@@ -59,32 +59,26 @@
 ;; the procedures `f', `g', and `h' for positive integer values of n.
 ;; For example, `(k n)' computes 5n^2.
 
-; (f n) == (* 2 n)
+;; (f n) == (* 2 n)
 
 (f 1)                                   ; 2
 (f 2)                                   ; 4
 (f 3)                                   ; 6
 (f 4)                                   ; 8
 
-; (g n) == (expt 2 n)
+;; (g n) == (expt 2 n)
 
 (g 1)                                   ; 2
 (g 2)                                   ; 4
 (g 3)                                   ; 8
 (g 4)                                   ; 16
 
-; (h n) == (expt 2 (h (- n 1)))
+(define e expt)                         ; alias for readability
 
-(define e expt)
+;; (h n) == (e 2 (h (- n 1))) apparently known as a "power tower"
 
-(h 1)                                   ; 2                 2
-(h 2)                                   ; 4              (e 2 2)
-(h 3)                                   ; 16          (e (e 2 2) 2)
-(h 4)                                   ; 65536 (e (e (e (e 2 2) 2) 2) 2)
-(h 5)                                   ; HUUGE (e 2 65536)
-
-(h 1)                                   ; 2     (e 2 1)
-(h 2)                                   ; 4     (e 2 2)
-(h 3)                                   ; 16    (e 2 4)
-(h 4)                                   ; 65536 (e 2 16)
-(h 5)                                   ; HUUGE (e 2 65536)
+(h 1)                ;                   2       = (e 2 1)     = 2
+(h 2)                ;                (e 2 2)    = (e 2 2)     = 4
+(h 3)                ;           (e 2 (e 2 2))   = (e 2 4)     = 16
+(h 4)                ;      (e 2 (e 2 (e 2 2)))  = (e 2 16)    = 65536
+;; (h 5)             ; (e 2 (e 2 (e 2 (e 2 2)))) = (e 2 65536) = HUUGE and slow

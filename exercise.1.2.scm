@@ -1,3 +1,5 @@
+#lang r5rs
+
 ;;; *Exercise 1.2:*
 
 ;; Translate the following expression into prefix form.

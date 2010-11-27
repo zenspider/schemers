@@ -1,3 +1,5 @@
+#lang r5rs
+
 ;;; *Exercise 1.4:*
 
 ;; Observe that our model of evaluation allows for combinations whose

@@ -1,3 +1,5 @@
+#lang r5rs
+
 ;;; *Exercise 1.3:*
 
 ;; Define a procedure that takes three numbers as arguments and

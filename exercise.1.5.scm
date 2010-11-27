@@ -1,3 +1,5 @@
+#lang r5rs
+
 ;;; *Exercise 1.5:*
 
 ;; Ben Bitdiddle has invented a test to determine whether the

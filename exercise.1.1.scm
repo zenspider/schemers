@@ -1,3 +1,5 @@
+#lang r5rs
+
 ;;; *Exercise 1.1:*
 
 ;; Below is a sequence of expressions. What is the result printed by

@@ -10,14 +10,6 @@
 ;; Write a procedure that computes f by means of a recursive process.
 ;; Write a procedure that computes f by means of an iterative process.
 
-(define (fib n)
-  (define (fib-iter a b count)
-    (if (= count 0) b
-        (fib-iter (+ a b) a (- count 1))))
-  (fib-iter 1 0 n))
-
-(fib 10)                                ; 55
-
 (define (f-recursive n)
   (if (< n 3) n
       (+ (* 1 (f-recursive (- n 1)))

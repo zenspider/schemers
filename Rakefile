@@ -1,3 +1,4 @@
+task :default => [:clean, :test]
 
 task :clean do
   rm_f Dir["**/*~"]
@@ -5,6 +6,6 @@ end
 
 task :test do
   Dir["*.scm"].each do |file|
-    sh "mzscheme #{file}"
+    sh "X=1 time mzscheme #{file} 2>&1"
   end
 end

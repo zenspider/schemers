@@ -1,4 +1,4 @@
-#lang r6rs
+#lang r5rs
 
 ;;; Exercise 1.14:
 
@@ -7,9 +7,6 @@
 ;; for 11 cents. What are the orders of growth of the space and number
 ;; of steps used by this process as the amount to be changed
 ;; increases?
-
-(import (rnrs)
-        (racket trace))
 
 (define (count-change amount)
   (cc amount 5))
@@ -64,10 +61,6 @@
 ;;    (cc (- 11 (first-denomination 5)) 5))
 ;; 
 ;; ;; I don't think I care anymore. I know how recursion works. Bite me.
-
-(trace count-change)
-(trace cc)
-(trace first-denomination)
 
 (count-change 11)
 

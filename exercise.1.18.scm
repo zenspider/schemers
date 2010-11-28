@@ -9,6 +9,9 @@
 
 ;; um... I did that in 1.17
 
+(define (double n) (+ n n))
+(define (halve  n) (/ n 2))             ; that makes no sense...
+
 (define (mult a b)
   (define (iterate a b p)
     (cond ((= b 0) p)

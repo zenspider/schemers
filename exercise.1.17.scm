@@ -29,14 +29,9 @@
 ;; (double (+ 11 (double (double 11))))
 
 (define (mult a b)
-  (define (iterate a b)
-    (cond ((= b 0) 0)
-          ((= b 1) a)
-          ((even? b) (iterate (double a) (halve b)))
-          (else      (+ a (iterate a (- b 1))))))
-  (iterate a b))
-
-;; this isn't strictly tail recursive, or something... doesn't feel right
+  (cond ((= b 0) 0)
+        ((even? b) (double (mult a (halve b))))
+        (else      (+ a    (mult a (- b 1))))))
 
 (mult 11 10)                            ; 110
 (mult 65 64)                            ; 4160

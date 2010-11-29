@@ -10,22 +10,24 @@
 ;; procedure prints three asterisks followed by the amount of time
 ;; used in performing the test.
 
-(define (prime? n) #f)
+(define (prime? n)
+  (= n (smallest-divisor n)))
 
 (define runtime current-inexact-milliseconds)
 
 (define (timed-prime-test n)
-  (newline)
-  (display n)
   (start-prime-test n (runtime)))
 
 (define (start-prime-test n start-time)
   (and (prime? n)
-       (report-prime (- (runtime) start-time))))
+       (report-prime n (- (runtime) start-time))))
 
-(define (report-prime elapsed-time)
-  (display " *** ")
-  (display elapsed-time))
+(define (report-prime n elapsed-time)
+  (display n)
+  (display " = ")
+  (display elapsed-time)
+  (display " ms")
+  (newline))
 
 ;; Using this procedure, write a procedure `search-for-primes' that
 ;; checks the primality of consecutive odd integers in a specified
@@ -41,3 +43,37 @@
 ;; time proportional to the number of steps required for the
 ;; computation?
 
+(define (!= a b) (not (= a b)))
+(define (search-for-primes from count)
+  (and (!= count 0)
+       (if (timed-prime-test from)
+           (search-for-primes (+ from 1) (- count 1))
+           (search-for-primes (+ from 1) count))))
+
+(search-for-primes 1001 3)
+
+;; 1009    = 0.0009765625 ms
+;; 1013    = 0.0009765625 ms
+;; 1019    = 0.0009765625 ms
+
+(search-for-primes 10001 3)
+
+;; 10007   = 0.001953125 ms
+;; 10009   = 0.001953125 ms
+;; 10037   = 0.001953125 ms
+
+(search-for-primes 100001 3)
+
+;; 100003  = 0.0068359375 ms
+;; 100019  = 0.007080078125 ms
+;; 100043  = 0.005859375 ms
+
+(search-for-primes 1000001 3)
+
+;; 1000003 = 0.018798828125 ms
+;; 1000033 = 0.018798828125 ms
+;; 1000037 = 0.019775390625 ms
+
+(sqrt 10)                               ; 3.162
+
+;; seems to fit the pattern quite well

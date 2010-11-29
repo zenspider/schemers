@@ -19,31 +19,73 @@
       a
       (gcd b (remainder a b))))
 
-;; normal order:
-
-;; boring...
-;;
-;; (define g gcd)
-;; (define r remainder)
-;; 
-;; (g 206 40)                              ; expand/eval/substitute to:
-;; 
-;; (if (= 40 0)                            ; expands c/t/f
-;;     206
-;;     (g 40 (r 206 40)))
-;; 
-;; (if (= 40 0)                            ; evals c/t/f
-;;     206
-;;     (g 40 (if (= 40 0) 206 (g 40 (r 206 40)))))
-;;
-;; and so on... ugh
-
 ;; applicative order:
 
-;; (gcd 206 40) > (remainder 206 40)
-;; (gcd 40 6)   > (remainder 40 6)
-;; (gcd 6 4)    > (remainder 6 4)
-;; (gcd 4 2)    > (remainder 4 2)
-;; (gcd 2 0)
+(gcd 206 40)                            ; > (remainder 206 40)
+(gcd 40 6)                              ; > (remainder 40 6)
+(gcd 6 4)                               ; > (remainder 6 4)
+(gcd 4 2)                               ; > (remainder 4 2)
+(gcd 2 0)
+2
 
 ;; 4 calls to remainder
+;; normal order:
+
+;; shorten for readibility... not that it really helps... ugh
+(define g gcd)
+(define r remainder)
+
+;; step 1
+(g 206 40)                              ; expand/eval/substitute to:
+(if (= 40 0) 206 (g 40 (r 206 40)))     ; expands
+(if #f 206 (g 40 (r 206 40)))           ; evals and substitutes, and so on:
+
+;; step 2
+(g 40 (r 206 40))
+(if (= (r 206 40) 0) 40 (g (r 206 40) (r 40 (r 206 40))))
+(if (= 6 0) 40 (g (r 206 40) (r 40 (r 206 40))))
+(if #f 40 (g (r 206 40) (r 40 (r 206 40))))
+
+;; step 3
+(g (r 206 40) (r 40 (r 206 40)))
+(if (= (r 40 (r 206 40)) 0)
+    (r 206 40)
+    (g (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))
+(if (= 4 0)
+    (r 206 40)
+    (g (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))
+(if #f
+    (r 206 40)
+    (g (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))
+
+;; step 4
+(g (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40))))
+(if (= (r (r 206 40) (r 40 (r 206 40))) 0)
+    (r 40 (r 206 40))
+    (g (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40))))))
+(if (= 2 0)
+    (r 40 (r 206 40))
+    (g (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40))))))
+(if #f
+    (r 40 (r 206 40))
+    (g (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40))))))
+
+;; step 5
+(g (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))
+(if (= (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))) 0)
+    (r (r 206 40) (r 40 (r 206 40)))
+    (g (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))) (r (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))))
+(if (= 0 0)
+    (r (r 206 40) (r 40 (r 206 40)))
+    (g (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))) (r (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))))
+(if #t
+    (r (r 206 40) (r 40 (r 206 40)))
+    (g (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))) (r (r (r 206 40) (r 40 (r 206 40))) (r (r 40 (r 206 40)) (r (r 206 40) (r 40 (r 206 40)))))))
+
+;; step 6 - finally done
+(r (r 206 40) (r 40 (r 206 40)))
+2
+
+;; so... 18 calls to remainder? I think I counted that right.
+
+;; and so on... ugh

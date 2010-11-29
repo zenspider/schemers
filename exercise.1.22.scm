@@ -1,4 +1,4 @@
-#lang r5rs
+#lang racket
 
 ;;; Exercise 1.22:
 
@@ -10,14 +10,18 @@
 ;; procedure prints three asterisks followed by the amount of time
 ;; used in performing the test.
 
+(define (prime? n) #f)
+
+(define runtime current-inexact-milliseconds)
+
 (define (timed-prime-test n)
   (newline)
   (display n)
   (start-prime-test n (runtime)))
 
 (define (start-prime-test n start-time)
-  (if (prime? n)
-      (report-prime (- (runtime) start-time))))
+  (and (prime? n)
+       (report-prime (- (runtime) start-time))))
 
 (define (report-prime elapsed-time)
   (display " *** ")

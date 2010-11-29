@@ -23,3 +23,10 @@
 ;; says Eva. "By writing the procedure like that, you have transformed
 ;; the [theta](`log' n) process into a [theta](n) process." Explain.
 
+
+;; When the exponent is even, he's performing twice the number of
+;; recursive expmod calls, eliminating any benefit to begin with. This
+;; transforms the problem from O(log n) to O(n).
+;; 
+;; Still not sure why they wouldn't use the built in expt... I'm fairly
+;; certain it was standard even when this book was written. :P

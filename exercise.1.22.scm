@@ -11,6 +11,16 @@
 ;; used in performing the test.
 
 (define (prime? n)
+  (define (smallest-divisor n)
+    (define (find-divisor n test-divisor)
+      (define (divides? a b)
+        (= (remainder b a) 0))
+      (define (square n) (* n n))
+      (define (next n) (+ test-divisor 1))
+      (cond ((> (square test-divisor) n) n)
+            ((divides? test-divisor n) test-divisor)
+            (else (find-divisor n (next test-divisor)))))
+    (find-divisor n 2))
   (= n (smallest-divisor n)))
 
 (define runtime current-inexact-milliseconds)
@@ -42,17 +52,6 @@
 ;; compatible with the notion that programs on your machine run in
 ;; time proportional to the number of steps required for the
 ;; computation?
-
-(define (smallest-divisor n)
-  (define (find-divisor n test-divisor)
-    (define (divides? a b)
-      (= (remainder b a) 0))
-    (define (square n) (* n n))
-    (define (next n) (+ test-divisor 1))
-    (cond ((> (square test-divisor) n) n)
-          ((divides? test-divisor n) test-divisor)
-          (else (find-divisor n (next test-divisor)))))
-  (find-divisor n 2))
 
 (define (!= a b) (not (= a b)))
 (define (search-for-primes from count)

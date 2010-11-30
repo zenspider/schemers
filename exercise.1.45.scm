@@ -18,3 +18,5 @@
 ;; `average-damp', and the `repeated' procedure of *Note Exercise
 ;; 1-43::. Assume that any arithmetic operations you need are
 ;; available as primitives.
+
+;; aja says we should skip this one

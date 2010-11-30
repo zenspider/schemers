@@ -17,21 +17,16 @@
 ;;      value to use when the terms run out. Write `accumulate' and
 ;;      show how `sum' and `product' can both be defined as simple
 ;;      calls to `accumulate'.
-;; 
-;;   b. If your `accumulate' procedure generates a recursive process,
-;;      write one that generates an iterative process. If it generates
-;;      an iterative process, write one that generates a recursive
-;;      process.
 
 (define (prod-old f a b n)
   (if (> a b) 1
       (* (f a)
          (prod-old f (n a) b n))))
 
-(define (accumulate f-c f a b n)
-  (if (> a b) 1
+(define (accumulate f-c nullv f a b n)
+  (if (> a b) nullv
       (f-c (f a)
-         (accumulate f-c f (n a) b n))))
+         (accumulate f-c nullv f (n a) b n))))
 
 (define (inc n) (+ n 1))
 (define (identity n) n)
@@ -40,10 +35,27 @@
    (prod-old identity 1 10 inc))        ; #t
 
 (= (* 10 9 8 7 6 5 4 3 2 1)
-   (accumulate * identity 1 10 inc))    ; #t
+   (accumulate * 1 identity 1 10 inc))  ; #t
 
 (define (prod-new f a b n)
-  (accumulate * f a b n))
+  (accumulate * 1 f a b n))
 
 (= (* 10 9 8 7 6 5 4 3 2 1)
    (prod-new identity 1 10 inc))        ; #t
+ 
+;;   b. If your `accumulate' procedure generates a recursive process,
+;;      write one that generates an iterative process. If it generates
+;;      an iterative process, write one that generates a recursive
+;;      process.
+
+;; god this is getting old
+
+(define (accumulate-i f-c nullv f a b n)
+  (define (iterate a result)
+    (if (> a b) result
+        (iterate (n a) (f-c (f a) result))))
+  (iterate a nullv))
+
+(= (* 10 9 8 7 6 5 4 3 2 1)
+   (accumulate-i * 1 identity 1 10 inc))    ; #t
+

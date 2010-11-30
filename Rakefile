@@ -6,6 +6,6 @@ end
 
 task :test do
   Dir["*.scm"].each do |file|
-    sh "X=1 time mzscheme #{file} 2>&1"
+    sh "X=1 time racket -f #{file} 2>&1"
   end
 end

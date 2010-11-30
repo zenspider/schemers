@@ -1,4 +1,4 @@
-#lang r5rs
+#lang racket
 
 ;;; Exercise 1.21:
 

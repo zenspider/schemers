@@ -72,7 +72,7 @@
 
 ;; seriously? are MIT students this bad at this?
 
-(define (cont-frac-r n d i)
+(define (cont-frac-i n d i)
   (define (iterate i fraction)
     (if (< i 1) fraction
         (iterate (- i 1) 
@@ -80,7 +80,7 @@
                     (+ (d i) fraction)))))
   (iterate i 0))
 
-(define (phi-approx-r k)
-  (/ 1 (cont-frac-r (lambda (i) 1.0) (lambda (i) 1.0) k)))
+(define (phi-approx-i k)
+  (/ 1 (cont-frac-i (lambda (i) 1.0) (lambda (i) 1.0) k)))
 
-(phi-approx-r 13)                       ; 1.6180257510729614
+(phi-approx-i 13)                       ; 1.6180257510729614

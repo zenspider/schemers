@@ -15,3 +15,21 @@
 ;; improving the guess until it is good enough. Rewrite the `sqrt'
 ;; procedure of section *Note 1-1-7:: and the `fixed-point' procedure
 ;; of section *Note 1-3-3:: in terms of `iterative-improve'.
+
+(define (iterative-improve good-enough? improve)
+  (lambda (x)
+    (define (iterate guess n)
+      (if (good-enough? guess n) guess
+          (iterate (improve guess n) n)))
+    (iterate 1.0 x)))
+
+(define (square x) (* x x))
+(define (average x y) (/ (+ x y) 2))
+
+(define sqrt (iterative-improve
+              (lambda (guess x) (< (abs (- (square guess) x)) 0.001))
+              (lambda (guess x) (average guess (/ x guess)))))
+
+(sqrt 25)
+
+;; TODO: fixed-point

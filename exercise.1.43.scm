@@ -39,20 +39,18 @@
 ((repeated-twice square) 5)             ; 625
 
 (define (repeated f n)
-  (cond ((= n 0) f)
-        ((= n 1) (compose f identity))
-        (else (repeated (compose f f) (- n 2)))))
+  (if (= n 1) f
+      (compose f (repeated f (- n 1)))))
 
-(define (repeated-i f n)                ; I'm sure I can do this cleaner
+(define (repeated-i f n)
   (define (iterate f- n)
-    (cond ((= n 0) f-)
-          ((= n 1) (compose f- f))
-          (else (iterate (compose f f) (- n 1)))))
-  (iterate f (- n 1)))                  ; HACK: - here seems wrong
+    (if (= n 0) f-
+        (iterate (compose f f-) (- n 1))))
+  (iterate f (- n 1)))
 
 ((repeated square 1) 5)                 ; 25
 ((repeated square 2) 5)                 ; 625
-((repeated square 3) 5)                 ; this is wrong
+((repeated square 3) 5)                 ; 390625
 
 ((repeated-i square 1) 5)               ; 25
 ((repeated-i square 2) 5)               ; 625

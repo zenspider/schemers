@@ -15,3 +15,23 @@
 ;; 1-43::.
 
 ;; TODO
+
+(define (repeated f n)
+  (if (= n 1) f
+      (compose f (repeated f (- n 1)))))
+
+(define (smooth f)
+  (let ((dx 0.0001))
+    (lambda (x) (/ (+ (f x) (f (+ x dx)) (f (- x dx))) 3))))
+
+(define (f x) (* x x))
+
+(define f- (smooth f))
+
+(< (abs (- (f 2) (f- 2))) 0.0001)
+
+(define f-- ((repeated smooth 3) f))
+
+(f 3)                                   ; 9
+(f- 3)                                  ; 9.000000006666665
+(f-- 3)                                 ; 9.00000002

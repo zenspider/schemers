@@ -18,6 +18,10 @@ def update_touch_file touch_file = ".gitignore"
   touch touch_file
 end
 
+task :todo do
+  sh "grep -l TODO *.scm"
+end
+
 task :run do
   with_newer_files do |file|
     sh "X=1 time racket #{file} 2>&1"

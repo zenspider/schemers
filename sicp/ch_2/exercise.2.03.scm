@@ -10,6 +10,9 @@
 ;; with suitable abstraction barriers, so that the same perimeter and
 ;; area procedures will work using either representation?
 
+(define rect-width  'whatevs)
+(define rect-length 'whatevs)
+
 (define (rect-perimeter r)
   (+ (* 2 (rect-width r))
      (* 2 (rect-length r))))

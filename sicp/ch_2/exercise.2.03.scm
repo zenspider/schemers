@@ -9,4 +9,13 @@
 ;; different representation for rectangles. Can you design your system
 ;; with suitable abstraction barriers, so that the same perimeter and
 ;; area procedures will work using either representation?
-;; 
+
+(define (rect-perimeter r)
+  (+ (* 2 (rect-width r))
+     (* 2 (rect-length r))))
+
+(define (rect-area r)
+  (* (rect-width r)
+     (rect-length r)))
+
+;; these will work no matter how you define rectangles (point w h) vs (p1 p2)

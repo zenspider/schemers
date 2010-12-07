@@ -23,4 +23,25 @@
 ;;        (display ",")
 ;;        (display (y-point p))
 ;;        (display ")"))
-;; 
+
+(define make-segment cons)
+(define start-segment car)
+(define end-segment   cdr)
+(define make-point   cons)
+(define x-point       car)
+(define y-point       cdr)
+
+(define (average a b) (/ (+ a b) 2))
+
+(define (midpoint-segment s)
+  (make-point (average (x-point (start-segment s))
+                       (x-point (end-segment   s)))
+              (average (y-point (start-segment s))
+                       (y-point (end-segment   s)))))
+
+(define s (make-segment (make-point 0 0) (make-point 10 5)))
+
+(start-segment s)
+(end-segment s)
+
+(midpoint-segment s)

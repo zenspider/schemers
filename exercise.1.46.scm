@@ -32,4 +32,4 @@
 
 (sqrt 25)
 
-;; TODO: fixed-point
+;; fixed-point... don't care

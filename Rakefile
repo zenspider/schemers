@@ -7,7 +7,7 @@ end
 def with_newer_files touch_file = ".gitignore"
   t0 = File.mtime(touch_file) rescue Time.at(0)
 
-  Dir["*.scm"].each do |file|
+  Dir["**/*.scm"].each do |file|
     t1 = File.mtime(file)
     next if t0 > t1
     yield file

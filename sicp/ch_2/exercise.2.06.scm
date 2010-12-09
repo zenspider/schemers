@@ -67,8 +67,8 @@
 ;;
 ;; really:
 ;;
-;; (+ (lambda (f) (lambda (x) (f (f x))))
-;;    (lambda (f) (lambda (x) (f (f x)))))
+;; (add (lambda (f) (lambda (x) (f (f x))))
+;;      (lambda (f) (lambda (x) (f (f x)))))
 ;;
 ;; should be:
 ;;
@@ -109,7 +109,7 @@
 
 ;; YAY!
 
-(define (+ a b) (lambda (f) (lambda (x) ((a f) ((b f) x)))))
+(define (add a b) (lambda (f) (lambda (x) ((a f) ((b f) x)))))
 
 ;; to test, substitute one in for a and reduce:
 ;; (I'm also substituting define -> lambda because mzscheme is annoying
@@ -133,3 +133,11 @@
 ;; add-1:
 (lambda (n)
   (lambda (f) (lambda (x) (f ((n f) x)))))
+
+;; aja figured out how to USE the fucking things!
+(define (inc n) (+ n 1))
+
+(((add one one) inc) 0)                 ; 2
+(((add one two) inc) 0)                 ; 3
+(((add two one) inc) 0)                 ; 3
+(((add two two) inc) 0)                 ; 4

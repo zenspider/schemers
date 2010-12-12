@@ -10,8 +10,7 @@
 ;; others the width of the combination is not a function of the widths
 ;; of the argument intervals. Show that the width of the sum (or
 ;; difference) of two intervals is a function only of the widths of
-;; the intervals being added (or subtracted). Give examples to show
-;; that this is not true for multiplication or division.
+;; the intervals being added (or subtracted). 
 
 (define make-interval cons)
 (define upper-bound cdr)
@@ -40,8 +39,10 @@
 ;; (width ((+ a c) . (+ b d)))
 ;; => (/ (- (+ b d) (+ a c)) 2)
 ;; => (/ (+ (- b a) (- d c)) 2)
-;; (width (a . b)) => (/ (- b a) 2)
-;; (width (c . d)) => (/ (- c d) 2)
+;; (width (a . b))
+;; => (/ (- b a) 2)
+;; (width (c . d))
+;; => (/ (- c d) 2)
 ;; (+ (/ (- b a) 2) (/ (- c d) 2))
 ;; => (/ (+ (- b a) (- c d)) 2)
 
@@ -49,3 +50,8 @@
 (interval-width i4)                     ; 2
 (interval-width (add-interval i3 i4))   ; 5/2 = 1/2 + 4/2
 (interval-width (sub-interval i4 i3))   ; 3/2 = 4/2 - 1/2
+
+;; Give examples to show that this is not true for multiplication or
+;; division.
+
+;; TODO

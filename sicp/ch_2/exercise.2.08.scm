@@ -21,13 +21,13 @@
   (make-interval (- (lower-bound x) (lower-bound y))
                  (- (upper-bound x) (upper-bound y))))
 
-(define i3 (make-interval 1 2))
-(define i4 (make-interval 4 8))
+(define a (make-interval 1 2))
+(define b (make-interval 4 8))
 
-(sub-interval i4 i3)                    ; (3 . 6)
+(sub-interval b a)                      ; (3 . 6)
 
-(sub-interval (add-interval i3 i4) i3)  ; (4 . 8) aka i4
-(sub-interval (add-interval i3 i4) i4)  ; (1 . 2) aka i3
+(sub-interval (add-interval a b) a)     ; (4 . 8) aka b
+(sub-interval (add-interval a b) b)     ; (1 . 2) aka a
 
 ;; I suspect I'm not getting something because this problem shouldn't
 ;; be this easy.

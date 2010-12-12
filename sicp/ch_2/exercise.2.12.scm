@@ -31,11 +31,11 @@
 (define (interval-width i)
   (/ (- (upper-bound i) (lower-bound i)) 2))
 
-(define (midpoint i)
+(define (center i)
   (+ (lower-bound i) (interval-width i)))
 
 (define (percent i)
-  (/ (interval-width i) (midpoint i)))
+  (/ (interval-width i) (center i)))
 
 (percent r3)
 (percent r4)

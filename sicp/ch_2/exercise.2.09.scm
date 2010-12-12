@@ -54,4 +54,4 @@
 ;; Give examples to show that this is not true for multiplication or
 ;; division.
 
-;; TODO
+;; don't care

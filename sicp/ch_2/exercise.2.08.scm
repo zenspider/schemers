@@ -6,6 +6,10 @@
 ;; of two intervals may be computed. Define a corresponding
 ;; subtraction procedure, called `sub-interval'.
 
+(define make-interval cons)
+(define upper-bound cdr)
+(define lower-bound car)
+
 (define (add-interval x y)
   (make-interval (+ (lower-bound x) (lower-bound y))
                  (+ (upper-bound x) (upper-bound y))))

@@ -22,9 +22,11 @@
 (define (interval-width x)
   (/ (- (upper-bound x) (lower-bound x)) 2))
 
-;; TODO: I read the problem entirely different from aja. I read "an
+;; huh... I read the problem entirely different from aja. I read "an
 ;; interval that spans zero" as "a zero width interval", not "an
 ;; interval with a negative lower bound and positive upper bound"
+;;
+;; don't care...
 
 (define (div-interval x y)
   (if (= (interval-width y) 0) null

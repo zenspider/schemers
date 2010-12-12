@@ -18,8 +18,8 @@
 (define r1 (make-interval (* 0.90 6.8) (* 1.10 6.8)))
 (define r2 (make-interval (* 0.95 4.7) (* 1.05 4.7)))
 
-(define r3 (make-center-percent 6.8 0.1))
-(define r4 (make-center-percent 4.7 0.05))
+(define r3 (make-center-percent 6.8 1/10))
+(define r4 (make-center-percent 4.7 1/20))
 
 (define (i= i j)
   (and (= (upper-bound i) (upper-bound j))

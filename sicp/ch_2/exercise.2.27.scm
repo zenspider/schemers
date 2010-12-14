@@ -35,3 +35,6 @@
 
 (assert-equal '((3 4) (1 2)) (reverse x))
 (assert-equal '((4 3) (2 1)) (deep-reverse x))
+
+
+(assert-equal '((6 5 (4 3)) (2 1)) (deep-reverse '((1 2) ((3 4) 5 6))))

@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;;; Exercise 2.19:
 
 ;; Consider the change-counting program of section *Note 1-2-2::. It
@@ -16,11 +18,11 @@
 ;; is a list of the values of the coins to use rather than an integer
 ;; specifying which coins to use. We could then have lists that
 ;; defined each kind of currency:
-;; 
-;;      (define us-coins (list 50 25 10 5 1))
-;; 
-;;      (define uk-coins (list 100 50 20 10 5 2 1 0.5))
-;; 
+
+(define us-coins (list 50 25 10 5 1))
+
+(define uk-coins (list 100 50 20 10 5 2 1 0.5))
+
 ;; We could then call `cc' as follows:
 ;; 
 ;;      (cc 100 us-coins)
@@ -29,19 +31,26 @@
 ;; To do this will require changing the program `cc' somewhat. It will
 ;; still have the same form, but it will access its second argument
 ;; differently, as follows:
-;; 
-;;      (define (cc amount coin-values)
-;;        (cond ((= amount 0) 1)
-;;              ((or (< amount 0) (no-more? coin-values)) 0)
-;;              (else
-;;               (+ (cc amount
-;;                      (except-first-denomination coin-values))
-;;                  (cc (- amount
-;;                         (first-denomination coin-values))
-;;                      coin-values)))))
-;; 
+
+(define (cc amount coin-values)
+  (cond ((= amount 0) 1)
+        ((or (< amount 0) (no-more? coin-values)) 0)
+        (else
+         (+ (cc amount
+                (except-first-denomination coin-values))
+            (cc (- amount
+                   (first-denomination coin-values))
+                coin-values)))))
+
 ;; Define the procedures `first-denomination',
 ;; `except-first-denomination', and `no-more?' in terms of primitive
 ;; operations on list structures. Does the order of the list
 ;; `coin-values' affect the answer produced by `cc'? Why or why not?
-;; 
+
+(define first-denomination car)
+(define except-first-denomination cdr)
+(define no-more? null?)
+
+(assert-equal 292 (cc 100 us-coins))
+
+;; of course, it'll affect the order that you count coins, so... duh.

@@ -7,4 +7,14 @@
 ;; 
 ;;      (reverse (list 1 4 9 16 25))
 ;;      (25 16 9 4 1)
-;; 
+
+(require "../lib/testes.rkt")
+
+(define (reverse l)
+  (define (iterate l r)
+    (if (null? l) r
+        (iterate (cdr l) (cons (car l) r))))
+  (iterate l null))
+
+(assert-equal '(3 2 1) (reverse '(1 2 3)))
+(done)

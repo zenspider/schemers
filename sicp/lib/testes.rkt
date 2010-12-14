@@ -7,7 +7,8 @@
       (error "failed")))
 
 (define (assert-equal a b)
-  (assert (equal? a b)))
+  (if (equal? a b) (display ".")
+      (error 'assert-equal "(equal? ~s ~s)~n" a b)))
 
 (define (done)
   (display "done!")

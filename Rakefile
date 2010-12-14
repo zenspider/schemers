@@ -35,3 +35,7 @@ task :test do
 
   update_touch_file
 end
+
+task :autotest do
+  sh "run_if_changed 'rake run' */*.scm"
+end

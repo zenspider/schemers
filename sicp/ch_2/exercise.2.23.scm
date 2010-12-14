@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;;; Exercise 2.23:
 
 ;; The procedure `for-each' is similar to `map'. It takes as arguments
@@ -19,3 +21,11 @@
 ;; The value returned by the call to `for-each' (not illustrated
 ;; above) can be something arbitrary, such as true. Give an
 ;; implementation of `for-each'.
+
+(define (foreach f l)
+  (f (car l))
+  (if (null? l) null
+      (foreach f (cdr l))))
+
+(foreach (lambda (x) (newline) (display x))
+         (list 57 321 88))

@@ -2,7 +2,7 @@
 
 (require "../lib/testes.rkt")
 
-;; Exercise 2.27.  
+;; Exercise 2.27.
 
 ;; Modify your reverse procedure of exercise 2.18 to produce a
 ;; deep-reverse procedure that takes a list as argument and returns as
@@ -38,3 +38,4 @@
 
 
 (assert-equal '((6 5 (4 3)) (2 1)) (deep-reverse '((1 2) ((3 4) 5 6))))
+(done)

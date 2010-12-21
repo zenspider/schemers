@@ -1,10 +1,6 @@
 #lang racket
 
-(provide assert assert-equal done)
-
-;; (define (assert test)
-;;   (if test (display ".")
-;;       (error "failed")))
+(provide assert assert-equal assert-many done)
 
 ; print-test : a macro for printing tests.
 (define-syntax assert
@@ -40,6 +36,10 @@
                        (write act)
                        (display ")")
                        (newline))))))
+
+
+(define (assert-many tests . futs)
+  (for-each tests futs))
 
 (define (done)
   (display "done!")

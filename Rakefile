@@ -19,7 +19,7 @@ def update_touch_file touch_file = ".gitignore"
 end
 
 task :todo do
-  sh "grep -l TODO **/*.scm"
+  system "grep -l TODO **/*.scm"
 end
 
 task :run do

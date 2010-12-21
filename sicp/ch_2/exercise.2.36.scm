@@ -1,6 +1,7 @@
 #lang racket
 
 (require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
 
 ;; Exercise 2.36
 
@@ -21,5 +22,13 @@
 ;;            (cons (accumulate op init <??>)
 ;;                  (accumulate-n op init <??>))))
 
-;; (assert-equal x y)
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs)) null
+      (cons (accumulate   op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
+(assert-equal '(22 26 30) (accumulate-n + 0 '((1 2 3)
+                                              (4 5 6)
+                                              (7 8 9)
+                                              (10 11 12))))
 (done)

@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.37
 
 ;; Suppose we represent vectors v = (v_i) as sequences of numbers, and
@@ -51,3 +53,5 @@
 ;;        (let ((cols (transpose n)))
 ;;          (map <??> m)))
 
+;; (assert-equal x y)
+(done)

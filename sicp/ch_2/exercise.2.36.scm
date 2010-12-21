@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.36
 
 ;; The procedure `accumulate-n' is similar to `accumulate' except that
@@ -19,3 +21,5 @@
 ;;            (cons (accumulate op init <??>)
 ;;                  (accumulate-n op init <??>))))
 
+;; (assert-equal x y)
+(done)

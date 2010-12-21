@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.40
 
 ;; Define a procedure `unique-pairs' that, given an integer n,
@@ -7,3 +9,5 @@
 ;; `unique-pairs' to simplify the definition of `prime-sum-pairs'
 ;; given above.
 
+;; (assert-equal x y)
+(done)

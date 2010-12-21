@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.33
 
 ;; Fill in the missing expressions to complete the following
@@ -15,3 +17,5 @@
 ;;      (define (length sequence)
 ;;        (accumulate <??> 0 sequence))
 
+;; (assert-equal x y)
+(done)

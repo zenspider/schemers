@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.48
 
 ;; A directed line segment in the plane can be represented as a pair
@@ -11,3 +13,5 @@
 ;; constructor `make-segment' and selectors `start-segment' and
 ;; `end-segment'.
 
+;; (assert-equal x y)
+(done)

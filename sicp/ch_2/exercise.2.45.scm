@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.45
 
 ;; `Right-split' and `up-split' can be expressed as instances of a
@@ -12,3 +14,5 @@
 ;; produces procedures `right-split' and `up-split' with the same
 ;; behaviors as the ones already defined.
 
+;; (assert-equal x y)
+(done)

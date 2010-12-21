@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.39
 
 ;; Complete the following definitions of `reverse' (*Note Exercise
@@ -13,3 +15,5 @@
 ;;      (define (reverse sequence)
 ;;        (fold-left (lambda (x y) <??>) nil sequence))
 
+;; (assert-equal x y)
+(done)

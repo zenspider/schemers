@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.52
 
 ;; Make changes to the square limit of `wave' shown in *Note Figure
@@ -17,3 +19,5 @@
 ;;      `square-of-four' so as to assemble the corners in a different
 ;;      pattern.  (For example, you might make the big Mr. Rogers
 ;;      look outward from each corner of the square.)
+;; (assert-equal x y)
+(done)

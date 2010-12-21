@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.51
 
 ;; Define the `below' operation for painters. `Below' takes two
@@ -10,3 +12,5 @@
 ;; `beside' procedure given above, and again in terms of `beside' and
 ;; suitable rotation operations (from *Note Exercise 2-50::).
 
+;; (assert-equal x y)
+(done)

@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.38
 
 ;; The `accumulate' procedure is also known as `fold-right', because
@@ -30,3 +32,5 @@
 ;; `fold-right' and `fold-left' will produce the same values for any
 ;; sequence.
 
+;; (assert-equal x y)
+(done)

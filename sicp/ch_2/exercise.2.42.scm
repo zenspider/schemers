@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.42
 
 ;; *Figure 2.8:* A solution to the eight-queens puzzle.
@@ -73,3 +75,5 @@
 ;; safe--the other queens are already guaranteed safe with respect to
 ;; each other.)
 
+;; (assert-equal x y)
+(done)

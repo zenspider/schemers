@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.49
 
 ;; Use `segments->painter' to define the following primitive painters:
@@ -14,3 +16,5 @@
 ;;
 ;;   d. The `wave' painter.
 
+;; (assert-equal x y)
+(done)

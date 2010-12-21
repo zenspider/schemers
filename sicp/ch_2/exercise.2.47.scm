@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.47
 
 ;; Here are two possible constructors for frames:
@@ -13,3 +15,5 @@
 ;; For each constructor supply the appropriate selectors to produce an
 ;; implementation for frames.
 
+;; (assert-equal x y)
+(done)

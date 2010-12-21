@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.34
 
 ;; Evaluating a polynomial in x at a given value of x can be
@@ -30,3 +32,5 @@
 ;;
 ;;      (horner-eval 2 (list 1 3 0 5 0 1))
 
+;; (assert-equal x y)
+(done)

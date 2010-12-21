@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.43
 
 ;; Louis Reasoner is having a terrible time doing *Note Exercise
@@ -21,3 +23,5 @@
 ;; eight-queens puzzle, assuming that the program in *Note Exercise
 ;; 2-42:: solves the puzzle in time T.
 
+;; (assert-equal x y)
+(done)

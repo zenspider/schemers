@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;; Exercise 2.46
 
 ;; A two-dimensional vector v running from the origin to a point can
@@ -15,3 +17,5 @@
 ;;      (x_1, y_1) - (x_2, y_2) = (x_1 - x_2, y_1 - y_2)
 ;;                   s * (x, y) = (sx, sy)
 
+;; (assert-equal x y)
+(done)

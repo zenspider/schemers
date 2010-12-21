@@ -45,16 +45,16 @@
 (define (square-tree5 l)
   (map (lambda (x) ((if (list? x) square-tree5 square) x)) l))
 
-(for-each (lambda (f)
-            (assert-equal '()    (f '()))
-            (assert-equal '(4)   (f '(2)))
-            (assert-equal '(4 9) (f '(2 3)))
+(assert-many (lambda (f)
+               (assert-equal '()    (f '()))
+               (assert-equal '(4)   (f '(2)))
+               (assert-equal '(4 9) (f '(2 3)))
 
-            (assert-equal '(1 (4 (9 16) 25) (36 49))
-                          (f '(1 (2 (3 4) 5) (6 7)))))
-          (list square-tree1
-                square-tree2
-                square-tree3
-                square-tree4
-                square-tree5))
+               (assert-equal '(1 (4 (9 16) 25) (36 49))
+                             (f '(1 (2 (3 4) 5) (6 7)))))
+             square-tree1
+             square-tree2
+             square-tree3
+             square-tree4
+             square-tree5)
 (done)

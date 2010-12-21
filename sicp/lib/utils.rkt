@@ -1,6 +1,7 @@
 #lang racket
 
 (provide accumulate
+         accumulate-n
          inc
          square)
 
@@ -13,7 +14,11 @@
       (op (car sequence)
           (accumulate op initial (cdr sequence)))))
 
-;; (define (identity x) x)
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs)) null
+      (cons (accumulate   op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
+
 ;; (define (flatmap proc seq)
 ;;   (accumulate append null (map proc seq)))
 ;; (define (enumerate-interval low high)

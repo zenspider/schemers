@@ -11,15 +11,13 @@
 ;; `fold-left', which is similar to `fold-right', except that it
 ;; combines elements working in the opposite direction:
 
-(define fold-right accumulate)
-
-(define (fold-left op initial sequence)
-  (define (iter result rest)
-    (if (null? rest)
-        result
-        (iter (op result (car rest))
-              (cdr rest))))
-  (iter initial sequence))
+;; (define (fold-left op initial sequence)
+;;   (define (iter result rest)
+;;     (if (null? rest)
+;;         result
+;;         (iter (op result (car rest))
+;;               (cdr rest))))
+;;   (iter initial sequence))
 
 ;; What are the values of
 ;;

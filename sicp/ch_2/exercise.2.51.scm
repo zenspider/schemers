@@ -1,6 +1,7 @@
 #lang racket
 
 (require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
 
 ;; Exercise 2.51
 

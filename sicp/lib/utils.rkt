@@ -5,6 +5,7 @@
          fold-left
          fold-right
          inc
+         prime?
          square)
 
 (define (inc n) (+ 1 n))
@@ -30,6 +31,19 @@
   (if (null? (car seqs)) null
       (cons (accumulate   op init (map car seqs))
             (accumulate-n op init (map cdr seqs)))))
+
+(define (prime? n)
+  (define (smallest-divisor n)
+    (define (find-divisor n test-divisor)
+      (define (divides? a b)
+        (= (remainder b a) 0))
+      (define (next n)
+        (if (odd? n) (+ 2 n) (+ 1 n)))
+      (cond ((> (square test-divisor) n) n)
+            ((divides? test-divisor n) test-divisor)
+            (else (find-divisor n (next test-divisor)))))
+      (find-divisor n 2))
+  (= n (smallest-divisor n)))
 
 ;; (define (flatmap proc seq)
 ;;   (accumulate append null (map proc seq)))

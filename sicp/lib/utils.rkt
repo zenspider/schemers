@@ -2,6 +2,8 @@
 
 (provide accumulate
          accumulate-n
+         fold-left
+         fold-right
          inc
          square)
 
@@ -9,10 +11,20 @@
 
 (define (square n) (* n n))
 
-(define (accumulate op initial sequence)
+(define (fold-right op initial sequence)
   (if (null? sequence) initial
       (op (car sequence)
           (accumulate op initial (cdr sequence)))))
+
+(define accumulate fold-right)
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
 
 (define (accumulate-n op init seqs)
   (if (null? (car seqs)) null

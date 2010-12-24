@@ -1,6 +1,7 @@
 #lang racket
 
 (require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
 
 ;; Exercise 2.38
 
@@ -9,15 +10,17 @@
 ;; combining all the elements to the right. There is also a
 ;; `fold-left', which is similar to `fold-right', except that it
 ;; combines elements working in the opposite direction:
-;;
-;;      (define (fold-left op initial sequence)
-;;        (define (iter result rest)
-;;          (if (null? rest)
-;;              result
-;;              (iter (op result (car rest))
-;;                    (cdr rest))))
-;;        (iter initial sequence))
-;;
+
+(define fold-right accumulate)
+
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
 ;; What are the values of
 ;;
 ;;      (fold-right / 1 (list 1 2 3))
@@ -32,5 +35,8 @@
 ;; `fold-right' and `fold-left' will produce the same values for any
 ;; sequence.
 
-;; (assert-equal x y)
+(assert-equal (/ 3 2 1 1)     (fold-right / 1 (list 1 2 3)))
+(assert-equal (/ 1 1 2 3)     (fold-left / 1 (list 1 2 3)))
+(assert-equal '(1 (2 (3 ()))) (fold-right list null (list 1 2 3)))
+(assert-equal '(((() 1) 2) 3) (fold-left list null (list 1 2 3)))
 (done)

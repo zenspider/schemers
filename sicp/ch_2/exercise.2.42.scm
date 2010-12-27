@@ -76,5 +76,82 @@
 ;; safe--the other queens are already guaranteed safe with respect to
 ;; each other.)
 
-;; (assert-equal x y)
+(define empty-board null)
+
+(define (any? f l)
+  (if (null? l) #f
+      (or (f (car l))
+          (any? f (cdr l)))))
+
+(define (not-any? f l) (not (any? f l)))
+
+(define (straight? board)
+  (if (null? board) #t
+      (let ((cols (map car  board))
+            (rows (map cadr board)))
+        (and (not-any? (lambda (m) (= m (car cols))) (cdr cols))
+             (not-any? (lambda (m) (= m (car rows))) (cdr rows))))))
+
+(define (diagonal? board k)
+  (if (null? board) #t
+      (let ((r (caar  board))
+            (c (cadar board)))
+        (and (or (= c k) (not (= (abs (- r k)) (abs (- c k)))))
+             (diagonal? (cdr board) k)))
+      ))
+
+(define (safe? k board)
+  (display k)
+  (newline)
+  (if (null? board) #t
+      (and (straight? board)
+           (diagonal? board k))))
+
+(define (adjoin-position new-row k rest-of-queens)
+  (append rest-of-queens (list (list new-row k))))
+
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0) (list empty-board)
+        (filter (lambda (positions) (safe? k positions))
+                (flatmap
+                 (lambda (rest-of-queens)
+                   (map (lambda (new-row)
+                          (adjoin-position new-row k rest-of-queens))
+                        (enumerate-interval 1 board-size)))
+                 (queen-cols (- k 1))))))
+  (queen-cols board-size))
+
+(let ((good '((3 1) (1 2) (4 3) (2 4)))
+      (bad  '((4 1) (3 2) (1 3) (2 4)))
+      (straight '((1 1) (1 2) (1 3) (1 4)))
+      (diagonal '((1 1) (1 2) (1 3) (4 4)))
+      (boards (queens 4)))
+
+  (assert-equal '((r1 c1))         (adjoin-position 'r1 'c1 null))
+  (assert-equal '((r1 c1) (r2 c2)) (adjoin-position 'r2 'c2 '((r1 c1))))
+
+  (assert (straight? '((1 1) (2 2))))
+  (assert (straight? '((2 2) (1 1))))
+  (refute (straight? '((1 1) (1 2))))
+  (refute (straight? '((1 1) (2 1))))
+
+  (assert (diagonal? '((1 1) (1 2)) 1))
+  (assert (diagonal? '((1 1) (2 1)) 1))
+  (assert (diagonal? '((1 1) (2 1) (3 1)) 1))
+  (refute (diagonal? '((1 1) (2 2)) 1))
+  (refute (diagonal? '((2 2) (1 1)) 1))
+  (refute (diagonal? '((2 1) (1 2) (1 3)) 1))
+
+  ;; (assert (straight? good))
+  ;; (refute (straight? straight))
+  ;;
+  ;; (assert (diagonal? good 1))
+  ;; (refute (diagonal? diagonal 1))
+  ;; (refute (diagonal? '((4 4) (1 2) (1 3) (1 1)) 1))
+  ;;
+  ;; (assert-equal null (queens 3))
+  ;; (refute-include bad boards)
+  ;; (assert-include good boards)
+  )
 (done)

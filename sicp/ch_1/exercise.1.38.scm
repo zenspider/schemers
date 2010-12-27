@@ -13,7 +13,7 @@
 (define (cont-frac n d i)
   (define (iterate i fraction)
     (if (< i 1) fraction
-        (iterate (- i 1) 
+        (iterate (- i 1)
                  (/ (n i)
                     (+ (d i) fraction)))))
   (iterate i 0))

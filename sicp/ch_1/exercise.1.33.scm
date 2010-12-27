@@ -18,7 +18,7 @@
   (iterate a identity))
 
 ;; Show how to express the following using `filtered-accumulate':
-;; 
+;;
 ;;   a. the sum of the squares of the prime numbers in the interval a
 ;;      to b (assuming that you have a `prime?' predicate already
 ;;      written)

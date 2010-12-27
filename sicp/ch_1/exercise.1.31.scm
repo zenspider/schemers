@@ -25,7 +25,7 @@
 
 ;;  Also use `product' to compute approximations to [pi] using the
 ;;  formula(4)
-;; 
+;;
 ;;           pi   2 * 4 * 4 * 6 * 6 * 8 ...
 ;;           -- = -------------------------
 ;;            4   3 * 3 * 5 * 5 * 7 * 7 ...

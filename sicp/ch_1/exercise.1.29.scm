@@ -5,11 +5,11 @@
 ;; Simpson's Rule is a more accurate method of numerical integration
 ;; than the method illustrated above. Using Simpson's Rule, the
 ;; integral of a function f between a and b is approximated as
-;; 
+;;
 ;;      h
 ;;      -(y[0] + 4y[1] + 2y[2] + 4y[3] + 2y[4] + ... + 2y[n-2] + 4y[n-1] + y[n]
 ;;      3
-;; 
+;;
 ;; where h = (b - a)/n, for some even integer n, and y_k = f(a + kh).
 ;; (Increasing n increases the accuracy of the approximation.) Define
 ;; a procedure that takes as arguments f, a, b, and n and returns the

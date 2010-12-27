@@ -7,17 +7,17 @@
 ;; she gets a frenzied call from an irate user, Lem E. Tweakit. It
 ;; seems that Lem has noticed that the formula for parallel resistors
 ;; can be written in two algebraically equivalent ways:
-;; 
+;;
 ;;       R_1 R_2
 ;;      ---------
 ;;      R_1 + R_2
-;; 
+;;
 ;; and
-;; 
+;;
 ;;            1
 ;;      -------------
 ;;      1/R_1 + 1/R_2
-;; 
+;;
 ;; He has written the following two programs, each of which computes
 ;; the parallel-resistors formula differently:
 

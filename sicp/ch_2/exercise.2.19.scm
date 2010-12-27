@@ -13,7 +13,7 @@
 ;; (which knows that there are five kinds of U.S. coins). It would be
 ;; nicer to be able to supply a list of coins to be used for making
 ;; change.
-;; 
+;;
 ;; We want to rewrite the procedure `cc' so that its second argument
 ;; is a list of the values of the coins to use rather than an integer
 ;; specifying which coins to use. We could then have lists that
@@ -24,10 +24,10 @@
 (define uk-coins (list 100 50 20 10 5 2 1 0.5))
 
 ;; We could then call `cc' as follows:
-;; 
+;;
 ;;      (cc 100 us-coins)
 ;;      292
-;; 
+;;
 ;; To do this will require changing the program `cc' somewhat. It will
 ;; still have the same form, but it will access its second argument
 ;; differently, as follows:

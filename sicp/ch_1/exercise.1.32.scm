@@ -6,9 +6,9 @@
 ;;      special cases of a still more general notion called
 ;;      `accumulate' that combines a collection of terms, using some
 ;;      general accumulation function:
-;; 
+;;
 ;;           (accumulate combiner null-value term a next b)
-;; 
+;;
 ;;      `Accumulate' takes as arguments the same term and range
 ;;      specifications as `sum' and `product', together with a
 ;;      `combiner' procedure (of two arguments) that specifies how the
@@ -42,7 +42,7 @@
 
 (= (* 10 9 8 7 6 5 4 3 2 1)
    (prod-new identity 1 10 inc))        ; #t
- 
+
 ;;   b. If your `accumulate' procedure generates a recursive process,
 ;;      write one that generates an iterative process. If it generates
 ;;      an iterative process, write one that generates a recursive

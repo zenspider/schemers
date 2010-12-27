@@ -12,7 +12,7 @@
 
 ;; Define selectors `upper-bound' and `lower-bound' to complete the
 ;; implementation.
-;; 
+;;
 
 (define (add-interval x y)
   (make-interval (+ (lower-bound x) (lower-bound y))
@@ -35,7 +35,7 @@
 ;; electrical quantities. It is sometimes necessary for them to
 ;; compute the value of a parallel equivalent resistance R_p of two
 ;; resistors R_1 and R_2 using the formula
-;; 
+;;
 ;;                  1
 ;;      R_p = -------------
 ;;            1/R_1 + 1/R_2

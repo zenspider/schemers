@@ -10,7 +10,7 @@
 (define make-interval cons)
 (define upper-bound cdr)
 (define lower-bound car)
- 
+
 (define (mul-interval x y)
   (let ((p1 (* (lower-bound x) (lower-bound y)))
         (p2 (* (lower-bound x) (upper-bound y)))

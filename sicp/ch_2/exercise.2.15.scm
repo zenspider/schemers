@@ -9,4 +9,4 @@
 ;; form that no variable that represents an uncertain number is
 ;; repeated. Thus, she says, `par2' is a "better" program for parallel
 ;; resistances than `par1'. Is she right? Why?
-;; 
+;;

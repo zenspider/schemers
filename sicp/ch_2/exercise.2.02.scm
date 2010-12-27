@@ -15,7 +15,7 @@
 ;; returns its midpoint (the point whose coordinates are the average
 ;; of the coordinates of the endpoints). To try your procedures,
 ;; you'll need a way to print points:
-;; 
+;;
 ;;      (define (print-point p)
 ;;        (newline)
 ;;        (display "(")

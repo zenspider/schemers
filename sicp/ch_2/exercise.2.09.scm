@@ -10,7 +10,7 @@
 ;; others the width of the combination is not a function of the widths
 ;; of the argument intervals. Show that the width of the sum (or
 ;; difference) of two intervals is a function only of the widths of
-;; the intervals being added (or subtracted). 
+;; the intervals being added (or subtracted).
 
 (define make-interval cons)
 (define upper-bound cdr)

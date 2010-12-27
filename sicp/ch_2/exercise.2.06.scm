@@ -19,7 +19,7 @@
 ;; This representation is known as "Church numerals", after its
 ;; inventor, Alonzo Church, the logician who invented the [lambda]
 ;; calculus.
-;; 
+;;
 ;; Define `one' and `two' directly (not in terms of `zero' and
 ;; `add-1'). (Hint: Use substitution to evaluate `(add-1 zero)'). Give
 ;; a direct definition of the addition procedure `+' (not in terms of
@@ -75,7 +75,7 @@
 ;; (lambda (f) (lambda (x) (f (f (f (f x))))))
 ;;
 ;; I think all we need to do is take the one part out of add-1
-;; 
+;;
 ;; (define one       (lambda (f) (lambda (x) (f x))))
 ;;                                       one ^^^^^
 ;;

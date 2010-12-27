@@ -13,10 +13,10 @@
 ;; n and returns the procedure that computes the nth repeated
 ;; application of f. Your procedure should be able to be used as
 ;; follows:
-;; 
+;;
 ;;      ((repeated square 2) 5)
 ;;      625
-;; 
+;;
 ;; Hint: You may find it convenient to use `compose' from *Note
 ;; Exercise 1-42::.
 

@@ -2,7 +2,7 @@
 
 (require "../lib/testes.rkt")
 
-;; Exercise 2.25.  
+;; Exercise 2.25.
 
 ;; Give combinations of cars and cdrs that will pick 7 from each of
 ;; the following lists:

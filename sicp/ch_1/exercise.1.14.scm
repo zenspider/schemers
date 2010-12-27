@@ -59,7 +59,7 @@
 ;;          (cc (- 11 (first-denomination 3)) 3))
 ;;       (cc (- 11 (first-denomination 4)) 4))
 ;;    (cc (- 11 (first-denomination 5)) 5))
-;; 
+;;
 ;; ;; I don't think I care anymore. I know how recursion works. Bite me.
 
 (count-change 11)

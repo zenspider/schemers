@@ -5,11 +5,11 @@
 ;; The sine of an angle (specified in radians) can be computed by
 ;; making use of the approximation `sin' xapprox x if x is
 ;; sufficiently small, and the trigonometric identity
-;; 
+;;
 ;;                     x             x
 ;;      sin x = 3 sin --- - 4 sin^3 ---
 ;;                     3             3
-;; 
+;;
 ;; to reduce the size of the argument of `sin'. (For purposes of this
 ;; exercise an angle is considered "sufficiently small" if its
 ;; magnitude is not greater than 0.1 radians.) These ideas are

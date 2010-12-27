@@ -44,9 +44,8 @@
                                     (seg (vec e m) (vec m s))
                                     (seg (vec m s) (vec s m)))))))
 
-(paint-box)
-(paint-x)
-(paint-diamond)
-;; fuck the wave guy
+;; (paint-box)
+;; (paint-x)
+;; (paint-diamond)
 
-(done)
+;; aaaaand... fuck the wave guy

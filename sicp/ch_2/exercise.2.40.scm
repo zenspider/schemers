@@ -10,13 +10,6 @@
 ;; `unique-pairs' to simplify the definition of `prime-sum-pairs'
 ;; given above.
 
-(define (enumerate-interval low high)
-  (if (> low high) null
-      (cons low (enumerate-interval (+ low 1) high))))
-
-(define (flatmap proc seq)
-  (accumulate append null (map proc seq)))
-
 (define (unique-pairs n)
   (flatmap (lambda (i)
              (map (lambda (j) (list i j))

@@ -1,5 +1,7 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+
 ;;; Exercise 1.16:
 
 ;; Design a procedure that evolves an iterative exponentiation process
@@ -32,12 +34,8 @@
 (expt 2 8)                              ; 256
 (expt 2 10)                             ; 1024
 
-(require rackunit)
-(require rackunit/gui)
-
-(test-begin
- (check-equal?    4 (expt 2 2))
- (check-equal?   27 (expt 3 3))
- (check-equal?  128 (expt 2 7))
- (check-equal?  256 (expt 2 8))
- (check-equal? 1024 (expt 2 10)))
+(assert-equal    4 (expt 2 2))
+(assert-equal   27 (expt 3 3))
+(assert-equal  128 (expt 2 7))
+(assert-equal  256 (expt 2 8))
+(assert-equal 1024 (expt 2 10))

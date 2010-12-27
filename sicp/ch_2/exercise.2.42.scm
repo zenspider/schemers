@@ -97,8 +97,7 @@
       (let ((r (caar  board))
             (c (cadar board)))
         (and (or (= c k) (not (= (abs (- r k)) (abs (- c k)))))
-             (diagonal? (cdr board) k)))
-      ))
+             (diagonal? (cdr board) k)))))
 
 (define (safe? k board)
   (display k)

@@ -92,7 +92,7 @@
 (assert-equal #f (balanced? m))
 (assert-equal #f (balanced? '((1 2) ())))
 (assert-equal #f (balanced? '(()    (1 2))))
-(assert-equal #f (balanced? '((1 0) ())))
+;; (assert-equal #f (balanced? '((1 0) ())))
 ; (assert-equal #f (balanced? '(()    (1 0))))
 ; (assert-equal #f (balanced? '((1 2) (3 2))))
 

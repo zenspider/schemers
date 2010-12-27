@@ -23,9 +23,10 @@
 ;; implementation of `for-each'.
 
 (define (foreach f l)
-  (f (car l))
   (if (null? l) null
-      (foreach f (cdr l))))
+      (begin
+        (f (car l))
+        (foreach f (cdr l)))))
 
 (foreach (lambda (x) (newline) (display x))
          (list 57 321 88))

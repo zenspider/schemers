@@ -21,4 +21,5 @@
 ;;      pattern.  (For example, you might make the big Mr. Rogers
 ;;      look outward from each corner of the square.)
 ;; (assert-equal x y)
-(done)
+
+;; no

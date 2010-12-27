@@ -13,5 +13,4 @@
 ;; `beside' procedure given above, and again in terms of `beside' and
 ;; suitable rotation operations (from *Note Exercise 2-50::).
 
-;; (assert-equal x y)
-(done)
+;; no

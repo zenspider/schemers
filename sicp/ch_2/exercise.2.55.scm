@@ -11,5 +11,7 @@
 ;;
 ;; To her surprise, the interpreter prints back `quote'.  Explain.
 
-;; (assert-equal x y)
+(assert-equal ''abracadabra  (quote (quote abracadabra)))
+(assert-equal 'quote         (car (quote (quote abracadabra))))
+(assert-equal '(abracadabra) (cdr (quote (quote abracadabra))))
 (done)

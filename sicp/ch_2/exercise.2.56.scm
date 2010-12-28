@@ -40,19 +40,31 @@
         ((and (number? m1) (number? m2)) (* m1 m2))
         (else (list '* m1 m2))))
 
+(define (operator? x op)
+  (and (pair? x) (eq? (car x) op)))
+
 (define (sum? x)
-  (and (pair? x) (eq? (car x) '+)))
+  (operator? x '+))
 
-(define (addend s) (cadr s))
-
-(define (augend s) (caddr s))
+(define addend cadr)
+(define augend caddr)
 
 (define (product? x)
-  (and (pair? x) (eq? (car x) '*)))
+  (operator? x '*))
 
-(define (multiplier p) (cadr p))
+(define multiplier cadr)
+(define multiplicand caddr)
 
-(define (multiplicand p) (caddr p))
+(define (exponentiation? x)
+  (operator? x '**))
+(define base cadr)
+(define exponent caddr)
+
+(define (make-exponentiation base exponent)
+  (cond ((=number? exponent 0) 1)
+        ((=number? exponent 1) base)
+        ((and (number? base) (number? exponent)) (expt base exponent))
+        (else (list '** base exponent))))
 
 (define (deriv exp var)
   (cond ((number? exp) 0)
@@ -67,15 +79,28 @@
                         (deriv (multiplicand exp) var))
           (make-product (deriv (multiplier exp) var)
                         (multiplicand exp))))
+        ((exponentiation? exp)
+         (make-product
+          (make-product
+           (exponent exp)
+           (make-exponentiation (base exp) (make-sum (exponent exp) -1)))
+          (deriv (base exp) var)))
         (else
          (error "unknown expression type -- DERIV" exp))))
 
-
 (assert-equal 1 (deriv '(+ x 3) 'x))
-
 (assert-equal 'y (deriv '(* x y) 'x))
-
 (assert-equal '(+ (* x y) (* y (+  x 3)))
               (deriv '(* (* x y) (+ x 3)) 'x))
+
+(assert-equal #t (exponentiation? '(** x 1)))
+(assert-equal 'x (base '(** x 1)))
+(assert-equal 1  (exponent '(** x 1)))
+
+(assert-equal 1               (deriv '(** x 1) 'x))
+(assert-equal 0               (deriv '(** x 0) 'x))
+(assert-equal 0               (deriv '(** y 1) 'x))
+(assert-equal 0               (deriv '(** y 0) 'x))
+(assert-equal '(* 3 (** x 2)) (deriv '(** x 3) 'x))
 
 (done)

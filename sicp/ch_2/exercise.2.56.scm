@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.56:
 
 ;; Show how to extend the basic differentiator to handle more kinds of
@@ -15,3 +18,6 @@
 ;; exponentiation.)  Build in the rules that anything raised to the
 ;; power 0 is 1 and anything raised to the power 1 is the thing
 ;; itself.
+
+;; (assert-equal x y)
+(done)

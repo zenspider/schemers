@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.63:
 
 ;; Each of the following two procedures converts a binary tree to a
@@ -29,3 +32,6 @@
 ;;   b. Do the two procedures have the same order of growth in the
 ;;      number of steps required to convert a balanced tree with n
 ;;      elements to a list?  If not, which one grows more slowly?
+
+;; (assert-equal x y)
+(done)

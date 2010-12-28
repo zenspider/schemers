@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.60:
 
 ;; We specified that a set would be represented as a list with no
@@ -11,3 +14,6 @@
 ;; the non-duplicate representation? Are there applications for which
 ;; you would use this representation in preference to the
 ;; non-duplicate one?
+
+;; (assert-equal x y)
+(done)

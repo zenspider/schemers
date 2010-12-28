@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.70:
 
 ;; The following eight-symbol alphabet with associated relative
@@ -31,3 +34,6 @@
 ;; How many bits are required for the encoding?  What is the smallest
 ;; number of bits that would be needed to encode this song if we used
 ;; a fixed-length code for the eight-symbol alphabet?
+
+;; (assert-equal x y)
+(done)

@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.64:
 
 ;; The following procedure `list->tree' converts an ordered list to a
@@ -35,3 +38,6 @@
 ;;
 ;;   b. What is the order of growth in the number of steps required by
 ;;      `list->tree' to convert a list of n elements?
+
+;; (assert-equal x y)
+(done)

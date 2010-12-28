@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.54:
 
 ;; Two lists are said to be `equal?' if they contain equal elements
@@ -17,3 +20,6 @@
 ;; `eq?', or if they are both lists such that `(car a)' is `equal?'
 ;; to `(car b)' and `(cdr a)' is `equal?' to `(cdr b)'.  Using this
 ;; idea, implement `equal?' as a procedure.(5)
+
+;; (assert-equal x y)
+(done)

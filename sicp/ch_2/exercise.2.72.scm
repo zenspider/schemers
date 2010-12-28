@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.72:
 
 ;; Consider the encoding procedure that you designed in *Note Exercise
@@ -11,3 +14,6 @@
 ;; Exercise 2-71::, and give the order of growth (as a function of n)
 ;; of the number of steps needed to encode the most frequent and least
 ;; frequent symbols in the alphabet.
+
+;; (assert-equal x y)
+(done)

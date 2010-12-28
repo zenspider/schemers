@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.69:
 
 ;; The following procedure takes as its argument a list of
@@ -20,3 +23,6 @@
 ;; almost certainly doing something wrong.  You can take significant
 ;; advantage of the fact that we are using an ordered set
 ;; representation.)
+
+;; (assert-equal x y)
+(done)

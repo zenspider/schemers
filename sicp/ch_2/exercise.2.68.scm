@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.68:
 
 ;; The `encode' procedure takes as arguments a message and a tree and
@@ -18,3 +21,6 @@
 ;; procedure by encoding the result you obtained in *Note Exercise
 ;; 2-67:: with the sample tree and seeing whether it is the same as
 ;; the original sample message.
+
+;; (assert-equal x y)
+(done)

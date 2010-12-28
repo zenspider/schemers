@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.58:
 
 ;; Suppose we want to modify the differentiation program so that it
@@ -23,3 +26,6 @@
 ;;      is done before addition.  Can you design appropriate
 ;;      predicates, selectors, and constructors for this notation
 ;;      such that our derivative program still works?
+
+;; (assert-equal x y)
+(done)

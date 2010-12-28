@@ -1,5 +1,8 @@
 #lang racket
 
+(require "../lib/testes.rkt")
+(require "../lib/utils.rkt")
+
 ;;; Exercise 2.67:
 
 ;; Define an encoding tree and a sample message:
@@ -15,3 +18,6 @@
 ;;
 ;; Use the `decode' procedure to decode the message, and give the
 ;; result.
+
+;; (assert-equal x y)
+(done)

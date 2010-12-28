@@ -88,10 +88,9 @@
         (else
          (error "unknown expression type -- DERIV" exp))))
 
-(assert-equal 1 (deriv '(+ x 3) 'x))
-(assert-equal 'y (deriv '(* x y) 'x))
-(assert-equal '(+ (* x y) (* y (+  x 3)))
-              (deriv '(* (* x y) (+ x 3)) 'x))
+(assert-equal 1                           (deriv '(+ x 3) 'x))
+(assert-equal 'y                          (deriv '(* x y) 'x))
+(assert-equal '(+ (* x y) (* y (+  x 3))) (deriv '(* (* x y) (+ x 3)) 'x))
 
 (assert-equal #t (exponentiation? '(** x 1)))
 (assert-equal 'x (base '(** x 1)))

@@ -27,12 +27,25 @@
 (define (=number? exp num)
   (and (number? exp) (= exp num)))
 
+(define (operator? x op)
+  (and (pair? x) (eq? (car x) op)))
+
+;; +
+
+(define (sum? x) (operator? x '+))
+(define addend cadr)
+(define augend caddr)
 (define (make-sum a1 a2)
   (cond ((=number? a1 0) a2)
         ((=number? a2 0) a1)
         ((and (number? a1) (number? a2)) (+ a1 a2))
         (else (list '+ a1 a2))))
 
+;; *
+
+(define (product? x) (operator? x '*))
+(define multiplier cadr)
+(define multiplicand caddr)
 (define (make-product m1 m2)
   (cond ((or (=number? m1 0) (=number? m2 0)) 0)
         ((=number? m1 1) m2)
@@ -40,31 +53,18 @@
         ((and (number? m1) (number? m2)) (* m1 m2))
         (else (list '* m1 m2))))
 
-(define (operator? x op)
-  (and (pair? x) (eq? (car x) op)))
+;; **
 
-(define (sum? x)
-  (operator? x '+))
-
-(define addend cadr)
-(define augend caddr)
-
-(define (product? x)
-  (operator? x '*))
-
-(define multiplier cadr)
-(define multiplicand caddr)
-
-(define (exponentiation? x)
-  (operator? x '**))
+(define (exponentiation? x) (operator? x '**))
 (define base cadr)
 (define exponent caddr)
-
 (define (make-exponentiation base exponent)
   (cond ((=number? exponent 0) 1)
         ((=number? exponent 1) base)
         ((and (number? base) (number? exponent)) (expt base exponent))
         (else (list '** base exponent))))
+
+;; meat
 
 (define (deriv exp var)
   (cond ((number? exp) 0)
@@ -87,6 +87,8 @@
           (deriv (base exp) var)))
         (else
          (error "unknown expression type -- DERIV" exp))))
+
+;; tests
 
 (assert-equal 1                           (deriv '(+ x 3) 'x))
 (assert-equal 'y                          (deriv '(* x y) 'x))

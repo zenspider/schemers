@@ -8,6 +8,7 @@
          fold-right
          inc
          prime?
+         sort-<
          square)
 
 (define (accumulate-n op init seqs)
@@ -51,5 +52,8 @@
             (else (find-divisor n (next test-divisor)))))
       (find-divisor n 2))
   (= n (smallest-divisor n)))
+
+(define (sort-< l)
+  (sort l (lambda (x y) (< x y))))
 
 (define (square n) (* n n))

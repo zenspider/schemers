@@ -27,14 +27,24 @@
 (define (operator? x op)
   (and (pair? x) (eq? (car x) op)))
 
+;; I'm sure there is a better way to write this, but at this point, I
+;; don't care.
+(define (reformat-binary x operator)
+  (let ((rest (cddr x)))
+   (let ((len (length rest))
+         (head (car rest))
+         (tail (cdr rest)))
+     (cond ((= 1 len) head)
+           ((= 2 len) (list operator head (car tail)))
+           (else (list operator head (reformat-binary
+                                      (cons operator (cons 'ignored tail))
+                                      operator)))))))
+
 ;; +
 
 (define (sum? x) (operator? x '+))
 (define addend cadr)
-(define (augend x)
-  (if (pair? x)
-      (cons '+ (cddr x))
-      (cddr x)))
+(define (augend x) (reformat-binary x '+))
 (define (make-sum a1 a2)
   (cond ((=number? a1 0) a2)
         ((=number? a2 0) a1)
@@ -45,7 +55,8 @@
 
 (define (product? x) (operator? x '*))
 (define multiplier   cadr)
-(define multiplicand cddr)
+;; (define multiplicand cddr)
+(define (multiplicand x) (reformat-binary x '*))
 (define (make-product m1 m2)
   (cond ((or (=number? m1 0) (=number? m2 0)) 0)
         ((=number? m1 1) m2)
@@ -57,7 +68,8 @@
 
 (define (exponentiation? x) (operator? x '**))
 (define base     cadr)
-(define exponent cddr)
+;; (define exponent cddr)
+(define (exponent x) (reformat-binary x '**))
 (define (make-exponentiation base exponent)
   (cond ((=number? exponent 0) 1)
         ((=number? exponent 1) base)
@@ -90,37 +102,37 @@
 
 ;; +
 
-(assert-equal #t       (sum?   '(+ x 1)))
-(assert-equal 'x       (addend '(+ x y z)))
-(assert-equal 'y       (augend '(+ x y)))
-(assert-equal '(+ y z) (augend '(+ x y z)))
-(assert-equal 1        (deriv  '(+ x 3) 'x))
+(assert-equal #t             (sum?   '(+ x 1)))
+(assert-equal 'x             (addend '(+ x y z)))
+(assert-equal 'y             (augend '(+ x y)))
+(assert-equal '(+ y z)       (augend '(+ x y z)))
+(assert-equal '(+ y (+ z w)) (augend '(+ x y z w)))
+(assert-equal 1              (deriv  '(+ x 3) 'x))
+(assert-equal 1              (deriv  '(+ x 3 1) 'x))
 
 ;; *
 
-(assert-equal #t     (product?     '(* x 1)))
-(assert-equal 'x     (multiplier   '(* x y z)))
-(assert-equal '(y z) (multiplicand '(* x y z)))
+(assert-equal #t             (product?     '(* x 1)))
+(assert-equal 'x             (multiplier   '(* x y z)))
+(assert-equal '(* y z)       (multiplicand '(* x y z)))
+(assert-equal '(* y (* z w)) (multiplicand '(* x y z w)))
+(assert-equal 'y             (deriv '(* x y) 'x))
+(assert-equal '(* y z)       (deriv '(* x y z) 'x))
 
 ;; **
 
-(assert-equal #t              (exponentiation? '(** x 1)))
-(assert-equal 'x              (base            '(** x 1)))
-(assert-equal '(y z)          (exponent        '(** x y z)))
-(assert-equal 1               (deriv '(** x 1) 'x))
-(assert-equal 0               (deriv '(** x 0) 'x))
-(assert-equal 0               (deriv '(** y 1) 'x))
-(assert-equal 0               (deriv '(** y 0) 'x))
-(assert-equal '(* 3 (** x 2)) (deriv '(** x 3) 'x))
+(assert-equal #t               (exponentiation? '(** x 1)))
+(assert-equal 'x               (base            '(** x 1)))
+(assert-equal '(** y z)        (exponent        '(** x y z)))
+(assert-equal '(** y (** z w)) (exponent        '(** x y z w)))
+(assert-equal 1                (deriv '(** x 1) 'x))
+(assert-equal 0                (deriv '(** x 0) 'x))
+(assert-equal 0                (deriv '(** y 1) 'x))
+(assert-equal 0                (deriv '(** y 0) 'x))
+(assert-equal '(* 3 (** x 2))  (deriv '(** x 3) 'x))
 
 ;; misc
 
-;; (assert-equal 'y                          (deriv '(* x y) 'x))
-
 (assert-equal '(+ (* x y) (* y (+  x 3))) (deriv '(* (* x y) (+ x 3)) 'x))
 (assert-equal '(+ (* x y) (* y (+  x 3))) (deriv '(* x y (+ x 3)) 'x))
-
-;; TODO: not done
-
-;; (assert-equal x y)
 (done)

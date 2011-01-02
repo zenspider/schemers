@@ -1,8 +1,11 @@
 #lang racket
 
 (provide decode
+         left-branch
          make-code-tree
-         make-leaf)
+         make-leaf
+         right-branch
+         symbols)
 
 (define (make-leaf symbol weight) (list 'leaf symbol weight))
 (define (leaf? object) (eq? (car object) 'leaf))

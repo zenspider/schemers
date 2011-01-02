@@ -11,5 +11,13 @@
 ;; the average about half as many steps as with the unordered
 ;; representation.
 
-;; (assert-equal x y)
+(define (adjoin-set x set)
+  (cond ((null? set) (list x))
+        ((= x (car set)) set)
+        ((< x (car set)) (cons x set))
+        (else (cons (car set) (adjoin-set x (cdr set))))))
+
+(assert-equal '(1 2 3) (adjoin-set 1 '(2 3)))
+(assert-equal '(1 2 3) (adjoin-set 2 '(1 3)))
+(assert-equal '(1 2 3) (adjoin-set 3 '(1 2)))
 (done)

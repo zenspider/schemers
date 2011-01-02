@@ -120,5 +120,7 @@
 (assert-equal '(+ (* x y) (* y (+  x 3))) (deriv '(* (* x y) (+ x 3)) 'x))
 (assert-equal '(+ (* x y) (* y (+  x 3))) (deriv '(* x y (+ x 3)) 'x))
 
+;; TODO: not done
+
 ;; (assert-equal x y)
 (done)

@@ -23,17 +23,6 @@
 
 (require "../lib/huffman.rkt")
 
-;; (define (lookup given-key tree)
-;;   (if (null? tree) #f
-;;       (let ((node (entry tree)))
-;;         (let ((k (key node)))
-;;           (cond ((equal? given-key k) node)
-;;                 ((< given-key k)
-;;                  (lookup given-key (left-branch tree)))
-;;                 (else (lookup given-key (right-branch tree))))))))
-;; (define key car)
-
-
 (define (encode-symbol s tree)
   (define (find-path tree path)
     (cond ((null? tree) path)

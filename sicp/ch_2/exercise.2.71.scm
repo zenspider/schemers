@@ -11,5 +11,7 @@
 ;; general n) how may bits are required to encode the most frequent
 ;; symbol? the least frequent symbol?
 
+;; TODO
+
 ;; (assert-equal x y)
 (done)

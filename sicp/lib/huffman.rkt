@@ -5,7 +5,8 @@
          make-code-tree
          make-leaf
          right-branch
-         symbols)
+         symbols
+         weight)
 
 (define (make-leaf symbol weight) (list 'leaf symbol weight))
 (define (leaf? object) (eq? (car object) 'leaf))

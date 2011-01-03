@@ -23,7 +23,7 @@
 
 (define (adjoin-set x set)
   (cond ((null? set) (list x))
-        ((< (weight x) (weight (car set))) (cons x set))
+        ((<= (weight x) (weight (car set))) (cons x set))
         (else (cons (car set)
                     (adjoin-set x (cdr set))))))
 
@@ -55,56 +55,36 @@
       (g (make-leaf 'G 1))
       (h (make-leaf 'H 1)))
 
-  ;; make-leaf-set
-  (assert-equal (list d c b a)
-                (make-leaf-set '((A 8) (B 3) (C 1) (D 1))))
-
-  ;; successive-merge
   (let ((cd (make-code-tree c d))
-        (bc (make-code-tree b c))
         (ef (make-code-tree e f))
-        (de (make-code-tree d e))
-        (fg (make-code-tree f g))
-        (gh (make-code-tree g h)))
+        (gh (make-code-tree g h))
+        (input '((A 8) (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1))))
 
-    (let ((cd_ef (make-code-tree cd ef))
-          (gh_cd_ef (make-code-tree
-                     gh
-                     (make-code-tree cd ef)))
-          (hg_fe_dcb (make-code-tree
-                      (make-code-tree
-                       (make-code-tree h g)
-                       (make-code-tree f e))
-                      (make-code-tree
-                       (make-code-tree d c)
-                       b))))
+    (assert-equal '((leaf C 1) (leaf D 1) (leaf E 1) (leaf F 1)
+                    (leaf G 1) (leaf H 1) (leaf B 3) (leaf A 8))
+                  (make-leaf-set input))
 
-      (assert-equal cd        (successive-merge (list c d)))
-      (assert-equal cd_ef     (successive-merge (list c d e f)))
-      (assert-equal gh_cd_ef  (successive-merge (list c d e f g h)))
-      (assert-equal hg_fe_dcb (successive-merge (list h g f e d c b)))
+    ;; successive-merge
+    (assert-equal cd
+                  (successive-merge (list c d)))
 
-      ;; Initial leaves {(A 8)  (B 3) (C 1) (D 1) (E 1) (F 1) (G 1) (H 1)}
-      ;; Merge          {(A 8)  (B 3) ({C D} 2)   (E 1) (F 1) (G 1) (H 1)}
-      ;; Merge          {(A 8)  (B 3) ({C D} 2)  ({E F} 2)    (G 1) (H 1)}
-      ;; Merge          {(A 8)  (B 3) ({C D} 2)  ({E F} 2)   ({G H} 2)}
-      ;; Merge          {(A 8)  (B 3) ({C D} 2)  ({E F G H} 4)}
-      ;; Merge          {(A 8) ({B C D} 5)       ({E F G H} 4)}
-      ;; Merge          {(A 8) ({B C D E F G H} 9)}
-      ;; Final merge    {({A B C D E F G H} 17)}
+    (assert-equal (make-code-tree cd ef)
+                  (successive-merge (list e f c d)))
 
-      ;; LIAR!
+    (assert-equal (make-code-tree cd (make-code-tree gh ef))
+                  (successive-merge (list c d e f g h)))
 
-      (define expected
-        (make-code-tree
-         a
-         (make-code-tree
-          (make-code-tree
-           (make-code-tree h g)
-           (make-code-tree f e))
-          (make-code-tree
-           (make-code-tree d c)
-           b))))
+    (assert-equal (make-code-tree (make-code-tree gh ef)
+                                  (make-code-tree cd b))
+                  (successive-merge (list c d e f g h b)))
 
-      (assert-equal expected (successive-merge (list h g f e d c b a))))))
+    (assert-equal (make-code-tree a (make-code-tree
+                                     (make-code-tree gh ef)
+                                     (make-code-tree cd b)))
+                  (successive-merge (list c d e f g h b a)))
+
+    (assert-equal (make-code-tree a (make-code-tree
+                                     (make-code-tree gh ef)
+                                     (make-code-tree cd b)))
+                  (generate-huffman-tree input))))
 (done)

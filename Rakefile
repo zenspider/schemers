@@ -47,3 +47,35 @@ end
 task :autotest do
   sh "run_if_changed 'rake run' */*.scm"
 end
+
+task :split do
+  exercises = File.read("x.scm").split(/;; .(Exercise \d+\.\d+):/)
+  exercises.shift # nuke the empty at the front
+  exercises.each_slice(2) do |x, y|
+    ch, ex = x.scan(/\d+/).map { |s| s.to_i }
+
+    path = "ch_%d/exercise.%d.%02d.scm" % [ch, ch, ex]
+
+    if File.exist? path then
+      warn "File #{path} exists. Skipping."
+      next
+    end
+
+    y.gsub!(/(;;\n)+\Z/, '')
+    y.gsub!(/\A\*\s+/, '')
+
+    File.open path, "w" do |f|
+      f.puts "#lang racket"
+      f.puts ""
+      f.puts '(require "../lib/testes.rkt")'
+      f.puts '(require "../lib/utils.rkt")'
+      f.puts
+      f.puts ";;; #{x}"
+      f.puts
+      f.puts ";; #{y}"
+      f.puts
+      f.puts ";; (assert-equal x y)"
+      f.puts "(done)"
+    end
+  end
+end

@@ -15,7 +15,4 @@
 ;; of the number of steps needed to encode the most frequent and least
 ;; frequent symbols in the alphabet.
 
-;; TODO
-
-;; (assert-equal x y)
-(done)
+;; no. don't care

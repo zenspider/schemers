@@ -38,7 +38,3 @@
 ;; the operators. The only thing left is to reorder deriv so that
 ;; exponentiation and product are before sum.
 
-;; TODO
-
-;; (assert-equal x y)
-(done)

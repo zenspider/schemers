@@ -19,13 +19,24 @@
 ;;      (y + 2))))'.  To simplify the task, assume that `+' and `*'
 ;;      always take two arguments and that expressions are fully
 ;;      parenthesized.
-;;
+
+(define (operator? x op) (and (pair? x) (eq? (cadr x) op)))
+(define addend     car)
+(define multiplier car)
+(define base       car)
+
 ;;   b. The problem becomes substantially harder if we allow standard
 ;;      algebraic notation, such as `(x + 3 * (x + y + 2))', which
 ;;      drops unnecessary parentheses and assumes that multiplication
 ;;      is done before addition.  Can you design appropriate
 ;;      predicates, selectors, and constructors for this notation
 ;;      such that our derivative program still works?
+
+(define (operator2? x op) (member op x))
+
+;; plus rewriting reformat-binary to split addend/augend etc around
+;; the operators. The only thing left is to reorder deriv so that
+;; exponentiation and product are before sum.
 
 ;; TODO
 

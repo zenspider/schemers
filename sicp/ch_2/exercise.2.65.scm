@@ -10,7 +10,4 @@
 ;; `intersection-set' for sets implemented as (balanced) binary
 ;; trees.(5)
 
-;; TODO ugh
-
-;; (assert-equal x y)
-(done)
+;; no

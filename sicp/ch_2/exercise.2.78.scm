@@ -20,5 +20,24 @@
 ;; should be represented simply as Scheme numbers rather than as
 ;; pairs whose `car' is the symbol `scheme-number'.
 
-;; (assert-equal x y)
+(define (attach-tag type-tag contents)
+  (cond
+   ((number? contents) contents)
+   (else (cons type-tag contents))))
+
+(define (type-tag datum)
+  (cond
+   ((pair? datum) (car datum))
+   ((number? datum) 'scheme-number)
+   (else (error "Bad tagged datum -- TYPE-TAG" datum))))
+
+(define (contents datum)
+  (cond
+   ((pair? datum) (cdr datum))
+   ((number? datum) datum)
+   (else (error "Bad tagged datum -- CONTENTS" datum))))
+
+(assert-equal 42             (attach-tag 'scheme-number 42))
+(assert-equal 'scheme-number (type-tag 42))
+(assert-equal 42             (contents 42))
 (done)

@@ -36,13 +36,21 @@
 ;;
 ;;      What happens if we call `exp' with two complex numbers as
 ;;      arguments?
-;;
+
+;; A: Louis is an idiot. It'd infinitely recurse.
+
 ;;   b. Is Louis correct that something had to be done about coercion
 ;;      with arguments of the same type, or does `apply-generic' work
 ;;      correctly as is?
-;;
+
+;; A: Of course not. It is Louis. apply-generic only coerces if proc
+;; is null.
+
 ;;   c. Modify `apply-generic' so that it doesn't try coercion if the
 ;;      two arguments have the same type.
 
-;; (assert-equal x y)
-(done)
+;; A: no. I'd rather modify put-coersion to error if the types are the
+;;    same. I don't address symptoms. That said, I bet anyone can
+;;    figure out how to put an if statement in apply-generic. Besides,
+;;    it DOESN'T have the problem, so what's the point?
+

@@ -2,6 +2,7 @@
 
 (provide assert
          assert-equal
+         assert-float
          assert-include
          assert-many
          refute
@@ -27,6 +28,9 @@
                    (write exp)
                    (display ")")
                    (newline))))))
+
+(define (assert-float x y)
+  (assert (< (abs (- x y)) 0.00001)))
 
 (define-syntax assert-equal
   (syntax-rules ()

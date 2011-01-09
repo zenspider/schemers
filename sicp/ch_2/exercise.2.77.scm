@@ -20,11 +20,30 @@
 ;;      (put 'magnitude '(complex) magnitude)
 ;;      (put 'angle '(complex) angle)
 ;;
-;; Describe in detail why this works.  As an example, trace through
-;; all the procedures called in evaluating the expression `(magnitude
-;; z)' where `z' is the object shown in *Note Figure 2-24::.  In
-;; particular, how many times is `apply-generic' invoked?  What
-;; procedure is dispatched to in each case?
+;; Describe in detail why this works.
 
-;; (assert-equal x y)
-(done)
+;; A: Calling the puts above attaches the 4 "methods" for the complex
+;;    type. It gets the complex accessors by virtue of the fact that
+;;    you used make-from-real-imag which dispatches to the proper
+;;    rectangular constructor. This is, in essence, smalltalk's double
+;;    dispatch design pattern.
+
+;; As an example, trace through all the procedures called in
+;; evaluating the expression `(magnitude z)' where `z' is the object
+;; shown in *Note Figure 2-24::. In particular, how many times is
+;; `apply-generic' invoked? What procedure is dispatched to in each
+;; case?
+
+(define (apply-generic op arg) (arg op))
+(define (magnitude z) (apply-generic 'magnitude z))
+
+(define z (make-complex-from-real-imag 3 4))
+;; -> (lambda-thingy '(complex rectangular 3 . 4))
+
+;; (magnitude z)
+;; (apply-generic 'magnitude z))
+;; (z 'magnitude)
+;; ((get z '(complex) 'magnitude) z)
+;; (sqrt (+ (square (real-part z))
+;;          (square (imag-part z))))
+;; ... and so on

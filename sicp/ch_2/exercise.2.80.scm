@@ -10,5 +10,6 @@
 ;; package.  This operation should work for ordinary numbers, rational
 ;; numbers, and complex numbers.
 
-;; (assert-equal x y)
+(define (=zero? x) (= (magnitude x) 0))
+
 (done)

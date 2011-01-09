@@ -23,7 +23,7 @@ def update_touch_file touch_file = ".gitignore"
 end
 
 task :todo do
-  system "grep -l TODO **/*.scm"
+  system "grep TODO **/*.scm"
 end
 
 task :run do
@@ -78,4 +78,10 @@ task :split do
       f.puts "(done)"
     end
   end
+end
+
+task :commit, [:n] do |t, args|
+  n = args.n
+  f = Dir["*/*#{n}.scm"].first
+  sh "git commit -m #{n.inspect} #{f}"
 end

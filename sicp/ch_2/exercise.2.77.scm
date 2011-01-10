@@ -34,10 +34,10 @@
 ;; `apply-generic' invoked? What procedure is dispatched to in each
 ;; case?
 
-(define (apply-generic op arg) (arg op))
-(define (magnitude z) (apply-generic 'magnitude z))
-
-(define z (make-complex-from-real-imag 3 4))
+;; (define (apply-generic op arg) (arg op))
+;; (define (magnitude z) (apply-generic 'magnitude z))
+;;
+;; (define z (make-complex-from-real-imag 3 4))
 ;; -> (lambda-thingy '(complex rectangular 3 . 4))
 
 ;; (magnitude z)

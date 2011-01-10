@@ -15,26 +15,26 @@
 ;; tests for this, I'd rather get more real work done and come back to
 ;; this later:
 
-(define (apply-generic op . args)
-  (define (coerce arg coersion) (if (null? coersion) arg (coersion arg)))
-  (define (coercions type-tags)
-    (let ((base (car type-tags))
-          (rest (cdr type-tags)))
-      (define (iterate l r)
-        (if (null? l) r
-            (let ((t (get-coersion base (car l))))
-              (if (null? t)
-                  (error "No coersion between types" (list base t))
-                  (iterate (cdr l) (cons t r))))))
-      (iterate rest '())))
-  (let ((type-tags (map type-tag args)))
-    (let ((proc (get op type-tags)))
-      (if proc
-          (apply proc (map contents args))
-          ;; if I knew how to splat args in, it'd be like this:
-          (apply-generic
-           op
-           (splat (map coerce (zip args (coersions type-tags)))))))))
+;; (define (apply-generic op . args)
+;;   (define (coerce arg coersion) (if (null? coersion) arg (coersion arg)))
+;;   (define (coercions type-tags)
+;;     (let ((base (car type-tags))
+;;           (rest (cdr type-tags)))
+;;       (define (iterate l r)
+;;         (if (null? l) r
+;;             (let ((t (get-coersion base (car l))))
+;;               (if (null? t)
+;;                   (error "No coersion between types" (list base t))
+;;                   (iterate (cdr l) (cons t r))))))
+;;       (iterate rest '())))
+;;   (let ((type-tags (map type-tag args)))
+;;     (let ((proc (get op type-tags)))
+;;       (if proc
+;;           (apply proc (map contents args))
+;;           ;; if I knew how to splat args in, it'd be like this:
+;;           (apply-generic
+;;            op
+;;            (splat (map coerce (zip args (coersions type-tags)))))))))
 
 ;; Give an example of a situation where this strategy (and likewise
 ;; the two-argument version given above) is not sufficiently general.

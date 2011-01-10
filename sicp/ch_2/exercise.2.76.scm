@@ -15,7 +15,7 @@
 ;; Which would be most appropriate for a system in which new
 ;; operations must often be added?
 
-;; TODO
+;; no
 
 ;; (assert-equal x y)
 (done)

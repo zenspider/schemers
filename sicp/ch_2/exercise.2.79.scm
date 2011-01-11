@@ -45,5 +45,3 @@
 ;;             (= (angle x) (angle y)))))
 ;; and so on
 
-;; TODO: maybe make this work
-

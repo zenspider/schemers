@@ -50,5 +50,3 @@
 
 ;; (assert-equal x y)
 (done)
-
-;; TODO: maybe make this work at some time

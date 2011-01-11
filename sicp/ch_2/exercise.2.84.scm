@@ -32,5 +32,3 @@
 
 ;; the rest is just hooking it in. Unfortunately the direction I took
 ;; with my last converter was too clever to make that a simple pop-in.
-
-;; TODO: make this work at some point

@@ -90,5 +90,3 @@
 ;;      required?
 
 ;; A: none. you just have to have your put's reversed as well.
-
-;; TODO: maybe... get this actually running once we bypass set-cdr!

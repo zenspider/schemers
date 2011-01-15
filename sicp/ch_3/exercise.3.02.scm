@@ -27,5 +27,22 @@
 ;;      (s 'how-many-calls?)
 ;;      1
 
-;; (assert-equal x y)
+(define (make-monitored f)
+  (let ((calls 0))
+    (lambda (arg)
+      (cond ((eq? arg 'how-many-calls?) calls)
+            (else
+             (set! calls (+ calls 1))
+             (f arg))))))
+
+
+(define s (make-monitored sqrt))
+
+(assert-equal  0 (s 'how-many-calls?))
+(assert-equal 10 (s 100))
+(assert-equal  1 (s 'how-many-calls?))
+(assert-equal  1 (s 'how-many-calls?))
+(assert-equal 10 (s 100))
+(assert-equal  2 (s 'how-many-calls?))
+
 (done)

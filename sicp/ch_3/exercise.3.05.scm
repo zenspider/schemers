@@ -39,10 +39,39 @@
 ;; `random-in-range' procedure implements this in terms of the
 ;; `random' procedure used in section *Note 1-2-6::, which returns a
 ;; nonnegative number less than its input.(3)
-;;
-;;      (define (random-in-range low high)
-;;        (let ((range (- high low)))
-;;          (+ low (random range))))
 
-;; (assert-equal x y)
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+
+(define (monte-carlo trials experiment)
+  (define (iter trials-remaining trials-passed)
+    (cond ((= trials-remaining 0)
+           (/ trials-passed trials))
+          ((experiment)
+           (iter (- trials-remaining 1) (+ trials-passed 1)))
+          (else
+           (iter (- trials-remaining 1) trials-passed))))
+  (iter trials 0))
+
+(define (estimate-integral test x1 y1 x2 y2 trials)
+  ;;  % = pi*rr / (w * h)
+  ;; pi = % * w * h / rr
+  (let ((h (- y2 y1))
+        (w (- x2 x1))
+        (% (monte-carlo trials (lambda () (test (random-in-range x1 x2)
+                                                (random-in-range y1 y2))))))
+    (/ (* % w h) (square (/ w 2)))))
+
+(let ((w 10000)
+      (h 10000)
+      (i 100000))
+  (let ((midx (/ w 2))
+        (midy (/ h 2))
+        (rr   (square (/ w 2))))
+
+    (define (in-circle x y)
+      (<= (+ (square (- x midx)) (square (- y midy))) rr))
+
+    (assert-float-d pi (* 1.0 (estimate-integral in-circle 0 0 w h i)) 0.01)))
 (done)

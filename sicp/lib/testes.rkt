@@ -2,6 +2,7 @@
 
 (provide assert
          assert-equal
+         assert-float-d
          assert-float
          assert-include
          assert-many
@@ -29,8 +30,11 @@
                    (display ")")
                    (newline))))))
 
+(define (assert-float-d x y d)
+  (assert (< (abs (- x y)) d)))
+
 (define (assert-float x y)
-  (assert (< (abs (- x y)) 0.00001)))
+  (assert-float-d x y 0.00001))
 
 (define-syntax assert-equal
   (syntax-rules ()

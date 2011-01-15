@@ -21,5 +21,13 @@
 ;;      (A 10)
 ;;      25
 
-;; (assert-equal x y)
+(define (make-accumulator value)
+  (lambda (n)
+    (set! value (+ value n))
+    value))
+
+(define A (make-accumulator 5))
+
+(assert-equal 15 (A 10))
+(assert-equal 25 (A 10))
 (done)

@@ -80,7 +80,7 @@ task :split do
   end
 end
 
-task :commit, [:n] do |t, args|
+task :commit, [:n] => [:default] do |t, args|
   n = args.n
   f = Dir["*/*#{n}.scm"].first
   sh "git commit -m #{n.inspect} #{f}"

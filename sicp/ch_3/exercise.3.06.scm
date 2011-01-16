@@ -15,5 +15,30 @@
 ;; can generate repeatable sequences.  These are very handy to have
 ;; when testing and debugging programs that use random numbers.
 
-;; (assert-equal x y)
+(define (rand-update x)
+  ;; primes 100006, 100007, and 100008
+  (let ((a 1299817) (b 1299821) (m 1299827) (% modulo))
+    (% (+ (* a x) b) m)))
+
+(define (make-rand)
+  (let ((x -1))
+    (lambda (msg)
+      (define (reset n)
+        (set! x n)
+        x)
+      (define (generate)
+        (set! x (rand-update x))
+        x)
+      (cond ((eq? msg 'reset) reset)
+            ((eq? msg 'generate) (generate))
+            (else (error "Undefined message: " msg))))))
+
+(define rand (make-rand))
+
+(assert-equal 42                             ((rand 'reset) 42))
+(assert-equal (rand-update 42)               (rand 'generate))
+(assert-equal (rand-update (rand-update 42)) (rand 'generate))
+
+(assert-equal 42                             ((rand 'reset) 42))
+(assert-equal (rand-update 42)               (rand 'generate))
 (done)

@@ -17,5 +17,17 @@
 ;; to right but will return 1 if the arguments are evaluated from
 ;; right to left.
 
+;; how's this for contrived?!? :P
+(define f
+  (let ((x 0))
+    (lambda (n)
+      (set! x (cond ((= n 0) 1)
+                    ((= n 1) (if (< x 0) 0 -1))
+                    (else 42)))
+      x)))
+
+(assert-equal 0 (+ (f 0) (f 1)))        ; left-to-right
+(assert-equal 1 (+ (f 1) (f 0)))        ; right-to-left
+
 ;; (assert-equal x y)
 (done)

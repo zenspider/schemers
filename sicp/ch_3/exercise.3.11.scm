@@ -37,7 +37,9 @@
 ;;
 ;;      ((acc 'withdraw) 60)
 ;;      30
-;;
+
+;; A: see exercise.3.11.pdf / graffle
+
 ;; Where is the local state for `acc' kept?  Suppose we define another
 ;; account
 ;;
@@ -46,6 +48,11 @@
 ;; How are the local states for the two accounts kept distinct?
 ;; Which parts of the environment structure are shared between `acc'
 ;; and `acc2'?
+
+;; A: calling make-account a second time would create E5, which would
+;; contain the balance slot for acc2. The only part shared between acc
+;; and acc2 is the global env, which contains make-account, acc, and
+;; acc2.
 
 ;; (assert-equal x y)
 (done)

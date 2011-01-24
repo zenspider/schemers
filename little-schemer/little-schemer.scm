@@ -910,3 +910,191 @@
 (refute (intersect? '(d c e) '()))
 
 ;; pg 116
+
+(define intersect
+  (lambda (set1 set2)
+    (cond ((null? set1) '())
+          ((member? (car set1) set2)
+           (cons (car set1) (intersect (cdr set1) set2)))
+          (else (intersect (cdr set1) set2)))))
+
+(assert-equal '(and macaroni)
+              (intersect '(stewed tomatoes and macaroni casserole)
+                         '(macaroni and cheese)))
+
+(define union
+  (lambda (set1 set2)
+    (cond ((null? set1) set2)
+          ((member? (car set1) set2)
+           (union (cdr set1) set2))
+          (else (cons (car set1) (union (cdr set1) set2))))))
+
+(assert-equal '(stewed tomatoes casserole macaroni and cheese)
+              (union '(stewed tomatoes and macaroni casserole)
+                     '(macaroni and cheese)))
+
+;; pg 117
+
+(define difference
+  (lambda (set1 set2)
+    (cond
+     ((null? set1) '())
+     ((member? (car set1) set2)
+      (difference (cdr set1) set2))
+     (else (cons (car set1) (difference (cdr set1) set2))))))
+
+(assert-equal '(b d) (difference '(a b c d e) '(a c e)))
+
+(define intersectall
+  (lambda (l-set)
+    (cond ((null? (cdr l-set)) (car l-set))
+          (else (intersect (car l-set)
+                           (intersectall (cdr l-set)))))))
+
+(assert-equal '(a) (intersectall '((a b c) (c a d e) (e f g h a b))))
+(assert-equal '(6 and) (intersectall '((6 pears and)
+                                       (3 peaches and 6 peppers)
+                                       (8 pears and 6 plums)
+                                       (and 6 prunes with some apples))))
+
+;; pg 118
+
+(define a-pair?
+  (lambda (x)
+    (cond ((atom? x) #f)
+          ((null? x) #f)
+          ((null? (cdr x)) #f)
+          ((null? (cdr (cdr x))) #t)
+          (else #f))))
+
+(assert (a-pair? '(full (house))))
+
+;; pg 119
+
+(define first car)
+(define second cadr)
+(define build (lambda (s1 s2) (cons s1 (cons s2 null))))
+(define third caddr)
+
+;; pg 120
+
+(define fun?
+  (lambda (rel)
+    (set? (firsts rel))))
+
+(assert (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+
+(define revrel1
+  (lambda (rel)
+    (cond
+     ((null? rel) '())
+     (else (cons (build (second (car rel))
+                        (first  (car rel)))
+                 (revrel1 (cdr rel)))))))
+
+(assert-equal '((3 8) (2 4) (6 7) (2 6) (4 3))
+              (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4))))
+
+;; pg 121
+
+(define revpair
+  (lambda (pair)
+    (build (second pair) (first pair))))
+
+(define revrel
+  (lambda (rel)
+    (cond
+     ((null? rel) '())
+     (else (cons (revpair (car rel))
+                 (revrel (cdr rel)))))))
+
+(assert-equal '((3 8) (2 4) (6 7) (2 6) (4 3))
+              (revrel '((8 3) (4 2) (7 6) (6 2) (3 4))))
+
+;; pg 122
+
+;; (define seconds
+;;   (lambda (l)
+;;     (cond ((null? l) '())
+;;           (else (cons (cadr l) (seconds (cdr l)))))))
+
+(define fullfun?
+  (lambda (fun)
+    (and (fun? fun)
+         (set? (revrel fun)))))
+
+(assert (fullfun? '((grape raisin) (plum prune) (stewed grape))))
+
+;;; Chapter 8
+;; pg 125-126
+
+(define rember-f1
+  (lambda (test? s l)
+    (cond
+     ((null? l) '())
+     ((test? (car l) s) (cdr l))
+     (else (cons (car l)
+                 (rember-f1 test? s (cdr l)))))))
+
+(assert-equal '(6 2 3)
+              (rember-f1 = 5 '(6 2 5 3)))
+(assert-equal '(beans are good)
+              (rember-f1 eq? 'jelly '(jelly beans are good)))
+(assert-equal '(lemonade and (cake))
+              (rember-f1 equal? '(pop corn) '(lemonade (pop corn) and (cake))))
+
+;; pg 127-129
+
+(define eq?-c
+  (lambda (a)
+    (lambda (x)
+      (eq? x a))))
+
+(assert ((eq?-c 'salad) 'salad))
+(refute ((eq?-c 'salad) 'pie))
+
+(define eq?-salad (eq?-c 'salad))
+
+(assert (eq?-salad 'salad))
+(refute (eq?-salad 'pie))
+
+(define rember-f
+  (lambda (test?)
+    (lambda (a l)
+      (cond
+       ((null? l) '())
+       ((test? (car l) a) (cdr l))
+       (else (cons (car l)
+                   ((rember-f test?) a (cdr l))))))))
+
+(define rember-eq? (rember-f eq?))
+
+(assert-equal '(salad is good) (rember-eq? 'tuna '(tuna salad is good)))
+(assert-equal '(shrimp salad and salad) ((rember-f eq?) 'tuna
+                                         '(shrimp salad and tuna salad)))
+
+;; pg 130
+
+(assert-equal '(equal? eqan? eqlist? eqpair?)
+              ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? eqpair?)))
+
+(define insertL-f
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond ((null? lat) '())
+            ((test? (car lat) old) (cons new (cons old (cdr lat))))
+            (else (cons (car lat) ((insertL-f test?) new old (cdr lat))))))))
+
+(define insertR-f
+  (lambda (test?)
+    (lambda (new old lat)
+      (cond ((null? lat) '())
+            ((test? (car lat) old) (cons old (cons new (cdr lat))))
+            (else (cons (car lat) ((insertR-f test?) new old (cdr lat))))))))
+
+(assert-equal '(a b c z d e)       ((insertR-f eq?) 'z 'c '(a b c d e)))
+(assert-equal '(a b c d e f g d h) ((insertR-f eq?) 'e 'd '(a b c d f g d h)))
+(assert-equal '(a b z c d e)
+              ((insertL-f eq?) 'z 'c '(a b c d e)))
+(assert-equal '(a b c e d f g d h)
+              ((insertL-f eq?) 'e 'd '(a b c d f g d h)))

@@ -1,7 +1,9 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
+(require 'testes)
+(import testes)
+(require 'myutils)
+(import myutils)
+(use (srfi 1))
 
 ;; Exercise 2.42
 
@@ -117,7 +119,7 @@
 (assert-equal '((r2 c2) (r1 c1)) (adjoin-position 'r2 'c2 '((r1 c1))))
 
 (let ((_ null))
-  (assert (safe? _ '((3 1) (1 2) (4 3) (2 4))))
+  (xassert (safe? _ '((3 1) (1 2) (4 3) (2 4))))
   (refute (safe? _ '((1 1) (1 2) (1 3) (1 4))))
   (refute (safe? _ '((1 1) (1 2) (1 3) (4 4)))))
 

@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 2.18:
 
@@ -8,7 +7,8 @@
 ;;      (reverse (list 1 4 9 16 25))
 ;;      (25 16 9 4 1)
 
-(require "../lib/testes.rkt")
+(require 'testes)
+(import testes)
 
 (define (reverse l)
   (define (iterate l r)

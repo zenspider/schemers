@@ -7,7 +7,7 @@ end
 def newer_files touch_file = ".gitignore"
   t0 = File.mtime(touch_file) rescue Time.at(0)
 
-  Dir["**/*.scm"].find_all { |file| t0 <= File.mtime(file) }
+  Dir["ch*/*.scm"].find_all { |file| t0 <= File.mtime(file) }
 end
 
 def with_newer_files touch_file = ".gitignore"
@@ -28,7 +28,7 @@ end
 
 task :run do
   with_newer_files do |file|
-    sh "X=1 time racket #{file} 2>&1"
+    sh "X=1 time csi -I lib < #{file} 2>&1"
   end
 end
 
@@ -38,7 +38,7 @@ end
 
 task :test do
   with_newer_files do |file|
-    sh "X=1 time racket -f #{file} 2>&1"
+    sh "X=1 time csi -I lib -s #{file} 2>&1"
   end
 
   update_touch_file

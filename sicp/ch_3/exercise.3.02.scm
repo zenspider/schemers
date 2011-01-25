@@ -1,7 +1,9 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
+(require 'testes)
+(import testes)
+;; (require 'myutils)
+;; (import myutils)
+;; (require-extension numbers)
 
 ;;; Exercise 3.2
 
@@ -39,10 +41,10 @@
 (define s (make-monitored sqrt))
 
 (assert-equal  0 (s 'how-many-calls?))
-(assert-equal 10 (s 100))
+(assert-equal 10.0 (s 100))
 (assert-equal  1 (s 'how-many-calls?))
 (assert-equal  1 (s 'how-many-calls?))
-(assert-equal 10 (s 100))
+(assert-equal 10.0 (s 100))
 (assert-equal  2 (s 'how-many-calls?))
 
 (done)

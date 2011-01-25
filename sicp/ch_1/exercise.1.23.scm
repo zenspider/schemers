@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 1.23:
 
@@ -33,7 +32,7 @@
       (find-divisor n 2))
   (= n (smallest-divisor n)))
 
-(define runtime current-inexact-milliseconds)
+(define runtime current-milliseconds)
 
 (define (timed-prime-test n)
   (start-prime-test n (runtime)))

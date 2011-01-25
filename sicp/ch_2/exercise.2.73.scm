@@ -1,7 +1,8 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
+(require 'testes)
+(import testes)
+(require 'myutils)
+(import myutils)
 ;; (require "../lib/table.rkt")
 
 ;;; Exercise 2.73

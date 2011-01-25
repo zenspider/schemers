@@ -1,8 +1,11 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
-(require "../lib/huffman.rkt")
+(require 'testes)
+(import testes)
+(require 'myutils)
+(import myutils)
+(require 'huffman)
+(import huffman)
+;; (require "../lib/huffman.rkt")
 
 ;;; Exercise 2.69:
 

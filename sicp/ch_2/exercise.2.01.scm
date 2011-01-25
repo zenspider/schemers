@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 2.1:
 

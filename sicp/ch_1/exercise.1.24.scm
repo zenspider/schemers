@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 1.24:
 
@@ -21,11 +20,11 @@
               (else        (remainder (* base (expmod base (- exp 1) m)) m))))
       (= (expmod a n n) a))
     (try-it (+ 1 (random (- n 1)))))
-  (cond ((= times 0) true)
+  (cond ((= times 0) #t)
         ((fermat-test n) (prime? n (- times 1)))
-        (else false)))
+        (else #f)))
 
-(define runtime current-inexact-milliseconds)
+(define runtime current-milliseconds)
 
 (define (timed-prime-test n)
   (start-prime-test n (runtime)))

@@ -1,4 +1,3 @@
-#lang racket
 
 (require scheme/trace)
 

@@ -1,6 +1,6 @@
-#lang racket
 
-(require "../lib/testes.rkt")
+(require 'testes)
+(import testes)
 
 ;;; Laws & Commandments:
 
@@ -88,13 +88,13 @@
 
 ;;; Chapter 1
 ;; pg 1 - 4
-(assert (atom? 'atom))
-(assert (atom? 1492))
-(assert (list? '(atom)))
-(assert (list? '(atom turkey or)))
+(xassert (atom? 'atom))
+(xassert (atom? 1492))
+(xassert (list? '(atom)))
+(xassert (list? '(atom turkey or)))
 
 ;; pg 5 - 7
-(assert (eq? (car '(a b c)) 'a))
+(xassert (eq? (car '(a b c)) 'a))
 (assert-equal (car '((a b c) x y z)) '(a b c))
 (assert-equal (car (cdr '((b) (x y) ((c))))) '(x y))
 (assert-equal (cdr (cdr '((b) (x y) ((c))))) '(((c))))
@@ -117,23 +117,23 @@
 
 (assert-equal '(a b) (cons 'a (car '((b) c d))))
 (assert-equal '(a c d) (cons 'a (cdr '((b) c d))))
-(assert (null? '()))
+(xassert (null? '()))
 (refute (null? '(a b c)))
 (refute (null? 'spaghetti))
 
 ;; pg 10
 (refute (atom? '(harry had an apple)))
 (refute (atom? '()))
-(assert (atom? 42))
+(xassert (atom? 42))
 (refute (atom? (car (cdr '(swing (low sweet) cherry oat)))))
 
 ;; pg 11 - 12
-(assert (eq? 'Harry (quote Harry)))
+(xassert (eq? 'Harry (quote Harry)))
 (refute (eq? 'margerine 'butter))
 (refute (eq? '() '(a)))
-(assert (eq? 'mary (car '(mary had a little lamb))))
+(xassert (eq? 'mary (car '(mary had a little lamb))))
 (refute (eq? (cdr '(soured milk)) 'milk))
-(assert (eq? (car (cdr '(soured milk))) 'milk))
+(xassert (eq? (car (cdr '(soured milk))) 'milk))
 
 ;;; Chapter 2
 ;; pg 15 - 20
@@ -152,19 +152,19 @@
      ((atom? (car l)) (lat? (cdr l)))
      (else #f))))
 
-(assert (mylat? '(a b c)))
+(xassert (mylat? '(a b c)))
 (refute (mylat? '((a) b c d)))
 (refute (mylat? '(a (b) c d)))
-(assert (mylat? '()))
-(assert (lat? '(a b c)))
+(xassert (mylat? '()))
+(xassert (lat? '(a b c)))
 (refute (lat? '((a) b c d)))
 (refute (lat? '(a (b) c d)))
-(assert (lat? '()))
+(xassert (lat? '()))
 
 ;; pg 21 - 31
 
-(assert (or (null? '()) (atom? '(a b c))))
-(assert (or (null? '(a b c)) (null? '())))
+(xassert (or (null? '()) (atom? '(a b c))))
+(xassert (or (null? '(a b c)) (null? '())))
 
 (define mymember?
   (lambda (a lat)
@@ -178,9 +178,9 @@
           (else (or (eq? (car lat) a)
                     (member? a (cdr lat)))))))
 
-(assert (mymember? 'b '(a b c)))
+(xassert (mymember? 'b '(a b c)))
 (refute (mymember? 'd '(a b c)))
-(assert (member? 'b '(a b c)))
+(xassert (member? 'b '(a b c)))
 (refute (member? 'd '(a b c)))
 
 ;;; Chapter 3
@@ -216,7 +216,7 @@
           (else (cons (caar l) (firsts (cdr l)))))))
 
 (assert-equal '(a c e) (firsts '((a b) (c d) (e f))))
-(assert (null? (firsts '())))
+(xassert (null? (firsts '())))
 (assert-equal '(a c d) (firsts '((a b) (c) (d e f))))
 
 ;; pg 47
@@ -277,7 +277,7 @@
 (assert-equal 68 (add1 67))
 (assert-equal 68 (sub1 69))
 (refute (zero? 42))
-(assert (zero? 0))
+(xassert (zero? 0))
 
 ;; (define +
 ;;   (lambda (m n)
@@ -301,7 +301,7 @@
           ((number? (car l)) (tup? (cdr l)))
           (else #f))))
 
-(assert (tup? '(1 2 3)))
+(xassert (tup? '(1 2 3)))
 (refute (tup? '(1 b 3)))
 (refute (tup? '(1 (2 3) 4)))
 
@@ -359,7 +359,7 @@
   (lambda (n m)
     (not (or (<< n m) (>> n m)))))
 
-(assert (== 3 3))
+(xassert (== 3 3))
 (refute (== 1 2))
 (refute (== 2 1))
 
@@ -570,9 +570,9 @@
 
 ;; HACK (define myeqlist? myeqlist1?)
 
-(assert (myeqlist1? '() '()))
-(assert (myeqlist1? '(a b c) '(a b c)))
-(assert (myeqlist1? '(a (b) c) '(a (b) c)))
+(xassert (myeqlist1? '() '()))
+(xassert (myeqlist1? '(a b c) '(a b c)))
+(xassert (myeqlist1? '(a (b) c) '(a (b) c)))
 (refute (myeqlist1? '(a b c) '(a b)))
 (refute (myeqlist1? '(a b c) '(a (b) c)))
 
@@ -595,9 +595,9 @@
 
 ;; HACK (define myeqlist? myeqlist2?)
 
-(assert (myeqlist2? '() '()))
-(assert (myeqlist2? '(a b c) '(a b c)))
-(assert (myeqlist2? '(a (b) c) '(a (b) c)))
+(xassert (myeqlist2? '() '()))
+(xassert (myeqlist2? '(a b c) '(a b c)))
+(xassert (myeqlist2? '(a (b) c) '(a (b) c)))
 (refute (myeqlist2? '(a b c) '(a b)))
 (refute (myeqlist2? '(a b c) '(a (b) c)))
 
@@ -618,9 +618,9 @@
 
 ;; HACK (define myeqlist? myeqlist3?)
 
-(assert (myeqlist3? '() '()))
-(assert (myeqlist3? '(a b c) '(a b c)))
-(assert (myeqlist3? '(a (b) c) '(a (b) c)))
+(xassert (myeqlist3? '() '()))
+(xassert (myeqlist3? '(a b c) '(a b c)))
+(xassert (myeqlist3? '(a (b) c) '(a (b) c)))
 (refute (myeqlist3? '(a b c) '(a b)))
 (refute (myeqlist3? '(a b c) '(a (b) c)))
 
@@ -642,13 +642,13 @@
 ;;      (else (myeqlist? a b)))))
 
 
-(assert (myequal? 'a 'a))
-(assert (myequal? '() '()))
+(xassert (myequal? 'a 'a))
+(xassert (myequal? '() '()))
 (refute (myequal? 'a 'b))
 (refute (myequal? 'b 'a))
 (refute (myequal? 'a '()))
 (refute (myequal? '() 'a))
-(assert (myequal? '(a (b) c) '(a (b) c)))
+(xassert (myequal? '(a (b) c) '(a (b) c)))
 (refute (myequal? '(a b c) '(a b)))
 (refute (myequal? '(a b c) '(a (b) c)))
 
@@ -734,8 +734,8 @@
       (** (value1 (car exp))
           (value1 (car (cdr (cdr exp)))))))))
 
-(assert (eq? 4 (value1 '(1 + 3))))
-(assert (eq? 13 (value1 '(1 + (3 * 4)))))
+(xassert (eq? 4 (value1 '(1 + 3))))
+(xassert (eq? 13 (value1 '(1 + (3 * 4)))))
 
 ;; pg 104 - 105
 
@@ -753,8 +753,8 @@
       (** (value2 (car (cdr exp)))
           (value2 (car (cdr (cdr exp)))))))))
 
-(assert (eq? 4 (value2 '(+ 1 3))))
-(assert (eq? 13 (value2 '(+ 1 (* 3 4)))))
+(xassert (eq? 4 (value2 '(+ 1 3))))
+(xassert (eq? 13 (value2 '(+ 1 (* 3 4)))))
 
 (define 1st-sub-exp
   (lambda (exp)
@@ -784,8 +784,8 @@
       (** (value (1st-sub-exp exp))
           (value (2nd-sub-exp exp)))))))
 
-(assert (eq? 4 (value '(+ 1 3))))
-(assert (eq? 13 (value '(+ 1 (* 3 4)))))
+(xassert (eq? 4 (value '(+ 1 3))))
+(xassert (eq? 13 (value '(+ 1 (* 3 4)))))
 
 ;; pg 107
 
@@ -793,7 +793,7 @@
   (lambda (n)
     (null? n)))
 
-(assert (sero? '()))
+(xassert (sero? '()))
 (refute (sero? 4))
 
 (define edd1
@@ -822,10 +822,10 @@
      (else (set? (cdr lat))))))
 
 (refute (set? '(a b a c)))
-(assert (set? '(a b c d)))
-(assert (set? '()))
+(xassert (set? '(a b c d)))
+(xassert (set? '()))
 (refute (set? '(apple 3 pear 4 9 apple 3 4)))
-(assert (set? '(apple 3 pear 4 9)))
+(xassert (set? '(apple 3 pear 4 9)))
 
 ;; pg 112
 
@@ -859,7 +859,7 @@
       (subset1? (cdr set1) set2))
      (else #f))))
 
-(assert (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
+(xassert (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
 (refute (subset1? '(4 p o h) '(4 p c a 5 oz h)))
 
 ;; pg 114
@@ -877,7 +877,7 @@
     (and (subset? set1 set2)
          (subset? set2 set1))))
 
-(assert (eqset? '(6 l c wi w) '(6 c wi l w)))
+(xassert (eqset? '(6 l c wi w) '(6 c wi l w)))
 
 ;; pg 115
 
@@ -904,7 +904,7 @@
      (or (member? (car set1) set2)
          (intersect? (cdr set1) set2)))))
 
-(assert (intersect? '(a b c d) '(d c e)))
+(xassert (intersect? '(a b c d) '(d c e)))
 (refute (intersect? '(a b c) '(d e f)))
 (refute (intersect? '() '(d c e)))
 (refute (intersect? '(d c e) '()))
@@ -967,7 +967,7 @@
           ((null? (cdr (cdr x))) #t)
           (else #f))))
 
-(assert (a-pair? '(full (house))))
+(xassert (a-pair? '(full (house))))
 
 ;; pg 119
 
@@ -982,7 +982,7 @@
   (lambda (rel)
     (set? (firsts rel))))
 
-(assert (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(xassert (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
 
 (define revrel1
   (lambda (rel)
@@ -1023,7 +1023,7 @@
     (and (fun? fun)
          (set? (revrel fun)))))
 
-(assert (fullfun? '((grape raisin) (plum prune) (stewed grape))))
+(xassert (fullfun? '((grape raisin) (plum prune) (stewed grape))))
 
 ;;; Chapter 8
 ;; pg 125-126
@@ -1050,12 +1050,12 @@
     (lambda (x)
       (eq? x a))))
 
-(assert ((eq?-c 'salad) 'salad))
+(xassert ((eq?-c 'salad) 'salad))
 (refute ((eq?-c 'salad) 'pie))
 
 (define eq?-salad (eq?-c 'salad))
 
-(assert (eq?-salad 'salad))
+(xassert (eq?-salad 'salad))
 (refute (eq?-salad 'pie))
 
 (define rember-f

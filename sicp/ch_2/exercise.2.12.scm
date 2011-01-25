@@ -1,4 +1,5 @@
-#lang racket
+
+(require-extension numbers)
 
 ;;; Exercise 2.12:
 

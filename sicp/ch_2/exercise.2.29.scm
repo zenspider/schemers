@@ -1,6 +1,6 @@
-#lang racket
 
-(require "../lib/testes.rkt")
+(require 'testes)
+(import testes)
 
 ;; Exercise 2.29.
 

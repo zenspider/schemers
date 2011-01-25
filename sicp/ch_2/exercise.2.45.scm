@@ -1,8 +1,9 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
-(require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
+(require 'testes)
+(import testes)
+(require 'myutils)
+(import myutils)
+;; (require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
 
 ;; Exercise 2.45
 
@@ -23,8 +24,8 @@
           (x painter (y smaller smaller)))))
   f)
 
-(define right-split (split beside below))
-(define up-split (split below beside))
+;; (define right-split (split beside below))
+;; (define up-split (split below beside))
 
 ;; (paint (up-split einstein 4))
 ;; (paint (right-split einstein 4))

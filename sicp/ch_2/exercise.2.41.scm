@@ -1,7 +1,9 @@
-#lang racket
 
-(require "../lib/testes.rkt")
-(require "../lib/utils.rkt")
+(require 'testes)
+(import testes)
+(require 'myutils)
+(import myutils)
+(use (srfi 1))
 
 ;; Exercise 2.41
 

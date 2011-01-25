@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 2.5:
 
@@ -7,18 +6,18 @@
 ;; as the integer that is the product 2^a 3^b. Give the corresponding
 ;; definitions of the procedures `cons', `car', and `cdr'.
 
-(define (count-factors b n count)
+(define (xcount-factors b n count)
   (if (> (remainder n b) 0) count
-      (count-factors b (/ n b) (+ count 1))))
+      (xcount-factors b (/ n b) (+ count 1))))
 
-(define (cons a b)
+(define (xcons a b)
   (* (expt 2 a) (expt 3 b)))
 
-(define (car p)
-  (count-factors 2 p 0))
+(define (xcar p)
+  (xcount-factors 2 p 0))
 
-(define (cdr p)
-  (count-factors 3 p 0))
+(define (xcdr p)
+  (xcount-factors 3 p 0))
 
-(car (cons 2 3))
-(cdr (cons 2 3))
+(xcar (xcons 2 3))
+(xcdr (xcons 2 3))

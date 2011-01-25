@@ -1,6 +1,7 @@
-#lang racket
 
-(require "../lib/testes.rkt")
+(require 'testes)
+(import testes)
+(require-library test)
 
 ;;; Exercise 1.16:
 

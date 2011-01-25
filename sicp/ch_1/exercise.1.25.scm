@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 1.25:
 
@@ -34,7 +33,7 @@
          (l)
          (times-do (- n 1) l))))
 
-(define iters 100000)
+(define iters 1000)
 (define max   100)
 
 (define (rnd n) (+ 1 (random n)))       ; avoid divide by zero

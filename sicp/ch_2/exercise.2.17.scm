@@ -1,4 +1,3 @@
-#lang racket
 
 ;;; Exercise 2.17:
 
@@ -8,7 +7,8 @@
 ;;      (last-pair (list 23 72 149 34))
 ;;      (34)
 
-(require "../lib/testes.rkt")
+(require 'testes)
+(import testes)
 
 (define (last-pair l)
   (if (or (null? l) (null? (cdr l))) l

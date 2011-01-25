@@ -19,7 +19,9 @@ def with_newer_files touch_file = ".gitignore"
 end
 
 def update_touch_file touch_file = ".gitignore"
-  touch touch_file
+  open touch_file, "w" do |f|
+    f.puts ".gitignore"
+  end
 end
 
 task :todo do

@@ -6,18 +6,16 @@
 
 ;;; Exercise 3.14
 
-;; The following procedure is quite useful, although
-;; obscure:
-;;
-;;      (define (mystery x)
-;;        (define (loop x y)
-;;          (if (null? x)
-;;              y
-;;              (let ((temp (cdr x)))
-;;                (set-cdr! x y)
-;;                (loop temp x))))
-;;        (loop x '()))
-;;
+;; The following procedure is quite useful, although obscure:
+
+(define (mystery x)
+  (define (loop x y)
+    (if (null? x) y
+        (let ((temp (cdr x)))
+          (set-cdr! x y)
+          (loop temp x))))
+  (loop x '()))
+
 ;; `Loop' uses the "temporary" variable `temp' to hold the old value
 ;; of the `cdr' of `x', since the `set-cdr!'  on the next line
 ;; destroys the `cdr'.  Explain what `mystery' does in general.
@@ -28,5 +26,20 @@
 ;; evaluating this expression.  What would be printed as the values
 ;; of `v' and `w'?
 
-;; (assert-equal x y)
+(define v (list 'a 'b 'c 'd))
+
+;; v = *--*--*--*--0
+;;     |  |  |  |
+;;     a  b  c  d
+
+(define w (mystery v)) ;; reverses the list, destructively
+
+;; w = *--*--*--+
+;;     |  |  |  |
+;;     d  c  b  |
+;;              |
+;;          v = *--0
+;;              |
+;;              a
+
 (done)

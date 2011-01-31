@@ -3,7 +3,6 @@
 (import testes)
 (require 'myutils)
 (import myutils)
-(require-extension test)
 
 ;;; Exercise 3.13
 

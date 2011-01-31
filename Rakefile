@@ -30,7 +30,7 @@ end
 
 task :run do
   with_newer_files do |file|
-    sh "X=1 time csi -I lib < #{file} 2>&1"
+    sh "X=1 time csi -q -I lib < #{file} 2>&1"
   end
 end
 

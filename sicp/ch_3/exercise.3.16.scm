@@ -52,6 +52,4 @@
 (assert-equal 3 (count-pairs x))
 (assert-equal 4 (count-pairs y))
 (assert-equal 7 (count-pairs z))
-
-;; (assert-equal x y)
 (done)

@@ -38,5 +38,11 @@
 ;; Define a procedure `print-queue' that takes a queue as input and
 ;; prints the sequence of items in the queue.
 
-;; (assert-equal x y)
-(done)
+(define front-ptr car)
+(define (print-queue q) (display (front-ptr q)))
+
+;; (define q1 (make-queue))
+;; (print-queue (insert-queue! q1 'a))     ; => (a)
+;; (print-queue (insert-queue! q1 'b))     ; => (a b)
+;; (print-queue (delete-queue! q1))        ; => (b)
+;; (print-queue (delete-queue! q1))        ; => ()

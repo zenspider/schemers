@@ -1,8 +1,5 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require-extension test)
 
 ;;; Exercise 3.22
 
@@ -22,5 +19,58 @@
 ;; Complete the definition of `make-queue' and provide
 ;; implementations of the queue operations using this representation.
 
-;; (assert-equal x y)
-(done)
+(define (make-queue)
+  (let ((head '())
+        (tail '()))
+
+    (define (set-rear-ptr! item) ;; TODO: remove
+      (set! tail item))
+
+    (define (empty?)
+      (null? head))
+
+    (define (push x)
+      (let ((new-pair (cons x '())))
+        (if (empty?)
+            (begin (set! head new-pair)
+                   (set! tail new-pair))
+            (begin
+              (set-cdr! tail new-pair)
+              (set! tail new-pair)))))
+
+    (define (pop)
+      (cond ((empty?)
+             (error "DELETE! called with an empty queue" head))
+            (else
+             (set! head (cdr head)))))
+
+    (define (print)
+      (display head))
+
+    (define (dispatch m)
+      (cond ((eq? m 'head) head)
+            ((eq? m 'tail) tail)
+            ((eq? m 'empty?) (empty?))
+            ((eq? m 'push) push)
+            ((eq? m 'pop) (pop))
+            ((eq? m 'print) (print))
+            (else (error "unknown command: " m))))
+    dispatch))
+
+(define (head q)    (q 'head))
+(define (tail q)    (q 'tail))
+(define (empty? q)  (q 'empty?))
+(define (push q x) ((q 'push) x))
+(define (pop q)     (q 'pop))
+(define (print-queue q) (q 'print))
+
+(define q (make-queue))
+(test '() (head q))
+(push q 'a)     ; => (a)
+(test '(a) (head q))
+(push q 'b)     ; => (a b)
+(test '(a b) (head q))
+(pop q)        ; => (b)
+(test '(b) (head q))
+(pop q)        ; => ()
+(test '() (head q))

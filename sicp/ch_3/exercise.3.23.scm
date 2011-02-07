@@ -23,6 +23,12 @@
 ;;    |     |     |
 ;;   [0|b] [a|c] [b|0]
 
+;; NOTE: I like the OO-ness of this form of programming... However,
+;; during development it is increasingly hard to use inside the REPL.
+;; Any implementation change to the module requires redefining all of
+;; make-deque, but that doesn't change any existing objects that are
+;; from previous versions. They're all bound to old functions.
+
 (define (make-deque)
   (let ((head '())
         (tail '()))

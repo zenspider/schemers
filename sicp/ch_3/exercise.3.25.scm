@@ -1,9 +1,4 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.25
 
 ;; Generalizing one- and two-dimensional tables,
@@ -12,5 +7,4 @@
 ;; different numbers of keys.  The `lookup' and `insert!' procedures
 ;; should take as input a list of keys used to access the table.
 
-;; (assert-equal x y)
-(done)
+;; No

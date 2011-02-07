@@ -1,8 +1,6 @@
+#!/usr/local/bin/csi -s
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.24
 
@@ -17,5 +15,48 @@
 ;; procedure that can be used to access appropriate `lookup' and
 ;; `insert!' procedures for a local table.
 
-;; (assert-equal x y)
-(done)
+(define (make-table . test)
+  (let ((local-table (list '*table*))
+        (same-key? (optional test equal?))) ;; see note below
+
+    (define (lookup key)
+      (let ((record (assoc key (cdr local-table))))
+        (if record
+            (cdr record)
+            #f)))
+
+    (define (assoc key records)
+      (cond ((null? records) #f)
+            ((same-key? key (caar records)) (car records))
+            (else (assoc key (cdr records)))))
+
+    (define (insert key value)
+      (let ((record (assoc key (cdr local-table))))
+        (if record
+            (set-cdr! record value)
+            (set-cdr! local-table (cons (cons key value) (cdr local-table))))))
+
+    (define (dispatch m)
+      (cond ((eq? m 'lookup-proc) lookup)
+            ((eq? m 'insert-proc) insert)))
+
+    dispatch))
+
+(define (get k t)   ((t 'lookup-proc) k))
+(define (put k v t) ((t 'insert-proc) k v))
+
+;; NOTE:
+;; (optional var default-value) is a macro for:
+;;
+;; (or (and (not (null? var)) (car var)) default-value))
+
+(test-group "3.24"
+            (define t (make-table eq?))
+
+            (test #f (get 'x t))
+
+            (put 'x 42 t)
+            (test 42 (get 'x t))
+
+            (put 'x 24 t)
+            (test 24 (get 'x t)))

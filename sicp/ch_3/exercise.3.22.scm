@@ -23,9 +23,6 @@
   (let ((head '())
         (tail '()))
 
-    (define (set-rear-ptr! item) ;; TODO: remove
-      (set! tail item))
-
     (define (empty?)
       (null? head))
 

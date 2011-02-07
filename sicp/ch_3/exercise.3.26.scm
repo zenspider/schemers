@@ -1,9 +1,4 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.26
 
 ;; To search a table as implemented above, one needs
@@ -16,5 +11,4 @@
 ;; alphabetically).  (Compare *Note Exercise 2-66:: of *Note Chapter
 ;; 2::.)
 
-;; (assert-equal x y)
-(done)
+;; A: No

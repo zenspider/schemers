@@ -1,6 +1,6 @@
+#!/usr/local/bin/csi -s
 
-(require 'testes)
-(import testes)
+(require-extension test)
 
 ;;; Laws & Commandments:
 
@@ -74,6 +74,8 @@
 
 ;; pg 107: 8th: Use help functions to abstract from representations.
 
+(define null '())
+
 (define atom?
   (lambda (x)
     (and (not (pair? x))
@@ -84,56 +86,56 @@
     (not (atom? x))))
 
 ;; scheme sanity check:
-(refute (atom? '()))
+(test #f (atom? '()))
 
 ;;; Chapter 1
 ;; pg 1 - 4
-(xassert (atom? 'atom))
-(xassert (atom? 1492))
-(xassert (list? '(atom)))
-(xassert (list? '(atom turkey or)))
+(test #t (atom? 'atom))
+(test #t (atom? 1492))
+(test #t (list? '(atom)))
+(test #t (list? '(atom turkey or)))
 
 ;; pg 5 - 7
-(xassert (eq? (car '(a b c)) 'a))
-(assert-equal (car '((a b c) x y z)) '(a b c))
-(assert-equal (car (cdr '((b) (x y) ((c))))) '(x y))
-(assert-equal (cdr (cdr '((b) (x y) ((c))))) '(((c))))
+(test #t (eq? (car '(a b c)) 'a))
+(test (car '((a b c) x y z)) '(a b c))
+(test (car (cdr '((b) (x y) ((c))))) '(x y))
+(test (cdr (cdr '((b) (x y) ((c))))) '(((c))))
 ;; (car '()) ; error on pedantic scheme
 ;; (cdr '()) ; error on pedantic scheme
 ;; (cdr (car '(a (b (c)) d))) ; error on pedantic scheme (cdr 'a)
 
 ;; pg 8
-(assert-equal (cons '(banana and) '(peanut butter and jelly))
+(test (cons '(banana and) '(peanut butter and jelly))
               '((banana and) peanut butter and jelly))
-(assert-equal (cons '((help) this) '(is very ((hard) to learn)))
+(test (cons '((help) this) '(is very ((hard) to learn)))
               '(((help) this) is very ((hard) to learn)))
-(assert-equal (cons '(a b (c)) '())
+(test (cons '(a b (c)) '())
               '((a b (c))))
-(assert-equal (cons 'a '()) '(a))
+(test (cons 'a '()) '(a))
 ;; (cons '((a b c)) 'b) ; INTERESTING: not an error in lisp
 ;; (cons 'a 'b) ; ditto
 
 ;; pg 9
 
-(assert-equal '(a b) (cons 'a (car '((b) c d))))
-(assert-equal '(a c d) (cons 'a (cdr '((b) c d))))
-(xassert (null? '()))
-(refute (null? '(a b c)))
-(refute (null? 'spaghetti))
+(test '(a b) (cons 'a (car '((b) c d))))
+(test '(a c d) (cons 'a (cdr '((b) c d))))
+(test #t (null? '()))
+(test #f (null? '(a b c)))
+(test #f (null? 'spaghetti))
 
 ;; pg 10
-(refute (atom? '(harry had an apple)))
-(refute (atom? '()))
-(xassert (atom? 42))
-(refute (atom? (car (cdr '(swing (low sweet) cherry oat)))))
+(test #f (atom? '(harry had an apple)))
+(test #f (atom? '()))
+(test #t (atom? 42))
+(test #f (atom? (car (cdr '(swing (low sweet) cherry oat)))))
 
 ;; pg 11 - 12
-(xassert (eq? 'Harry (quote Harry)))
-(refute (eq? 'margerine 'butter))
-(refute (eq? '() '(a)))
-(xassert (eq? 'mary (car '(mary had a little lamb))))
-(refute (eq? (cdr '(soured milk)) 'milk))
-(xassert (eq? (car (cdr '(soured milk))) 'milk))
+(test #t (eq? 'Harry (quote Harry)))
+(test #f (eq? 'margerine 'butter))
+(test #f (eq? '() '(a)))
+(test #t (eq? 'mary (car '(mary had a little lamb))))
+(test #f (eq? (cdr '(soured milk)) 'milk))
+(test #t (eq? (car (cdr '(soured milk))) 'milk))
 
 ;;; Chapter 2
 ;; pg 15 - 20
@@ -152,19 +154,19 @@
      ((atom? (car l)) (lat? (cdr l)))
      (else #f))))
 
-(xassert (mylat? '(a b c)))
-(refute (mylat? '((a) b c d)))
-(refute (mylat? '(a (b) c d)))
-(xassert (mylat? '()))
-(xassert (lat? '(a b c)))
-(refute (lat? '((a) b c d)))
-(refute (lat? '(a (b) c d)))
-(xassert (lat? '()))
+(test #t (mylat? '(a b c)))
+(test #f (mylat? '((a) b c d)))
+(test #f (mylat? '(a (b) c d)))
+(test #t (mylat? '()))
+(test #t (lat? '(a b c)))
+(test #f (lat? '((a) b c d)))
+(test #f (lat? '(a (b) c d)))
+(test #t (lat? '()))
 
 ;; pg 21 - 31
 
-(xassert (or (null? '()) (atom? '(a b c))))
-(xassert (or (null? '(a b c)) (null? '())))
+(test #t (or (null? '()) (atom? '(a b c))))
+(test #t (or (null? '(a b c)) (null? '())))
 
 (define mymember?
   (lambda (a lat)
@@ -178,10 +180,10 @@
           (else (or (eq? (car lat) a)
                     (member? a (cdr lat)))))))
 
-(xassert (mymember? 'b '(a b c)))
-(refute (mymember? 'd '(a b c)))
-(xassert (member? 'b '(a b c)))
-(refute (member? 'd '(a b c)))
+(test #t (mymember? 'b '(a b c)))
+(test #f (mymember? 'd '(a b c)))
+(test #t (member? 'b '(a b c)))
+(test #f (member? 'd '(a b c)))
 
 ;;; Chapter 3
 ;; pg 33 - 42
@@ -203,10 +205,10 @@
             (else (cons (car lat)
                         (rember1 a (cdr lat)))))))))
 
-(assert-equal '(a c) (myrember 'b '(a b c)))
-(assert-equal '(a b c) (myrember 'd '(a b c)))
-(assert-equal '(a c) (rember1  'b '(a b c)))
-(assert-equal '(a b c) (rember1  'd '(a b c)))
+(test '(a c) (myrember 'b '(a b c)))
+(test '(a b c) (myrember 'd '(a b c)))
+(test '(a c) (rember1  'b '(a b c)))
+(test '(a b c) (rember1  'd '(a b c)))
 
 ;; pg 43 - 46
 
@@ -215,9 +217,9 @@
     (cond ((null? l) '())
           (else (cons (caar l) (firsts (cdr l)))))))
 
-(assert-equal '(a c e) (firsts '((a b) (c d) (e f))))
-(xassert (null? (firsts '())))
-(assert-equal '(a c d) (firsts '((a b) (c) (d e f))))
+(test '(a c e) (firsts '((a b) (c d) (e f))))
+(test #t (null? (firsts '())))
+(test '(a c d) (firsts '((a b) (c) (d e f))))
 
 ;; pg 47
 
@@ -227,8 +229,8 @@
           ((eq? (car lat) old) (cons old (cons new (cdr lat))))
           (else (cons (car lat) (insertR new old (cdr lat)))))))
 
-(assert-equal '(a b c z d e)       (insertR 'z 'c '(a b c d e)))
-(assert-equal '(a b c d e f g d h) (insertR 'e 'd '(a b c d f g d h)))
+(test '(a b c z d e)       (insertR 'z 'c '(a b c d e)))
+(test '(a b c d e f g d h) (insertR 'e 'd '(a b c d f g d h)))
 
 ;; pg 51
 
@@ -238,9 +240,9 @@
           ((eq? (car lat) old) (cons new (cons old (cdr lat))))
           (else (cons (car lat) (insertL new old (cdr lat)))))))
 
-(assert-equal '(a b z c d e)
+(test '(a b z c d e)
               (insertL 'z 'c '(a b c d e)))
-(assert-equal '(a b c e d f g d h)
+(test '(a b c e d f g d h)
               (insertL 'e 'd '(a b c d f g d h)))
 
 (define subst
@@ -249,7 +251,7 @@
           ((eq? (car lat) old) (cons new (cdr lat)))
           (else (cons (car lat) (subst new old (cdr lat)))))))
 
-(assert-equal '(a z c) (subst 'z 'b '(a b c)))
+(test '(a z c) (subst 'z 'b '(a b c)))
 
 (define multirember
   (lambda (a lat)
@@ -257,7 +259,7 @@
           ((eq? (car lat) a)    (multirember a (cdr lat)))
           (else (cons (car lat) (multirember a (cdr lat)))))))
 
-(assert-equal '(a c d e) (multirember 'b '(b a b c b d b e b)))
+(test '(a c d e) (multirember 'b '(b a b c b d b e b)))
 
 (define multiinsertR
   (lambda (new old lat)
@@ -266,7 +268,7 @@
            (cons old (cons new (multiinsertR new old (cdr lat)))))
           (else (cons (car lat) (multiinsertR new old (cdr lat)))))))
 
-(assert-equal '(a b z c b z d b z) (multiinsertR 'z 'b '(a b c b d b)))
+(test '(a b z c b z d b z) (multiinsertR 'z 'b '(a b c b d b)))
 
 ;;; Chapter 4
 ;; pg 59
@@ -274,10 +276,10 @@
 (define add1 (lambda (n) (+ n 1))) ; defined in intermediate?
 (define sub1 (lambda (n) (- n 1))) ; defined in intermediate?
 
-(assert-equal 68 (add1 67))
-(assert-equal 68 (sub1 69))
-(refute (zero? 42))
-(xassert (zero? 0))
+(test 68 (add1 67))
+(test 68 (sub1 69))
+(test #f (zero? 42))
+(test #t (zero? 0))
 
 ;; (define +
 ;;   (lambda (m n)
@@ -301,18 +303,18 @@
           ((number? (car l)) (tup? (cdr l)))
           (else #f))))
 
-(xassert (tup? '(1 2 3)))
-(refute (tup? '(1 b 3)))
-(refute (tup? '(1 (2 3) 4)))
+(test #t (tup? '(1 2 3)))
+(test #f (tup? '(1 b 3)))
+(test #f (tup? '(1 (2 3) 4)))
 
 (define addtup
   (lambda (l)
     (cond ((null? l) 0)
           (else (+ (car l) (addtup (cdr l)))))))
 
-(assert-equal 0 (addtup '()))
-(assert-equal 1 (addtup '(1)))
-(assert-equal 6 (addtup '(1 2 3)))
+(test 0 (addtup '()))
+(test 1 (addtup '(1)))
+(test 6 (addtup '(1 2 3)))
 
 (define **
   (lambda (m n)
@@ -324,12 +326,12 @@
      ;; ((equal? 1 n) m)
      (else (+ n (** n (sub1 m)))))))
 
-(assert-equal 0 (** 5 0))
-(assert-equal 0 (** 0 5))
-(assert-equal 5 (** 1 5))
-(assert-equal 5 (** 5 1))
-(assert-equal 6 (** 2 3))
-(assert-equal 6 (** 3 2))
+(test 0 (** 5 0))
+(test 0 (** 0 5))
+(test 5 (** 1 5))
+(test 5 (** 5 1))
+(test 6 (** 2 3))
+(test 6 (** 3 2))
 
 (define tup+
   (lambda (t1 t2)
@@ -338,9 +340,9 @@
           ((null? t2) t1)
           (else (cons (+ (car t1) (car t2)) (tup+ (cdr t1) (cdr t2)))))))
 
-(assert-equal '(11 11 11 11 11) (tup+ '(3 6 9 11 4) '(8 5 2 0 7)))
-(assert-equal '(2 4 6 4 5) (tup+ '(1 2 3) '(1 2 3 4 5)))
-(assert-equal '(2 4 6 4 5) (tup+ '(1 2 3 4 5) '(1 2 3)))
+(test '(11 11 11 11 11) (tup+ '(3 6 9 11 4) '(8 5 2 0 7)))
+(test '(2 4 6 4 5) (tup+ '(1 2 3) '(1 2 3 4 5)))
+(test '(2 4 6 4 5) (tup+ '(1 2 3 4 5) '(1 2 3)))
 
 ;; pg 73
 (define >>
@@ -359,9 +361,9 @@
   (lambda (n m)
     (not (or (<< n m) (>> n m)))))
 
-(xassert (== 3 3))
-(refute (== 1 2))
-(refute (== 2 1))
+(test #t (== 3 3))
+(test #f (== 1 2))
+(test #f (== 2 1))
 
 ;; pg 74
 
@@ -371,17 +373,17 @@
           ((== 1 exp) n)
           (else (** n (^^ n (sub1 exp)))))))
 
-(assert-equal 1 (^^ 1 1))
-(assert-equal 8 (^^ 2 3))
-(assert-equal 125 (^^ 5 3))
+(test 1 (^^ 1 1))
+(test 8 (^^ 2 3))
+(test 125 (^^ 5 3))
 
 (define div
   (lambda (n m)
     (cond ((< n m) 0)
           (else (add1 (div (- n m) m))))))
 
-(assert-equal 3 (div 15 4))
-(assert-equal 3 (div 6 2))
+(test 3 (div 15 4))
+(test 3 (div 6 2))
 
 ;; pg 76
 
@@ -390,16 +392,16 @@
     (cond ((null? l) 0)
           (else (add1 (llength (cdr l)))))))
 
-(assert-equal 0 (llength '()))
-(assert-equal 1 (llength '(a)))
-(assert-equal 3 (llength '(a '(b c) d)))
+(test 0 (llength '()))
+(test 1 (llength '(a)))
+(test 3 (llength '(a '(b c) d)))
 
 (define pick
   (lambda (n lat)
     (cond ((= 1 n) (car lat))
           (else (pick (sub1 n) (cdr lat))))))
 
-(assert-equal 'd (pick 4 '(a b c d e)))
+(test 'd (pick 4 '(a b c d e)))
 
 ;; pg 77
 
@@ -408,7 +410,7 @@
     (cond ((= 1 n) (cdr lat))
           (else (cons (car lat) (rempick (sub1 n) (cdr lat)))))))
 
-(assert-equal '(a b d) (rempick 3 '(a b c d)))
+(test '(a b d) (rempick 3 '(a b c d)))
 
 (define no-nums
   (lambda (lat)
@@ -422,8 +424,8 @@
           ((number? (car lat)) (cons (car lat) (all-nums (cdr lat))))
           (else (all-nums (cdr lat))))))
 
-(assert-equal '(a b c) (no-nums '(1 a 2 b 3 c 4)))
-(assert-equal '(1 2 3) (all-nums '(a 1 b 2 c 3 d)))
+(test '(a b c) (no-nums '(1 a 2 b 3 c 4)))
+(test '(1 2 3) (all-nums '(a 1 b 2 c 3 d)))
 
 ;; pg 78
 (define eqan?
@@ -438,8 +440,8 @@
           ((eqan? a (car lat)) (add1 (occur a (cdr lat))))
           (else (occur a (cdr lat))))))
 
-(assert-equal 0 (occur 'z '(a b c)))
-(assert-equal 2 (occur 2 '(1 2 3 2 4)))
+(test 0 (occur 'z '(a b c)))
+(test 2 (occur 2 '(1 2 3 2 4)))
 
 ;; pg 79 is stupid and I basically already did it
 
@@ -461,12 +463,12 @@
                  (else (cons (car l) (rember* a (cdr l))))))
           (else (cons (rember* a (car l)) (rember* a (cdr l))))))) ; appreciated on end
 
-(assert-equal '()                  (myrember* 'a '()))
-(assert-equal '(b c d)             (myrember* 'a '(a b a c d a)))
-(assert-equal '((b) ((c)) (d (e))) (myrember* 'a '((b) a ((c) a) (d (e)) a)))
-(assert-equal '()                  (rember* 'a '()))
-(assert-equal '(b c d)             (rember* 'a '(a b a c d a)))
-(assert-equal '((b) ((c)) (d (e))) (rember* 'a '((b) a ((c) a) (d (e)) a)))
+(test '()                  (myrember* 'a '()))
+(test '(b c d)             (myrember* 'a '(a b a c d a)))
+(test '((b) ((c)) (d (e))) (myrember* 'a '((b) a ((c) a) (d (e)) a)))
+(test '()                  (rember* 'a '()))
+(test '(b c d)             (rember* 'a '(a b a c d a)))
+(test '((b) ((c)) (d (e))) (rember* 'a '((b) a ((c) a) (d (e)) a)))
 
 ;; pg 82
 (define insertR*
@@ -485,10 +487,10 @@
           ((eq? old (car l)) (cons old (cons new (myinsertR* new old (cdr l)))))
           (else (cons (car l) (myinsertR* new old (cdr l)))))))
 
-(assert-equal '()              (myinsertR* 'a 'b '()))
-(assert-equal '(a b (a b (c))) (myinsertR* 'b 'a '(a (a (c)))))
-(assert-equal '()              (insertR* 'a 'b '()))
-(assert-equal '(a b (a b (c))) (insertR* 'b 'a '(a (a (c)))))
+(test '()              (myinsertR* 'a 'b '()))
+(test '(a b (a b (c))) (myinsertR* 'b 'a '(a (a (c)))))
+(test '()              (insertR* 'a 'b '()))
+(test '(a b (a b (c))) (insertR* 'b 'a '(a (a (c)))))
 
 ;; pg 84
 (define occur*
@@ -498,9 +500,9 @@
           ((eq? a (car l)) (add1 (occur* a (cdr l))))
           (else (occur* a (cdr l))))))
 
-(assert-equal 0 (occur* 'a '(b c d)))
-(assert-equal 1 (occur* 'a '(((a)))))
-(assert-equal 3 (occur* 'a '(1 a 2 (3 a 4 (5)) a)))
+(test 0 (occur* 'a '(b c d)))
+(test 1 (occur* 'a '(((a)))))
+(test 3 (occur* 'a '(1 a 2 (3 a 4 (5)) a)))
 
 ;; pg 85
 (define subst*
@@ -510,8 +512,8 @@
           ((eq? old (car l)) (cons new (subst* new old (cdr l))))
           (else (cons (car l) (subst* new old (cdr l)))))))
 
-(assert-equal '(a z c) (subst* 'z 'b '(a b c)))
-(assert-equal '((a) (z ((((c d))) e (f)) z) (h) (z) (j k))
+(test '(a z c) (subst* 'z 'b '(a b c)))
+(test '((a) (z ((((c d))) e (f)) z) (h) (z) (j k))
               (subst* 'z 'b
                       '((a) (b ((((c d))) e (f)) b) (h) (b) (j k))))
 
@@ -523,7 +525,7 @@
           ((eq? old (car l)) (cons new (cons old (insertL* new old (cdr l)))))
           (else (cons (car l) (insertL* new old (cdr l)))))))
 
-(assert-equal '(z a b (z a b (z a z a) c) c c)
+(test '(z a b (z a b (z a z a) c) c c)
               (insertL* 'z 'a '(a b (a b (a a) c) c c)))
 
 ;; pg 87
@@ -538,10 +540,10 @@
           ((eq? a (car l)) #t)
           (else (member2* a (cdr l))))))
 
-(assert-equal #t (member1* 'b '((a (b)) c)))
-(assert-equal #f (member1* 'z '((a (b)) c)))
-(assert-equal #t (member2* 'b '((a (b)) c)))
-(assert-equal #f (member2* 'z '((a (b)) c)))
+(test #t  (member1* 'b '((a (b)) c)))
+(test #f (member1* 'z '((a (b)) c)))
+(test #t  (member2* 'b '((a (b)) c)))
+(test #f (member2* 'z '((a (b)) c)))
 
 ;; pg 88
 (define leftmost
@@ -550,9 +552,9 @@
           ((list? (car l)) (leftmost (car l)))
           (else (car l)))))
 
-(assert-equal 'a (leftmost '((a) (b ((c) d) (e)))))
-(assert-equal 'a (leftmost '(((a) (b (c))) d)))
-(assert-equal '() (leftmost '(((() a)) b (c))))
+(test 'a (leftmost '((a) (b ((c) d) (e)))))
+(test 'a (leftmost '(((a) (b (c))) d)))
+(test '() (leftmost '(((() a)) b (c))))
 
 ;; pg 90
 (define myeqlist1?
@@ -570,11 +572,11 @@
 
 ;; HACK (define myeqlist? myeqlist1?)
 
-(xassert (myeqlist1? '() '()))
-(xassert (myeqlist1? '(a b c) '(a b c)))
-(xassert (myeqlist1? '(a (b) c) '(a (b) c)))
-(refute (myeqlist1? '(a b c) '(a b)))
-(refute (myeqlist1? '(a b c) '(a (b) c)))
+(test #t (myeqlist1? '() '()))
+(test #t (myeqlist1? '(a b c) '(a b c)))
+(test #t (myeqlist1? '(a (b) c) '(a (b) c)))
+(test #f (myeqlist1? '(a b c) '(a b)))
+(test #f (myeqlist1? '(a b c) '(a (b) c)))
 
 ;; pg 91
 (define myeqlist2?
@@ -595,11 +597,11 @@
 
 ;; HACK (define myeqlist? myeqlist2?)
 
-(xassert (myeqlist2? '() '()))
-(xassert (myeqlist2? '(a b c) '(a b c)))
-(xassert (myeqlist2? '(a (b) c) '(a (b) c)))
-(refute (myeqlist2? '(a b c) '(a b)))
-(refute (myeqlist2? '(a b c) '(a (b) c)))
+(test #t (myeqlist2? '() '()))
+(test #t (myeqlist2? '(a b c) '(a b c)))
+(test #t (myeqlist2? '(a (b) c) '(a (b) c)))
+(test #f (myeqlist2? '(a b c) '(a b)))
+(test #f (myeqlist2? '(a b c) '(a (b) c)))
 
 ;; pg 92 - 93
 
@@ -618,11 +620,11 @@
 
 ;; HACK (define myeqlist? myeqlist3?)
 
-(xassert (myeqlist3? '() '()))
-(xassert (myeqlist3? '(a b c) '(a b c)))
-(xassert (myeqlist3? '(a (b) c) '(a (b) c)))
-(refute (myeqlist3? '(a b c) '(a b)))
-(refute (myeqlist3? '(a b c) '(a (b) c)))
+(test #t (myeqlist3? '() '()))
+(test #t (myeqlist3? '(a b c) '(a b c)))
+(test #t (myeqlist3? '(a (b) c) '(a (b) c)))
+(test #f (myeqlist3? '(a b c) '(a b)))
+(test #f (myeqlist3? '(a b c) '(a (b) c)))
 
 (define myequal?
   (lambda (a b)
@@ -642,15 +644,15 @@
 ;;      (else (myeqlist? a b)))))
 
 
-(xassert (myequal? 'a 'a))
-(xassert (myequal? '() '()))
-(refute (myequal? 'a 'b))
-(refute (myequal? 'b 'a))
-(refute (myequal? 'a '()))
-(refute (myequal? '() 'a))
-(xassert (myequal? '(a (b) c) '(a (b) c)))
-(refute (myequal? '(a b c) '(a b)))
-(refute (myequal? '(a b c) '(a (b) c)))
+(test #t (myequal? 'a 'a))
+(test #t (myequal? '() '()))
+(test #f (myequal? 'a 'b))
+(test #f (myequal? 'b 'a))
+(test #f (myequal? 'a '()))
+(test #f (myequal? '() 'a))
+(test #t (myequal? '(a (b) c) '(a (b) c)))
+(test #f (myequal? '(a b c) '(a b)))
+(test #f (myequal? '(a b c) '(a (b) c)))
 
 (define myeqlist?
   (lambda (a b)
@@ -734,8 +736,8 @@
       (** (value1 (car exp))
           (value1 (car (cdr (cdr exp)))))))))
 
-(xassert (eq? 4 (value1 '(1 + 3))))
-(xassert (eq? 13 (value1 '(1 + (3 * 4)))))
+(test #t (eq? 4 (value1 '(1 + 3))))
+(test #t (eq? 13 (value1 '(1 + (3 * 4)))))
 
 ;; pg 104 - 105
 
@@ -753,8 +755,8 @@
       (** (value2 (car (cdr exp)))
           (value2 (car (cdr (cdr exp)))))))))
 
-(xassert (eq? 4 (value2 '(+ 1 3))))
-(xassert (eq? 13 (value2 '(+ 1 (* 3 4)))))
+(test #t (eq? 4 (value2 '(+ 1 3))))
+(test #t (eq? 13 (value2 '(+ 1 (* 3 4)))))
 
 (define 1st-sub-exp
   (lambda (exp)
@@ -784,8 +786,8 @@
       (** (value (1st-sub-exp exp))
           (value (2nd-sub-exp exp)))))))
 
-(xassert (eq? 4 (value '(+ 1 3))))
-(xassert (eq? 13 (value '(+ 1 (* 3 4)))))
+(test #t (eq? 4 (value '(+ 1 3))))
+(test #t (eq? 13 (value '(+ 1 (* 3 4)))))
 
 ;; pg 107
 
@@ -793,8 +795,8 @@
   (lambda (n)
     (null? n)))
 
-(xassert (sero? '()))
-(refute (sero? 4))
+(test #t (sero? '()))
+(test #f (sero? 4))
 
 (define edd1
   (lambda (n)
@@ -821,11 +823,11 @@
      ((member? (car lat) (cdr lat)) #f)
      (else (set? (cdr lat))))))
 
-(refute (set? '(a b a c)))
-(xassert (set? '(a b c d)))
-(xassert (set? '()))
-(refute (set? '(apple 3 pear 4 9 apple 3 4)))
-(xassert (set? '(apple 3 pear 4 9)))
+(test #f (set? '(a b a c)))
+(test #t (set? '(a b c d)))
+(test #t (set? '()))
+(test #f (set? '(apple 3 pear 4 9 apple 3 4)))
+(test #t (set? '(apple 3 pear 4 9)))
 
 ;; pg 112
 
@@ -836,7 +838,7 @@
      ((member? (car lat) (cdr lat)) (makeset1 (cdr lat)))
      (else (cons (car lat) (makeset1 (cdr lat)))))))
 
-(assert-equal '(c d a e b) (makeset1 '(a b c b d a e b)))
+(test '(c d a e b) (makeset1 '(a b c b d a e b)))
 
 (define makeset
   (lambda (lat)
@@ -845,11 +847,11 @@
      (else
       (cons (car lat) (makeset (multirember (car lat) (cdr lat))))))))
 
-(assert-equal '(a b c d e) (makeset '(a b c b d a e b)))
+(test '(a b c d e) (makeset '(a b c b d a e b)))
 
 ;; pg 113
 
-(assert-equal '(a 3 p 4 9) (makeset '(a 3 p 4 9 a 3 4)))
+(test '(a 3 p 4 9) (makeset '(a 3 p 4 9 a 3 4)))
 
 (define subset1?
   (lambda (set1 set2)
@@ -859,8 +861,8 @@
       (subset1? (cdr set1) set2))
      (else #f))))
 
-(xassert (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
-(refute (subset1? '(4 p o h) '(4 p c a 5 oz h)))
+(test #t (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
+(test #f (subset1? '(4 p o h) '(4 p c a 5 oz h)))
 
 ;; pg 114
 
@@ -877,7 +879,7 @@
     (and (subset? set1 set2)
          (subset? set2 set1))))
 
-(xassert (eqset? '(6 l c wi w) '(6 c wi l w)))
+(test #t (eqset? '(6 l c wi w) '(6 c wi l w)))
 
 ;; pg 115
 
@@ -904,10 +906,10 @@
      (or (member? (car set1) set2)
          (intersect? (cdr set1) set2)))))
 
-(xassert (intersect? '(a b c d) '(d c e)))
-(refute (intersect? '(a b c) '(d e f)))
-(refute (intersect? '() '(d c e)))
-(refute (intersect? '(d c e) '()))
+(test #t (intersect? '(a b c d) '(d c e)))
+(test #f (intersect? '(a b c) '(d e f)))
+(test #f (intersect? '() '(d c e)))
+(test #f (intersect? '(d c e) '()))
 
 ;; pg 116
 
@@ -918,7 +920,7 @@
            (cons (car set1) (intersect (cdr set1) set2)))
           (else (intersect (cdr set1) set2)))))
 
-(assert-equal '(and macaroni)
+(test '(and macaroni)
               (intersect '(stewed tomatoes and macaroni casserole)
                          '(macaroni and cheese)))
 
@@ -929,7 +931,7 @@
            (union (cdr set1) set2))
           (else (cons (car set1) (union (cdr set1) set2))))))
 
-(assert-equal '(stewed tomatoes casserole macaroni and cheese)
+(test '(stewed tomatoes casserole macaroni and cheese)
               (union '(stewed tomatoes and macaroni casserole)
                      '(macaroni and cheese)))
 
@@ -943,7 +945,7 @@
       (difference (cdr set1) set2))
      (else (cons (car set1) (difference (cdr set1) set2))))))
 
-(assert-equal '(b d) (difference '(a b c d e) '(a c e)))
+(test '(b d) (difference '(a b c d e) '(a c e)))
 
 (define intersectall
   (lambda (l-set)
@@ -951,8 +953,8 @@
           (else (intersect (car l-set)
                            (intersectall (cdr l-set)))))))
 
-(assert-equal '(a) (intersectall '((a b c) (c a d e) (e f g h a b))))
-(assert-equal '(6 and) (intersectall '((6 pears and)
+(test '(a) (intersectall '((a b c) (c a d e) (e f g h a b))))
+(test '(6 and) (intersectall '((6 pears and)
                                        (3 peaches and 6 peppers)
                                        (8 pears and 6 plums)
                                        (and 6 prunes with some apples))))
@@ -967,7 +969,7 @@
           ((null? (cdr (cdr x))) #t)
           (else #f))))
 
-(xassert (a-pair? '(full (house))))
+(test #t (a-pair? '(full (house))))
 
 ;; pg 119
 
@@ -982,7 +984,7 @@
   (lambda (rel)
     (set? (firsts rel))))
 
-(xassert (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(test #t (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
 
 (define revrel1
   (lambda (rel)
@@ -992,7 +994,7 @@
                         (first  (car rel)))
                  (revrel1 (cdr rel)))))))
 
-(assert-equal '((3 8) (2 4) (6 7) (2 6) (4 3))
+(test '((3 8) (2 4) (6 7) (2 6) (4 3))
               (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4))))
 
 ;; pg 121
@@ -1008,7 +1010,7 @@
      (else (cons (revpair (car rel))
                  (revrel (cdr rel)))))))
 
-(assert-equal '((3 8) (2 4) (6 7) (2 6) (4 3))
+(test '((3 8) (2 4) (6 7) (2 6) (4 3))
               (revrel '((8 3) (4 2) (7 6) (6 2) (3 4))))
 
 ;; pg 122
@@ -1023,7 +1025,7 @@
     (and (fun? fun)
          (set? (revrel fun)))))
 
-(xassert (fullfun? '((grape raisin) (plum prune) (stewed grape))))
+(test #t (fullfun? '((grape raisin) (plum prune) (stewed grape))))
 
 ;;; Chapter 8
 ;; pg 125-126
@@ -1036,11 +1038,11 @@
      (else (cons (car l)
                  (rember-f1 test? s (cdr l)))))))
 
-(assert-equal '(6 2 3)
+(test '(6 2 3)
               (rember-f1 = 5 '(6 2 5 3)))
-(assert-equal '(beans are good)
+(test '(beans are good)
               (rember-f1 eq? 'jelly '(jelly beans are good)))
-(assert-equal '(lemonade and (cake))
+(test '(lemonade and (cake))
               (rember-f1 equal? '(pop corn) '(lemonade (pop corn) and (cake))))
 
 ;; pg 127-129
@@ -1050,13 +1052,13 @@
     (lambda (x)
       (eq? x a))))
 
-(xassert ((eq?-c 'salad) 'salad))
-(refute ((eq?-c 'salad) 'pie))
+(test #t ((eq?-c 'salad) 'salad))
+(test #f ((eq?-c 'salad) 'pie))
 
 (define eq?-salad (eq?-c 'salad))
 
-(xassert (eq?-salad 'salad))
-(refute (eq?-salad 'pie))
+(test #t (eq?-salad 'salad))
+(test #f (eq?-salad 'pie))
 
 (define rember-f
   (lambda (test?)
@@ -1069,13 +1071,13 @@
 
 (define rember-eq? (rember-f eq?))
 
-(assert-equal '(salad is good) (rember-eq? 'tuna '(tuna salad is good)))
-(assert-equal '(shrimp salad and salad) ((rember-f eq?) 'tuna
+(test '(salad is good) (rember-eq? 'tuna '(tuna salad is good)))
+(test '(shrimp salad and salad) ((rember-f eq?) 'tuna
                                          '(shrimp salad and tuna salad)))
 
 ;; pg 130
 
-(assert-equal '(equal? eqan? eqlist? eqpair?)
+(test '(equal? eqan? eqlist? eqpair?)
               ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? eqpair?)))
 
 (define insertL-f
@@ -1092,9 +1094,9 @@
             ((test? (car lat) old) (cons old (cons new (cdr lat))))
             (else (cons (car lat) ((insertR-f test?) new old (cdr lat))))))))
 
-(assert-equal '(a b c z d e)       ((insertR-f eq?) 'z 'c '(a b c d e)))
-(assert-equal '(a b c d e f g d h) ((insertR-f eq?) 'e 'd '(a b c d f g d h)))
-(assert-equal '(a b z c d e)
+(test '(a b c z d e)       ((insertR-f eq?) 'z 'c '(a b c d e)))
+(test '(a b c d e f g d h) ((insertR-f eq?) 'e 'd '(a b c d f g d h)))
+(test '(a b z c d e)
               ((insertL-f eq?) 'z 'c '(a b c d e)))
-(assert-equal '(a b c e d f g d h)
+(test '(a b c e d f g d h)
               ((insertL-f eq?) 'e 'd '(a b c d f g d h)))

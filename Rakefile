@@ -7,7 +7,7 @@ end
 def newer_files touch_file = ".gitignore"
   t0 = File.mtime(touch_file) rescue Time.at(0)
 
-  Dir["ch*/*.scm"].find_all { |file| t0 <= File.mtime(file) }
+  Dir["{ch*,little-schemer}/*.scm"].find_all { |file| t0 <= File.mtime(file) }
 end
 
 def with_newer_files touch_file = ".gitignore"

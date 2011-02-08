@@ -1,9 +1,4 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.30
 
 ;; *Note Figure 3-27:: shows a "ripple-carry adder"
@@ -36,5 +31,17 @@
 ;;         :        |               |               |     :   :        |
 ;;                 S_1             S_2             S_3                S_n
 
-;; (assert-equal x y)
-(done)
+;; in ruby:
+;;
+;;   a_s.zip(b_s, s_s).inject(c) { |c_in, (a, b, s)|
+;;     c_out = make_wire
+;;     full_adder(a, b, c_in, s, c_out)
+;;     c_out
+;;   }
+
+(define (ripple-carry-adder a-s b-s s-s c)
+  (fold (lambda (a b s c-in)
+          (let ((c-out (make-wire)))
+            (fulladder a c-in b s c-out)
+            c-out))
+        c a-s b-s s-s))

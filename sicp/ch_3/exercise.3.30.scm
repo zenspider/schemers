@@ -12,9 +12,7 @@
 ;; should take as arguments three lists of n wires each--the A_k, the
 ;; B_k, and the S_k--and also another wire C.  The major drawback of
 ;; the ripple-carry adder is the need to wait for the carry signals
-;; to propagate.  What is the delay needed to obtain the complete
-;; output from an n-bit ripple-carry adder, expressed in terms of the
-;; delays for and-gates, or-gates, and inverters?
+;; to propagate.
 ;;
 ;; *Figure 3.27:* A ripple-carry adder for n-bit numbers.
 ;;
@@ -45,3 +43,12 @@
             (fulladder a c-in b s c-out)
             c-out))
         c a-s b-s s-s))
+
+;; What is the delay needed to obtain the complete output from an
+;; n-bit ripple-carry adder, expressed in terms of the delays for
+;; and-gates, or-gates, and inverters?
+
+;; A: full adder cost is 2 * half adder + or
+;;    half adder is (max and or) + not + and
+;;    so ripple would be: n * (2 * ((max and or) + not + and) + or)
+;;    or 2n * (max and or) + 2n * not + 2n * and + n * or

@@ -16,5 +16,7 @@
 ;; ordinary list, adding and removing procedures only at the front
 ;; (last in, first out).
 
+;; TODO
+
 ;; (assert-equal x y)
 (done)

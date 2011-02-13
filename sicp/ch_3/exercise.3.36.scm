@@ -1,18 +1,17 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
+(require 'constraints)
+(import constraints)
 
 ;;; Exercise 3.36
 
 ;; Suppose we evaluate the following sequence of
 ;; expressions in the global environment:
-;;
-;;      (define a (make-connector))
-;;      (define b (make-connector))
-;;      (set-value! a 10 'user)
-;;
+
+(define a (make-connector))
+(define b (make-connector))
+(set-value! a 10 'user)
+
 ;; At some time during evaluation of the `set-value!', the following
 ;; expression from the connector's local procedure is evaluated:
 ;;
@@ -21,5 +20,4 @@
 ;; Draw an environment diagram showing the environment in which the
 ;; above expression is evaluated.
 
-;; (assert-equal x y)
-(done)
+;; no

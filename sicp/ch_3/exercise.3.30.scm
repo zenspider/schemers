@@ -1,4 +1,9 @@
 
+(require 'queue)
+(require 'circuits)
+(import queue circuits)
+(use test)
+
 ;;; Exercise 3.30
 
 ;; *Note Figure 3-27:: shows a "ripple-carry adder"
@@ -40,7 +45,7 @@
 (define (ripple-carry-adder a-s b-s s-s c)
   (fold (lambda (a b s c-in)
           (let ((c-out (make-wire)))
-            (fulladder a c-in b s c-out)
+            (full-adder a c-in b s c-out)
             c-out))
         c a-s b-s s-s))
 
@@ -52,3 +57,42 @@
 ;;    half adder is (max and or) + not + and
 ;;    so ripple would be: n * (2 * ((max and or) + not + and) + or)
 ;;    or 2n * (max and or) + 2n * not + 2n * and + n * or
+
+(test-group "3.3.0"
+            (define a1 (make-wire))
+            (define a2 (make-wire))
+            (define b1 (make-wire))
+            (define b2 (make-wire))
+            (define s1 (make-wire))
+            (define s2 (make-wire))
+            (define c (make-wire))
+            (define A (list a1 a2))
+            (define B (list b1 b2))
+            (define S (list s1 s2))
+
+            (set-signal! (ripple-carry-adder A B S c) 0)
+
+            (test-group "01 + 00 = 001"
+                        (set-signal! a1 1)
+                        (propagate)
+
+                        (test 1 (get-signal s1))
+                        (test 0 (get-signal s2))
+                        (test 0 (get-signal c)))
+
+            (test-group "11 + 00 = 011"
+                        (set-signal! a2 1)
+                        (propagate)
+
+                        (test 1 (get-signal s1))
+                        (test 1 (get-signal s2))
+                        (test 0 (get-signal c)))
+
+            (test-group "11 + 11 = 110"
+                        (set-signal! b1 1)
+                        (set-signal! b2 1)
+                        (propagate)
+
+                        (test 0 (get-signal s1))
+                        (test 1 (get-signal s2))
+                        (test 1 (get-signal c))))

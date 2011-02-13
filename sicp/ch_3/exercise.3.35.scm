@@ -1,8 +1,7 @@
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
+(require 'constraints)
+(import constraints)
 
 ;;; Exercise 3.35
 
@@ -23,5 +22,45 @@
 ;;        <REST OF DEFINITION>
 ;;        me)
 
-;; (assert-equal x y)
-(done)
+
+(define (squarer a aa)
+  (define (process-new-value)
+    (if (has-value? aa)
+        (if (< (get-value aa) 0)
+            (error "square less than 0 -- SQUARER" (get-value aa))
+            (set-value! a (sqrt (get-value aa)) me))
+        (set-value! aa (expt (get-value a) 2) me)))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! aa me))
+  (define (me m)
+    (cond ((eq? m 'I-have-a-value)  (process-new-value))
+          ((eq? m 'I-lost-my-value) (process-forget-value))
+          (else (error "Unknown request -- SQUARER" m))))
+  (connect a me)
+  (connect aa me)
+  me)
+
+(test-group "3.35"
+            (define A (make-connector))
+            (define B (make-connector))
+            (define C (make-connector))
+
+            (squarer A B)
+            (squarer B C)
+
+            ;; Honestly... I'm not seeing it.
+
+            (test-error (set-value! B -1 'user))
+
+            (set-value! A 2 'user)
+            (test  4 (get-value B))
+            (test 16 (get-value C))
+
+            (forget-value! A 'user)
+            (forget-value! B 'user)
+            (forget-value! C 'user)
+
+            (set-value! C 16 'user)
+            (test 4.0 (get-value B))
+            (test 2.0 (get-value A)))

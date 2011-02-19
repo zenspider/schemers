@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.41
 
 ;; Ben Bitdiddle worries that it would be better to
@@ -19,8 +13,6 @@
 ;;        (define (deposit amount)
 ;;          (set! balance (+ balance amount))
 ;;          balance)
-;;        ;; continued on next page
-;;
 ;;        (let ((protected (make-serializer)))
 ;;          (define (dispatch m)
 ;;            (cond ((eq? m 'withdraw) (protected withdraw))
@@ -35,5 +27,5 @@
 ;; result in anomalous behavior.  Do you agree?  Is there any
 ;; scenario that demonstrates Ben's concern?
 
-;; (assert-equal x y)
-(done)
+;; A: Assuming that memory access can't be read while it is in the
+;; middle of writing a word, ben is an idiot.

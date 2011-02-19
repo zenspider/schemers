@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.50
 
 ;; Complete the following definition, which
@@ -19,5 +13,11 @@
 ;;             (apply stream-map
 ;;                    (cons proc (map <??> argstreams))))))
 
-;; (assert-equal x y)
-(done)
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (stream-cons
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc (map stream-cdr argstreams))))))
+

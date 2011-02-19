@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.42
 
 ;; Ben Bitdiddle suggests that it's a waste of time
@@ -38,5 +32,6 @@
 ;; difference in what concurrency is allowed by these two versions of
 ;; `make-account' ?
 
-;; (assert-equal x y)
-(done)
+;; A: I don't _think_ there is any semantic or performance difference,
+;; since you're just storing the exact same thing in a let that you
+;; would normally return.

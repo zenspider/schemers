@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.45
 
 ;; Louis Reasoner thinks our bank-account system is
@@ -42,5 +36,4 @@
 ;; Explain what is wrong with Louis's reasoning.  In particular,
 ;; consider what happens when `serialized-exchange' is called.
 
-;; (assert-equal x y)
-(done)
+;; no

@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.32
 
 ;; The procedures to be run during each time segment
@@ -16,7 +10,4 @@
 ;; ordinary list, adding and removing procedures only at the front
 ;; (last in, first out).
 
-;; TODO
-
-;; (assert-equal x y)
-(done)
+;; no

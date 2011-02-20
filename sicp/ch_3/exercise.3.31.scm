@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.31
 
 ;; The internal procedure `accept-action-procedure!'
@@ -17,7 +11,4 @@
 ;;      (define (accept-action-procedure! proc)
 ;;        (set! action-procedures (cons proc action-procedures)))
 
-;; TODO
-
-;; (assert-equal x y)
-(done)
+;; no

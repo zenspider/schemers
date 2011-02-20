@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.48
 
 ;; Explain in detail why the deadlock-avoidance
@@ -14,5 +8,4 @@
 ;; need to modify `make-account' so that each account is created with
 ;; a number, which can be accessed by sending an appropriate message.)
 
-;; (assert-equal x y)
-(done)
+;; no

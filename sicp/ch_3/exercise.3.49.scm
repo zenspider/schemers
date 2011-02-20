@@ -1,9 +1,3 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-
 ;;; Exercise 3.49
 
 ;; Give a scenario where the deadlock-avoidance
@@ -13,5 +7,4 @@
 ;; access to some shared resources before it can know which
 ;; additional shared resources it will require.)
 
-;; (assert-equal x y)
-(done)
+;; no

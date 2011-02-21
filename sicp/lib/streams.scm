@@ -5,6 +5,7 @@
           stream-cons
           stream-display
           stream-enumerate-interval
+          stream-head
           stream-filter
           stream-for-each
           stream-map
@@ -35,6 +36,10 @@
                      (if (> n high) the-empty-stream
                          (cons n (delay (next (+ n 1))))))))
       (next low)))
+
+  (define (stream-head s n)
+    (if (= n 0) '()
+        (cons (stream-car s) (stream-head (stream-cdr s) (- n 1)))))
 
   (define (stream-filter pred stream)
     (cond ((stream-null? stream) the-empty-stream)

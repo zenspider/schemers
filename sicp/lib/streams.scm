@@ -1,5 +1,6 @@
 (module streams
-  (export stream-car
+  (export stream-add
+          stream-car
           stream-cdr
           stream-cons
           stream-display
@@ -15,6 +16,9 @@
   (define-syntax stream-cons
     (syntax-rules ()
       ((_ a b) (cons a (delay b)))))
+
+  (define (stream-add s1 s2)
+    (stream-map + s1 s2))
 
   (define (stream-car stream) (car stream))
 
@@ -45,10 +49,13 @@
         (begin (proc (stream-car s))
                (stream-for-each proc (stream-cdr s)))))
 
-  (define (stream-map proc s)
-    (if (stream-null? s) the-empty-stream
-        (stream-cons (proc (stream-car s))
-                     (stream-map proc (stream-cdr s)))))
+  (define (stream-map proc . argstreams)
+    (if (stream-null? (car argstreams))
+        the-empty-stream
+        (stream-cons
+         (apply proc (map stream-car argstreams))
+         (apply stream-map
+                (cons proc (map stream-cdr argstreams))))))
 
   (define (stream-null? stream) (null? stream))
 

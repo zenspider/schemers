@@ -2,6 +2,7 @@
   (export stream-car
           stream-cdr
           stream-cons
+          stream-display
           stream-enumerate-interval
           stream-filter
           stream-for-each
@@ -18,6 +19,12 @@
   (define (stream-car stream) (car stream))
 
   (define (stream-cdr stream) (force (cdr stream)))
+
+  (define (stream-display stream)
+    (define (display-line x)
+      (newline)
+      (display x))
+    (stream-for-each display-line stream))
 
   (define (stream-enumerate-interval low high)
     (letrec ((next (lambda (n)

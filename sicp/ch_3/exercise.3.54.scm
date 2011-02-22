@@ -19,17 +19,11 @@
 (define (integers-starting-from n)
   (stream-cons n (integers-starting-from (+ n 1))))
 
-;; HELP: why doesn't this work?
-;; (define ones     (stream-cons 1 ones))
-;; (define integers (stream-cons 1 (stream-add ones integers)))
-;; (define factorials
-;;   (stream-mul integers (stream-cdr factorials)))
+(define ones     (stream-cons 1 ones))
+(define integers (stream-cons 1 (stream-add ones integers)))
 
 (define factorials
-  (stream-cons 1
-               (stream-cons 2
-                            (stream-mul (integers-starting-from 3)
-                                        (stream-cdr factorials)))))
+  (stream-cons 1 (stream-mul (stream-cdr integers) factorials)))
 
 (test-group "3.54"
             (test '(1 2 6 24 120) (stream-head factorials 5))

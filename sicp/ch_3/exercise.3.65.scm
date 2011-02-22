@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.65
 
@@ -16,5 +12,3 @@
 ;; logarithm of 2, in the same way we did above for [pi].  How
 ;; rapidly do these sequences converge?
 
-;; (assert-equal x y)
-(done)

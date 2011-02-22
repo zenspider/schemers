@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.74
 
@@ -45,5 +41,3 @@
 ;;
 ;; Complete the program by supplying the indicated <EXPRESSION>.
 
-;; (assert-equal x y)
-(done)

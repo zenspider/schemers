@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.75
 
@@ -28,5 +24,3 @@
 ;; of the program.  (Hint: You will need to increase the number of
 ;; arguments to `make-zero-crossings'.)
 
-;; (assert-equal x y)
-(done)

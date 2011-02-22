@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.71
 
@@ -18,5 +14,3 @@
 ;; Write a procedure to generate the Ramanujan numbers.  The first
 ;; such number is 1,729.  What are the next five?
 
-;; (assert-equal x y)
-(done)

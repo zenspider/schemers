@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.76
 
@@ -17,5 +13,3 @@
 ;; Then use `smooth' as a component to implement the zero-crossing
 ;; detector in a more modular style.
 
-;; (assert-equal x y)
-(done)

@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.81
 
@@ -15,5 +11,3 @@
 ;; produces the desired stream of random numbers.  Don't use
 ;; assignment in your solution.
 
-;; (assert-equal x y)
-(done)

@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.62
 
@@ -15,5 +11,3 @@
 ;; `div-series' together with the result of *Note Exercise 3-59:: to
 ;; generate the power series for tangent.
 
-;; (assert-equal x y)
-(done)

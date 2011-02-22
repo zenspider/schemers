@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.82
 
@@ -12,5 +8,3 @@
 ;; trials to perform.  Instead, it will produce a stream of estimates
 ;; based on successively more trials.
 
-;; (assert-equal x y)
-(done)

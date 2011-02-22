@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.63
 
@@ -23,5 +19,3 @@
 ;; only `(lambda () <EXP>)' without using the optimization provided
 ;; by `memo-proc' (section *Note 3-5-1::)?
 
-;; (assert-equal x y)
-(done)

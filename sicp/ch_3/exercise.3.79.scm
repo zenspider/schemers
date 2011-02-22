@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.79
 
@@ -10,5 +6,3 @@
 ;; Exercise 3-78:: so that it can be used to solve general
 ;; second-order differential equations d^2 y/dt^2 = f(dy/dt, y).
 
-;; (assert-equal x y)
-(done)

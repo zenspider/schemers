@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.55
 
@@ -11,5 +7,3 @@
 ;; S_0 + S_1, S_0 + S_1 + S_2, ....  For example, `(partial-sums
 ;; integers)' should be the stream 1, 3, 6, 10, 15, ....
 
-;; (assert-equal x y)
-(done)

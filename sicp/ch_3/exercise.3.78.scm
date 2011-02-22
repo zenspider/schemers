@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.78
 
@@ -23,5 +19,3 @@
 ;; values y_0 and dy_0 for y and dy/dt and generates the stream of
 ;; successive values of y.
 
-;; (assert-equal x y)
-(done)

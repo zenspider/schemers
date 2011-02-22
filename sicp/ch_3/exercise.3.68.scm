@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.68
 
@@ -21,5 +17,3 @@
 ;; Does this work?  Consider what happens if we evaluate `(pairs
 ;; integers integers)' using Louis's definition of `pairs'.
 
-;; (assert-equal x y)
-(done)

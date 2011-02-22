@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.59
 
@@ -61,5 +57,3 @@
 ;;           (define sine-series
 ;;             (cons-stream 0 <??>))
 
-;; (assert-equal x y)
-(done)

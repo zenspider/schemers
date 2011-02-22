@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.69
 
@@ -12,5 +8,3 @@
 ;; the stream of all Pythagorean triples of positive integers, i.e.,
 ;; the triples (i,j,k) such that i <= j and i^2 + j^2 = k^2.
 
-;; (assert-equal x y)
-(done)

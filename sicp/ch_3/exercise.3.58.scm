@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.58
 
@@ -18,5 +14,3 @@
 ;; integers.)  What are the successive elements produced by `(expand
 ;; 1 7 10)'?  What is produced by `(expand 3 8 10)'?
 
-;; (assert-equal x y)
-(done)

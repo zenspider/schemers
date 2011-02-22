@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.60
 
@@ -17,5 +13,3 @@
 ;; You can test your procedure by verifying that sin^2 x + cos^2 x =
 ;; 1, using the series from *Note Exercise 3-59::.
 
-;; (assert-equal x y)
-(done)

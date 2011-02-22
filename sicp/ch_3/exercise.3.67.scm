@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.67
 
@@ -11,5 +7,3 @@
 ;; integers (i,j) (without the condition i <= j).  Hint: You will
 ;; need to mix in an additional stream.
 
-;; (assert-equal x y)
-(done)

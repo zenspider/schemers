@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.66
 
@@ -14,5 +10,3 @@
 ;; all the better. But feel free to give more qualitative answers if
 ;; you find yourself getting bogged down.)
 
-;; (assert-equal x y)
-(done)

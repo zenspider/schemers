@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.61
 
@@ -23,5 +19,3 @@
 ;; computes 1/S for a power series S with constant term 1.  You will
 ;; need to use `mul-series' from *Note Exercise 3-60::.
 
-;; (assert-equal x y)
-(done)

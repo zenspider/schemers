@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.57
 
@@ -14,5 +10,3 @@
 ;; optimization provided by the `memo-proc' procedure described in
 ;; section *Note 3-5-1::.(5)
 
-;; (assert-equal x y)
-(done)

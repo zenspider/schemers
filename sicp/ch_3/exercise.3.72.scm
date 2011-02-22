@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.72
 
@@ -11,5 +7,3 @@
 ;; two squares in three different ways (showing how they can be so
 ;; written).
 
-;; (assert-equal x y)
-(done)

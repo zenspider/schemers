@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.64
 
@@ -16,5 +12,3 @@
 ;;      (define (sqrt x tolerance)
 ;;        (stream-limit (sqrt-stream x) tolerance))
 
-;; (assert-equal x y)
-(done)

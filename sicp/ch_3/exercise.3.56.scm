@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.56
 
@@ -52,5 +48,3 @@
 ;;
 ;; Fill in the missing expressions in the places marked <??> above.
 
-;; (assert-equal x y)
-(done)

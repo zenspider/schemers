@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.73
 
@@ -47,5 +43,3 @@
 ;;               +--------------+     +------------+      | _/
 ;;                                                        |/
 
-;; (assert-equal x y)
-(done)

@@ -1,8 +1,4 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(use test)
 
 ;;; Exercise 3.80
 
@@ -94,5 +90,3 @@
 ;; ohm, C = 0.2 farad, L = 1 henry, dt = 0.1 second, and initial values
 ;; i_(L_0) = 0 amps and v_(C_0) = 10 volts.
 
-;; (assert-equal x y)
-(done)

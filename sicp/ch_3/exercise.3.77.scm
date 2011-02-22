@@ -9,7 +9,7 @@
 ;; section *Note 3-5-2::):
 ;;
 ;;      (define (integral integrand initial-value dt)
-;;        (cons-stream initial-value
+;;        (stream-cons initial-value
 ;;                     (if (stream-null? integrand)
 ;;                         the-empty-stream
 ;;                         (integral (stream-cdr integrand)

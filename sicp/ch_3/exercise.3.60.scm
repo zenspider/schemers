@@ -8,7 +8,7 @@
 ;; following procedure for multiplying series:
 ;;
 ;;      (define (mul-series s1 s2)
-;;        (cons-stream <??> (add-streams <??> <??>)))
+;;        (stream-cons <??> (add-streams <??> <??>)))
 ;;
 ;; You can test your procedure by verifying that sin^2 x + cos^2 x =
 ;; 1, using the series from *Note Exercise 3-59::.

@@ -11,7 +11,7 @@
 ;; complete the following definition of the stream whose nth element
 ;; (counting from 0) is n + 1 factorial:
 ;;
-;;      (define factorials (cons-stream 1 (mul-streams <??> <??>)))
+;;      (define factorials (stream-cons 1 (mul-streams <??> <??>)))
 
 (define (stream-mul s1 s2)
   (stream-map * s1 s2))

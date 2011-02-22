@@ -1,5 +1,7 @@
 (module streams
-  (export stream-add
+  (export integers
+          ones
+          stream-add
           stream-car
           stream-cdr
           stream-cons
@@ -18,6 +20,10 @@
   (define-syntax stream-cons
     (syntax-rules ()
       ((stream-cons a b) (cons a (delay b)))))
+
+  (define ones     (stream-cons 1 ones))
+
+  (define integers (stream-cons 1 (stream-add ones integers)))
 
   (define (stream-add s1 s2)
     (stream-map + s1 s2))

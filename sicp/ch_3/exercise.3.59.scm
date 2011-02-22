@@ -1,4 +1,6 @@
 (use test)
+(require-library streams)
+(import streams)
 
 ;;; Exercise 3.59
 
@@ -38,22 +40,27 @@
 ;;      result has no constant term, it doesn't represent a power
 ;;      series; when we use `integrate-series', we will `cons' on the
 ;;      appropriate constant.)
-;;
+
+(define nths (stream-map (lambda (x) (/ 1 x)) integers))
+(define (integrate-series A)
+  (stream-mul nths A))
+
 ;;   b. The function x |-> e^x is its own derivative.  This implies
 ;;      that e^x and the integral of e^x are the same series, except
 ;;      for the constant term, which is e^0 = 1.  Accordingly, we can
 ;;      generate the series for e^x as
-;;
-;;           (define exp-series
-;;             (cons-stream 1 (integrate-series exp-series)))
-;;
+
+(define exp-series
+  (stream-cons 1 (integrate-series exp-series)))
+
 ;;      Show how to generate the series for sine and cosine, starting
 ;;      from the facts that the derivative of sine is cosine and the
 ;;      derivative of cosine is the negative of sine:
-;;
-;;           (define cosine-series
-;;             (cons-stream 1 <??>))
-;;
-;;           (define sine-series
-;;             (cons-stream 0 <??>))
 
+(define cosine-series
+  (stream-cons 1 (integrate-series sine-series)))
+
+(define sine-series
+  (stream-cons 0 (integrate-series (stream-map - cosine-series))))
+
+;; I have no clue how to write tests for this crap... *shrug*

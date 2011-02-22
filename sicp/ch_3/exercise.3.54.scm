@@ -16,9 +16,6 @@
 (define (stream-mul s1 s2)
   (stream-map * s1 s2))
 
-(define (integers-starting-from n)
-  (stream-cons n (integers-starting-from (+ n 1))))
-
 (define ones     (stream-cons 1 ones))
 (define integers (stream-cons 1 (stream-add ones integers)))
 

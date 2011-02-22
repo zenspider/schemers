@@ -26,8 +26,5 @@
 
 (test-group "3.55"
             (let ((numbers (partial-sums integers)))
-              (test (+ 1)         (stream-ref numbers 0))
-              (test (+ 1 2)       (stream-ref numbers 1))
-              (test (+ 1 2 3)     (stream-ref numbers 2))
-              (test (+ 1 2 3 4)   (stream-ref numbers 3))
-              (test (+ 1 2 3 4 5) (stream-ref numbers 4))))
+              (test '(1 3 6 10 15 21 28 36 45 55)
+                    (stream-head numbers 10))))

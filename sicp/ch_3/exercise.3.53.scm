@@ -4,8 +4,7 @@
 
 ;;; Exercise 3.53
 
-;; Without running the program, describe the elements of the stream
-;; defined by:
+;; Without running the program, describe the elements of the stream defined by:
 
 (define s (stream-cons 1 (stream-add s s)))
 

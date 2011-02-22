@@ -10,13 +10,14 @@
           stream-for-each
           stream-map
           stream-null?
-          stream-ref)
+          stream-ref
+          stream-scale)
 
   (import scheme chicken extras)
 
   (define-syntax stream-cons
     (syntax-rules ()
-      ((_ a b) (cons a (delay b)))))
+      ((stream-cons a b) (cons a (delay b)))))
 
   (define (stream-add s1 s2)
     (stream-map + s1 s2))
@@ -62,11 +63,19 @@
          (apply stream-map
                 (cons proc (map stream-cdr argstreams))))))
 
+  ;; (define (stream-map proc s)
+  ;;   (if (stream-null? s) the-empty-stream
+  ;;       (stream-cons (proc s)
+  ;;                    (stream-map proc (stream-cdr s)))))
+
   (define (stream-null? stream) (null? stream))
 
   (define (stream-ref s n)
     (if (= n 0)
         (stream-car s)
         (stream-ref (stream-cdr s) (- n 1))))
+
+  (define (stream-scale s n)
+    (stream-map (lambda (x) (* x n)) s))
 
   (define the-empty-stream '()))

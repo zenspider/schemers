@@ -1,4 +1,7 @@
 (use test)
+(require-library streams)
+(import streams)
+(use numbers)
 
 ;;; Exercise 3.64
 
@@ -12,3 +15,12 @@
 ;;      (define (sqrt x tolerance)
 ;;        (stream-limit (sqrt-stream x) tolerance))
 
+(define (stream-limit s delta)
+  (let ((s0 (stream-ref s 0))
+        (s1 (stream-ref s 1)))
+    (if (< (abs (- s1 s0)) delta) s1
+        (stream-limit (stream-cdr s) delta))))
+
+(define nths (stream-map (lambda (n) (/ 1 n)) integers))
+
+(test 1/33 (stream-limit nths 1/1000))

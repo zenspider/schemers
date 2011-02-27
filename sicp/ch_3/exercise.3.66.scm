@@ -42,10 +42,6 @@
 (test '(4 4) (stream-ref int-pairs (sum-of-powers-of-2 (- 4 1))))
 (test '(5 5) (stream-ref int-pairs (sum-of-powers-of-2 (- 5 1))))
 
-(display (sum-of-powers-of-2 (- 20 1)))
-
-;; (test '(20 20) (stream-ref int-pairs (sum-of-powers-of-2 (- 20 1))))
-
 ;; so:
 ;; (100 100) is at (+ 2^1 2^2 2^3 ... 2^99)
 ;; or (sum-of-powers-of-2 (- 100 1))

@@ -42,7 +42,7 @@
 (test '(4 4) (stream-ref int-pairs (sum-of-powers-of-2 (- 4 1))))
 (test '(5 5) (stream-ref int-pairs (sum-of-powers-of-2 (- 5 1))))
 
-(sum-of-powers-of-2 (- 20 1))
+(display (sum-of-powers-of-2 (- 20 1)))
 
 ;; (test '(20 20) (stream-ref int-pairs (sum-of-powers-of-2 (- 20 1))))
 

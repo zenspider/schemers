@@ -36,12 +36,15 @@
 (define (sum-of-powers-of-2 n)
   (apply + (map (lambda (x) (expt 2 x)) (stream-head integers n))))
 
-;; as shown, (5 5) is at 30:
 (test '(1 1) (stream-ref int-pairs (sum-of-powers-of-2 (- 1 1))))
 (test '(2 2) (stream-ref int-pairs (sum-of-powers-of-2 (- 2 1))))
 (test '(3 3) (stream-ref int-pairs (sum-of-powers-of-2 (- 3 1))))
 (test '(4 4) (stream-ref int-pairs (sum-of-powers-of-2 (- 4 1))))
 (test '(5 5) (stream-ref int-pairs (sum-of-powers-of-2 (- 5 1))))
+
+(sum-of-powers-of-2 (- 20 1))
+
+;; (test '(20 20) (stream-ref int-pairs (sum-of-powers-of-2 (- 20 1))))
 
 ;; so:
 ;; (100 100) is at (+ 2^1 2^2 2^3 ... 2^99)

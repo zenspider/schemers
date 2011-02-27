@@ -19,3 +19,4 @@
 ;; computes 1/S for a power series S with constant term 1.  You will
 ;; need to use `mul-series' from *Note Exercise 3-60::.
 
+;; todo: doubtful

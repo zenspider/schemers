@@ -1,4 +1,5 @@
 (use test)
+(use numbers)
 (require-library streams)
 (import streams)
 
@@ -40,6 +41,9 @@
 ;;      result has no constant term, it doesn't represent a power
 ;;      series; when we use `integrate-series', we will `cons' on the
 ;;      appropriate constant.)
+
+(define (stream-mul s1 s2)
+  (stream-map * s1 s2))
 
 (define nths (stream-map (lambda (x) (/ 1 x)) integers))
 (define (integrate-series A)

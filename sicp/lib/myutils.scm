@@ -1,7 +1,7 @@
 
 (module myutils *
 
-        (import scheme chicken testes data-structures)
+        (import scheme chicken data-structures)
 
         ;; (provide accumulate
         ;;          accumulate-n
@@ -13,6 +13,8 @@
         ;;          prime?
         ;;          sort-<
         ;;          square)
+
+        (define null '())
 
         (define (accumulate-n op init seqs)
           (if (null? (car seqs)) null

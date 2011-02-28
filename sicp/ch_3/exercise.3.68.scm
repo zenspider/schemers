@@ -20,17 +20,6 @@
    (stream-map (lambda (x) (list (stream-car s) x)) t)
    (pairs (stream-cdr s) (stream-cdr t))))
 
-#;(define (pairs s t)
-  (stream-cons (list (stream-car s) (stream-car t))
-               (interleave
-                (stream-map (lambda (x) (list (stream-car s) x)) (stream-cdr t))
-                (pairs (stream-cdr s) (stream-cdr t)))))
-
-(define (pairs s t)
-  (interleave
-   (stream-map (lambda (x) (list (stream-car s) x)) t)
-   (pairs (stream-cdr s) (stream-cdr t))))
-
 ;; Does this work? Consider what happens if we evaluate `(pairs
 ;; integers integers)' using Louis's definition of `pairs'.
 

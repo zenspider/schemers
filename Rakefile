@@ -67,17 +67,13 @@ task :split do
     y.gsub!(/\A\*\s+/, '')
 
     File.open path, "w" do |f|
-      f.puts "#lang racket"
-      f.puts ""
-      f.puts '(require "../lib/testes.rkt")'
-      f.puts '(require "../lib/utils.rkt")'
+      f.puts "#!/usr/bin/env csi -s"
+      f.puts
+      f.puts "(use test)"
       f.puts
       f.puts ";;; #{x}"
       f.puts
       f.puts ";; #{y}"
-      f.puts
-      f.puts ";; (assert-equal x y)"
-      f.puts "(done)"
     end
   end
 end

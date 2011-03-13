@@ -25,3 +25,33 @@
 ;; defining appropriate syntax procedures and evaluation procedures
 ;; `eval-and' and `eval-or'.  Alternatively, show how to implement
 ;; `and' and `or' as derived expressions.
+
+(require-library eval)
+(import eval)
+
+;; add the following to eval:
+
+;; ((and? exp) (eval-and (cdr exp) env))
+;; ((or?  exp) (eval-or  (cdr exp) env))
+
+;; or run the following:
+
+;; (def-set 'and (lambda (exp env) (eval-and exp env)))
+;; (def-set 'or  (lambda (exp env) (eval-or  exp env)))
+
+;; only necessary for non-data-driven eval:
+
+(define (and? exp) (tagged-list? 'and exp))
+(define (or? exp) (tagged-list? 'or exp))
+
+;; needed in both cases:
+
+(define (eval-and exp env)
+  (if (null? exp) #t
+      (and (eval     (car exp) env)
+           (eval-and (cdr exp) env))))
+
+(define (eval-or exp env)
+  (if (null? exp) #f
+      (or (eval    (car exp) env)
+          (eval-or (cdr exp) env))))

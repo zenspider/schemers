@@ -14,7 +14,11 @@
 ;;
 ;;   a. What is wrong with Louis's plan?  (Hint: What will Louis's
 ;;      evaluator do with the expression `(define x 3)'?)
-;;
+
+;; A: Besides the fact that he's an idiot? (application? exp) is
+;; defined as (pair? exp), which is true of definitions, so he'd break
+;; everything.
+
 ;;   b. Louis is upset that his plan didn't work.  He is willing to
 ;;      go to any lengths to make his evaluator recognize procedure
 ;;      applications before it checks for most other kinds of
@@ -23,3 +27,10 @@
 ;;      `call'.  For example, instead of `(factorial 3)' we will now
 ;;      have to write `(call factorial 3)' and instead of `(+ 1 2)'
 ;;      we will have to write `(call + 1 2)'.
+
+;; you only have to change the following:
+
+(define (application? exp) (tagged-list? exp 'call))
+(define operator cadr)
+(define operands cddr)
+

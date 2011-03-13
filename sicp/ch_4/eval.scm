@@ -60,7 +60,7 @@
   (define lambda-body         cddr)
   (define lambda-parameters   cadr)
   (define no-operands?        null?)
-  (define null                (quote ()))
+  (define null                '())
   (define operands            cdr)
   (define operator            car)
   (define rest-exps           cdr)
@@ -70,19 +70,19 @@
   ;; Support Functions (sorted):
 
   (define (assignment? exp)
-    (tagged-list? exp (quote set)))
+    (tagged-list? exp 'set))
 
   (define (begin? exp)
-    (tagged-list? exp (quote begin)))
+    (tagged-list? exp 'begin))
 
   (define (cond->if exp)
     (expand-clauses (cond-clauses exp)))
 
   (define (cond-else-clause? clause)
-    (eq? (cond-predicate clause) (quote else)))
+    (eq? (cond-predicate clause) 'else))
 
   (define (cond? exp)
-    (tagged-list? exp (quote cond)))
+    (tagged-list? exp 'cond))
 
   (define (definition-value exp)
     (if (symbol? (cadr exp))
@@ -96,19 +96,19 @@
         (caadr exp)))
 
   (define (definition? exp)
-    (tagged-list? exp (quote define)))
+    (tagged-list? exp 'define))
 
   (define (eval-assignment exp env)
     (set-variable-value! (assignment-variable exp)
                          (eval (assignment-value exp) env)
                          env)
-    (quote ok))
+    'ok)
 
   (define (eval-definition exp env)
     (define-variable! (definition-variable exp)
       (eval (definition-value exp) env)
       env)
-    (quote ok))
+    'ok)
 
   (define (eval-if exp env)
     (if (true? (eval (if-predicate exp) env))
@@ -121,7 +121,7 @@
                 (eval-sequence (rest-exps) env))))
 
   (define (expand-clauses clauses)
-    (if (null? clauses) (quote false)
+    (if (null? clauses) 'false
         (let ((first (car clauses))
               (rest  (cdr clauses)))
           (if (cond-else-clause? first)
@@ -135,13 +135,13 @@
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
         (cadddr exp)
-        (quote false)))
+        'false))
 
   (define (if? exp)
-    (tagged-list? exp (quote if)))
+    (tagged-list? exp 'if))
 
   (define (lambda? exp)
-    (tagged-list? exp (quote lambda)))
+    (tagged-list? exp 'lambda))
 
   (define (last-exp? seq)
     (null? (cdr seq)))
@@ -152,16 +152,16 @@
               (list-of-values (rest-operands exps) env))))
 
   (define (make-begin seq)
-    (cons (quote begin) seq))
+    (cons 'begin seq))
 
   (define (make-if predicate consequent alternative)
-    (list (quote if) predicate consequent alternative))
+    (list 'if predicate consequent alternative))
 
   (define (make-lambda parameters body)
-    (cons (quote lambda) (cons parameters body))) ;; TODO: list?
+    (cons 'lambda (cons parameters body))) ;; TODO: list?
 
   (define (quoted? exp)
-    (tagged-list? exp (quote quote)))
+    (tagged-list? exp 'quote))
 
   (define (self-evaluating? exp)
     (or (number? exp) (string? exp)))

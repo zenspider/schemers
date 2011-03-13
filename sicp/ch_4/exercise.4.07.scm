@@ -25,3 +25,27 @@
 ;;
 ;; or must we explicitly expand `let*' in terms of non-derived
 ;; expressions?
+
+(define let-params cadr)
+(define let-body   cddr)
+
+(define (let*->nested-lets exp)
+  (define (let*->let params body)
+    (if (null? (cdr params))
+        (append (list 'let (list (car params)))
+                body)
+        (list 'let (list (car params))
+              (let*->let (cdr params) body))))
+  (let*->let (let-params exp) (let-body exp)))
+
+(test '(let ((x 3))
+         (let ((y (+ x 2)))
+           (let ((z (+ x y 5)))
+             (* x z)
+             42)))
+
+      (let*->nested-lets '(let* ((x 3)
+                                 (y (+ x 2))
+                                 (z (+ x y 5)))
+                            (* x z)
+                            42)))

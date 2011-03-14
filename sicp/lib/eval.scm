@@ -213,7 +213,9 @@
     (cons 'begin seq))
 
   (define (make-if predicate consequent alternative)
-    (list 'if predicate consequent alternative))
+    (if alternative
+        (list 'if predicate consequent alternative)
+        (list 'if predicate consequent)))
 
   (define (make-lambda parameters body)
     (cons 'lambda (cons parameters body))) ;; TODO: list?

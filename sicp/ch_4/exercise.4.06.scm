@@ -22,13 +22,14 @@
 ;; the type shown above, and add the appropriate clause to `eval' to
 ;; handle `let' expressions.
 
+(define let-params cadr)
+(define let-body   cddr)
+
 (define (let-args exp)
-  (map car (cadr exp)))
+  (map car (let-params exp)))
 
 (define (let-vals exp)
-  (map cadr (cadr exp)))
-
-(define let-body cddr)
+  (map cadr (let-params exp)))
 
 (define (let->call args vals body)
   (append (list (append (list 'lambda args) body)) vals))

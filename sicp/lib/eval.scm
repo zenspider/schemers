@@ -70,7 +70,8 @@
    (only scheme
          caadr cadddr caddr cadr car cdadr cdddr cddr cdr cond cons
          define eq? if let list not null? number? or pair? quote
-         string? symbol?)
+         string? symbol?
+         < length = set-cdr! set-car!)
 
    (only chicken error))
 
@@ -110,9 +111,13 @@
   (define cond-actions        cdr)
   (define cond-clauses        cdr)
   (define cond-predicate      car)
+  (define enclosing-environment cdr)
   (define false               #f)
   (define first-exp           car)
+  (define first-frame           car)
   (define first-operand       car)
+  (define frame-values          cdr)
+  (define frame-variables       car)
   (define if-consequent       caddr)
   (define if-predicate        cadr)
   (define lambda-body         cddr)
@@ -121,9 +126,13 @@
   (define null                '())
   (define operands            cdr)
   (define operator            car)
+  (define procedure-body        caddr)
+  (define procedure-environment cadddr)
+  (define procedure-parameters  cadr)
   (define rest-exps           cdr)
   (define rest-operands       cdr)
   (define text-of-quotation   cadr)
+  (define the-empty-environment null)
 
   ;; Support Functions (sorted):
 
@@ -190,6 +199,15 @@
                        (sequence->exp (cond-actions first))
                        (expand-clauses rest))))))
 
+  (define (false? exp)
+    (eq? exp false))
+
+  (define (make-procedure params body env)
+    (list 'proc params body env))
+
+  (define (compound-procedure? exp)
+    (tagged-list? exp 'proc))
+
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
         (cadddr exp)
@@ -237,7 +255,65 @@
         (eq? (car exp) tag)
         false))
 
+  (define (true? exp)
+    (not (eq? exp false)))
+
   (define (variable? exp) (symbol? exp))
+
+  (define (make-frame vars vals)
+    (cons vars vals))
+
+  (define (add-binding-to-frame! var val frame)
+    (set-car! frame (cons var (car frame)))
+    (set-cdr! frame (cons val (cdr frame))))
+
+  (define (extend-environment vars vals base-env)
+    (if (= (length vars) (length vals))
+        (cons (make-frame vars vals) base-env)
+        (if (< (length vars) (length vals))
+            (error "Too many arguments supplied" vars vals)
+            (error "Too few arguments supplied"  vars vals))))
+
+  (define (lookup-variable-value var env)
+    (define (env-loop env)
+      (define (scan vars vals)
+        (cond ((null? vars)
+               (env-loop (enclosing-environment env)))
+              ((eq? var (car vars))
+               (car vals))
+              (else (scan (cdr vars) (cdr vals)))))
+      (if (eq? env the-empty-environment)
+          (error "Unbound variable" var)
+          (let ((frame (first-frame env)))
+            (scan (frame-variables frame)
+                  (frame-values frame)))))
+    (env-loop env))
+
+  (define (set-variable-value! var val env)
+    (define (env-loop env)
+      (define (scan vars vals)
+        (cond ((null? vars)
+               (env-loop (enclosing-environment env)))
+              ((eq? var (car vars))
+               (set-car! vals val))
+              (else (scan (cdr vars) (cdr vals)))))
+      (if (eq? env the-empty-environment)
+          (error "Unbound variable -- SET!" var)
+          (let ((frame (first-frame env)))
+            (scan (frame-variables frame)
+                  (frame-values frame)))))
+    (env-loop env))
+
+  (define (define-variable! var val env)
+    (let ((frame (first-frame env)))
+      (define (scan vars vals)
+        (cond ((null? vars)
+               (add-binding-to-frame! var val frame))
+              ((eq? var (car vars))
+               (set-car! vals val))
+              (else (scan (cdr vars) (cdr vals)))))
+      (scan (frame-variables frame)
+            (frame-values frame))))
 
   ;; Undefined Expressions
 
@@ -252,6 +328,5 @@
   (define (procedure-environment     exp) null)
   (define (procedure-parameters      exp) null)
   (define (set-variable-value!       exp) null)
-  (define (true?                     exp) null)
   )
 

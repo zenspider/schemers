@@ -12,4 +12,13 @@
 ;; to use this alternative representation.
 
 (test-group "4.11"
-    (test #f #t))
+    (let ((env (extend-environment '() '() the-empty-environment)))
+
+      (test `(proc (a b c) 42 ,env) (make-procedure '(a b c) 42 env))
+
+      (define-variable! 'a 42 env)
+      (test 42 (lookup-variable-value 'a env))
+
+      (set-variable-value! 'a 24 env)
+      (test 24 (lookup-variable-value 'a env))
+      ))

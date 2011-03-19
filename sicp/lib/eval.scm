@@ -2,8 +2,9 @@
 
 (module eval
 
-  (eval apply
+  (eval add-binding-to-frame!
         application?
+        apply
         apply-primitive-procedure
         assignment-value
         assignment-variable
@@ -58,8 +59,10 @@
         self-evaluating?
         sequence->exp
         set-variable-value!
+        set-variable-value!
         tagged-list?
         text-of-quotation
+        the-empty-environment
         true?
         variable?)
 
@@ -318,15 +321,6 @@
   ;; Undefined Expressions
 
   (define (apply-primitive-procedure proc args) null)
-  (define (compound-procedure?       exp) null)
-  (define (define-variable!          var val env) null)
-  (define (extend-environment        exp) null)
-  (define (lookup-variable-value     exp env) null)
-  (define (make-procedure            args body env) null)
   (define (primitive-procedure?      exp) null)
-  (define (procedure-body            exp) null)
-  (define (procedure-environment     exp) null)
-  (define (procedure-parameters      exp) null)
-  (define (set-variable-value!       exp) null)
   )
 

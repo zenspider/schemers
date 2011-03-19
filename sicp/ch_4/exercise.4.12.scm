@@ -1,6 +1,8 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(require-library eval)
+(import eval)
 
 ;;; Exercise 4.12
 

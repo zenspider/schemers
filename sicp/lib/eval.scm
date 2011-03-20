@@ -30,6 +30,8 @@
         expand-clauses
         extend-environment
         false
+        find-pair-in-env
+        find-pair-in-frame
         first-exp
         first-frame
         first-operand
@@ -40,7 +42,7 @@
         if-predicate
         if?
         lambda-body
-        lambda-parameters
+        lambda-params
         lambda?
         last-exp?
         list-of-values
@@ -60,7 +62,7 @@
         primitive-procedures
         procedure-body
         procedure-environment
-        procedure-parameters
+        procedure-params
         quoted?
         rest-exps
         rest-frames
@@ -98,7 +100,7 @@
           ((assignment?      exp) (eval-assignment exp env))
           ((definition?      exp) (eval-definition exp env))
           ((if?              exp) (eval-if exp env))
-          ((lambda?          exp) (make-procedure (lambda-parameters exp)
+          ((lambda?          exp) (make-procedure (lambda-params exp)
                                                   (lambda-body exp) env))
           ((begin?           exp) (eval-sequence (begin-actions exp) env))
           ((cond?            exp) (eval (cond->if exp) env))
@@ -113,7 +115,7 @@
            (apply-primitive-procedure proc args))
           ((compound-procedure? proc)
            (eval-sequence (procedure-body proc)
-                          (extend-environment (procedure-parameters proc)
+                          (extend-environment (procedure-params proc)
                                               args
                                               (procedure-environment proc))))
           (else
@@ -138,7 +140,7 @@
   (define if-consequent            caddr)
   (define if-predicate             cadr)
   (define lambda-body              cddr)
-  (define lambda-parameters        cadr)
+  (define lambda-params            cadr)
   (define no-operands?             null?)
   (define null                     '())
   (define operands                 cdr)
@@ -146,7 +148,7 @@
   (define primitive-implementation cadr)
   (define procedure-body           caddr)
   (define procedure-environment    cadddr)
-  (define procedure-parameters     cadr)
+  (define procedure-params         cadr)
   (define rest-exps                cdr)
   (define rest-frames              cdr)
   (define rest-operands            cdr)
@@ -305,8 +307,8 @@
         (list 'if predicate consequent alternative)
         (list 'if predicate consequent)))
 
-  (define (make-lambda parameters body)
-    (cons 'lambda (cons parameters body))) ;; TODO: list?
+  (define (make-lambda params body)
+    (list 'lambda params body))
 
   (define (make-procedure params body env)
     (list 'proc params body env))

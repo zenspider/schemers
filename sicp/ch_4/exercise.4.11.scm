@@ -78,8 +78,6 @@
       (test '(b 24)  (find-pair-in-env '(((a 42) (b 24)) ((c 314))) 'b))
       (test '(c 314) (find-pair-in-env '(((a 42) (b 24)) ((c 314))) 'c))
 
-      ;; TODO: test with multiple frames
-
       (define-variable! 'c 42 env)
       (define-variable! 'd 24 env)
 

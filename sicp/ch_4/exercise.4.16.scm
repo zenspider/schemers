@@ -20,4 +20,5 @@
 ;;
 ;;   c. Install `scan-out-defines' in the interpreter, either in
 ;;      `make-procedure' or in `procedure-body' (see section *Note
-;;      4-1-3::). Which place is better? Why?
+;;      4-1-3::).  Which place is better?  Why?
+

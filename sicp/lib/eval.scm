@@ -30,7 +30,10 @@
         extend-environment
         false
         first-exp
+        first-frame
         first-operand
+        frame-values
+        frame-variables
         if-alternative
         if-consequent
         if-predicate
@@ -42,6 +45,7 @@
         list-of-values
         lookup-variable-value
         make-begin
+        make-frame
         make-if
         make-lambda
         make-procedure

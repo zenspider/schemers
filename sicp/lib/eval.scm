@@ -80,13 +80,16 @@
   (import
 
    (only scheme
-         * + - / < = and caadr cadddr caddr cadr car cdadr cdddr cddr cdr
+         * + - / < = and caadr caar cadddr caddr cadr car cdadr cdddr cddr cdr
          cond cons define eq? if lambda length let list map not null?
          number? or pair? quote set-car! set-cdr! string? symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
-   (only chicken error))
+   (only srfi-1 zip)
+   (only chicken error use))
+
+  (use srfi-1)
 
   (define (eval exp env)
     (cond ((self-evaluating? exp) exp)
@@ -167,8 +170,8 @@
   ;; Support Functions (sorted):
 
   (define (add-binding-to-frame! var val frame)
-    (set-car! frame (cons var (car frame)))
-    (set-cdr! frame (cons val (cdr frame))))
+    (set-cdr! frame (cons (car frame) (cdr frame)))
+    (set-car! frame (list var val)))
 
   (define (apply-primitive-procedure proc args)
     (scheme-apply (primitive-implementation proc) args))
@@ -192,15 +195,10 @@
     (tagged-list? exp 'cond))
 
   (define (define-variable! var val env)
-    (let ((frame (first-frame env)))
-      (define (scan vars vals)
-        (cond ((null? vars)
-               (add-binding-to-frame! var val frame))
-              ((eq? var (car vars))
-               (set-car! vals val))
-              (else (scan (cdr vars) (cdr vals)))))
-      (scan (frame-variables frame)
-            (frame-values frame))))
+    (let ((pair (find-pair-in-frame (first-frame env) var)))
+      (if (null? pair)
+          (add-binding-to-frame! var val (first-frame env))
+          (set-cdr! pair (list val)))))
 
   (define (definition-value exp)
     (if (symbol? (cadr exp))
@@ -260,6 +258,17 @@
   (define (false? exp)
     (eq? exp false))
 
+  (define (find-pair-in-env env var)
+    (if (eq? env the-empty-environment) null
+        (let ((pair (find-pair-in-frame (first-frame env) var)))
+          (if (null? pair) (find-pair-in-env (rest-frames env) var)
+              pair))))
+
+  (define (find-pair-in-frame frame var)
+    (cond ((null? frame)          null)
+          ((eq? var (caar frame)) (car frame))
+          (else (find-pair-in-frame (cdr frame) var))))
+
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
         (cadddr exp)
@@ -280,25 +289,16 @@
               (list-of-values (rest-operands exps) env))))
 
   (define (lookup-variable-value var env)
-    (define (env-loop env)
-      (define (scan vars vals)
-        (cond ((null? vars)
-               (env-loop (enclosing-environment env)))
-              ((eq? var (car vars))
-               (car vals))
-              (else (scan (cdr vars) (cdr vals)))))
-      (if (eq? env the-empty-environment)
+    (let ((pair (find-pair-in-env env var)))
+      (if (null? pair)
           (error "Unbound variable" var)
-          (let ((frame (first-frame env)))
-            (scan (frame-variables frame)
-                  (frame-values frame)))))
-    (env-loop env))
+          (cadr pair))))
 
   (define (make-begin seq)
     (cons 'begin seq))
 
   (define (make-frame vars vals)
-    (cons vars vals))
+    (zip vars vals))
 
   (define (make-if predicate consequent alternative)
     (if alternative
@@ -332,19 +332,10 @@
           (else (make-begin seq))))
 
   (define (set-variable-value! var val env)
-    (define (env-loop env)
-      (define (scan vars vals)
-        (cond ((null? vars)
-               (env-loop (enclosing-environment env)))
-              ((eq? var (car vars))
-               (set-car! vals val))
-              (else (scan (cdr vars) (cdr vals)))))
-      (if (eq? env the-empty-environment)
+    (let ((pair (find-pair-in-env env var)))
+      (if (null? pair)
           (error "Unbound variable -- SET!" var)
-          (let ((frame (first-frame env)))
-            (scan (frame-variables frame)
-                  (frame-values frame)))))
-    (env-loop env))
+          (set-cdr! pair (list val)))))
 
   (define (setup-environment)
     (let ((initial-env (extend-environment (primitive-procedure-names)

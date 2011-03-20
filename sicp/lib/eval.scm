@@ -22,6 +22,7 @@
         definition-value
         definition-variable
         definition?
+        enclosing-environment
         eval-assignment
         eval-definition
         eval-if
@@ -59,6 +60,7 @@
         procedure-parameters
         quoted?
         rest-exps
+        rest-frames
         rest-operands
         self-evaluating?
         sequence->exp
@@ -137,6 +139,7 @@
   (define procedure-environment cadddr)
   (define procedure-parameters  cadr)
   (define rest-exps           cdr)
+  (define rest-frames         cdr)
   (define rest-operands       cdr)
   (define text-of-quotation   cadr)
   (define the-empty-environment null)

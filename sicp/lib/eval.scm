@@ -80,10 +80,9 @@
   (import
 
    (only scheme
-         caadr cadddr caddr cadr car cdadr cdddr cddr cdr cond cons
-         define eq? if let list not null? number? or pair? quote
-         string? symbol?
-         < length = set-cdr! set-car! lambda map)
+         * + - / < = and caadr cadddr caddr cadr car cdadr cdddr cddr cdr
+         cond cons define eq? if lambda length let list map not null?
+         number? or pair? quote set-car! set-cdr! string? symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
@@ -151,6 +150,19 @@
   (define text-of-quotation        cadr)
   (define the-empty-environment    null)
   (define true                     #t)
+
+  ;; Other Values:
+
+  (define primitive-procedures
+    (list (list '*     *)
+          (list '+     +)
+          (list '-     -)
+          (list '/     /)
+          (list '=     =)
+          (list 'car   car)
+          (list 'cdr   cdr)
+          (list 'cons  cons)
+          (list 'null? null?)))
 
   ;; Support Functions (sorted):
 
@@ -352,10 +364,5 @@
 
   (define (variable? exp) (symbol? exp))
 
-  (define primitive-procedures
-    (list (list 'car car)
-          (list 'cdr cdr)
-          (list 'cons cons)
-          (list 'null? null?)))
   )
 

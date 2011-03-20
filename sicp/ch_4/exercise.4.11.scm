@@ -14,27 +14,9 @@
 (define (make-frame vars vals)
   (zip vars vals))
 
-(define (frame-variables frame) (map car frame))
-(define (frame-values    frame) (map cadr frame))
-
 (define (add-binding-to-frame! var val frame)
   (set-cdr! frame (cons (car frame) (cdr frame)))
   (set-car! frame (list var val)))
-
-(define (set-variable-value! var val env)
-  (define (env-loop env)
-    (define (scan vars vals)
-      (cond ((null? vars)
-             (env-loop (enclosing-environment env)))
-            ((eq? var (car vars))
-             (set-car! vals val))
-            (else (scan (cdr vars) (cdr vals)))))
-    (if (eq? env the-empty-environment)
-        (error "Unbound variable -- SET!" var)
-        (let ((frame (first-frame env)))
-          (scan (frame-variables frame)
-                (frame-values frame)))))
-  (env-loop env))
 
 ;; This is fucking stupid. This is the result of having a poor data
 ;; structure to begin with coupled with a poorly thought out
@@ -85,9 +67,6 @@
       (test '(((a 42) (b 24))) (identity env))
       (add-binding-to-frame! 'c 314 (first-frame env))
       (test '(((c 314) (a 42) (b 24))) (identity env))
-
-      (test '(a b)   (frame-variables '((a 42) (b 24))))
-      (test '(42 24) (frame-values    '((a 42) (b 24))))
 
       (test '(a 42) (find-pair-in-frame (first-frame env) 'a))
       (test null    (find-pair-in-frame (first-frame env) 'z))

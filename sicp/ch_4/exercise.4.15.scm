@@ -25,3 +25,7 @@
 ;; Now consider evaluating the expression `(try try)' and show that
 ;; any possible outcome (either halting or running forever) violates
 ;; the intended behavior of `halts?'.(5)
+
+;; A:
+;; (halts try) => #t => (run-forever) => contradiction
+;; (halts try) => #f => 'halted       => contradiction

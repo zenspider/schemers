@@ -20,6 +20,8 @@
 (require-library eval)
 (import eval)
 
+(use srfi-1)
+
 (define (cond-actions exp) (delete '=> (cdr exp)))
 
 (test '(if 1 2 (if 3 4 5))

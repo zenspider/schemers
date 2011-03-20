@@ -54,7 +54,10 @@
         null
         operands
         operator
+        primitive-procedure-names
+        primitive-procedure-objects
         primitive-procedure?
+        primitive-procedures
         procedure-body
         procedure-environment
         procedure-parameters
@@ -66,21 +69,23 @@
         sequence->exp
         set-variable-value!
         set-variable-value!
+        setup-environment
         tagged-list?
         text-of-quotation
         the-empty-environment
+        true
         true?
         variable?)
 
   (import
 
-   ;; (import (prefix (only scheme define) foo-))
-
    (only scheme
          caadr cadddr caddr cadr car cdadr cdddr cddr cdr cond cons
          define eq? if let list not null? number? or pair? quote
          string? symbol?
-         < length = set-cdr! set-car!)
+         < length = set-cdr! set-car! lambda map)
+
+   (prefix (only scheme apply) scheme-) ; scheme-apply
 
    (only chicken error))
 
@@ -97,60 +102,73 @@
           ((cond?            exp) (eval (cond->if exp) env))
           ((application?     exp) (apply (eval (operator exp) env)
                                          (list-of-values (operands exp) env)))
+          ((eq? #!eof exp) 'done)
           (else
            (error "Unknown expression type -- EVAL" exp))))
 
-  (define (apply procedure arguments)
-    (cond ((primitive-procedure? procedure)
-           (apply-primitive-procedure procedure arguments))
-          ((compound-procedure? procedure)
-           (eval-sequence (procedure-body procedure)
-                          (extend-environment (procedure-parameters procedure)
-                                              arguments
-                                              (procedure-environment procedure))))
+  (define (apply proc args)
+    (cond ((primitive-procedure? proc)
+           (apply-primitive-procedure proc args))
+          ((compound-procedure? proc)
+           (eval-sequence (procedure-body proc)
+                          (extend-environment (procedure-parameters proc)
+                                              args
+                                              (procedure-environment proc))))
           (else
-           (error "Unknown procedure type -- APPLY" procedure))))
+           (error "Unknown procedure type -- APPLY" proc))))
 
   ;; Simple Aliases:
 
-  (define application?        pair?)
-  (define assignment-value    caddr)
-  (define assignment-variable cadr)
-  (define begin-actions       cdr)
-  (define cond-actions        cdr)
-  (define cond-clauses        cdr)
-  (define cond-predicate      car)
-  (define enclosing-environment cdr)
-  (define false               #f)
-  (define first-exp           car)
-  (define first-frame           car)
-  (define first-operand       car)
-  (define frame-values          cdr)
-  (define frame-variables       car)
-  (define if-consequent       caddr)
-  (define if-predicate        cadr)
-  (define lambda-body         cddr)
-  (define lambda-parameters   cadr)
-  (define no-operands?        null?)
-  (define null                '())
-  (define operands            cdr)
-  (define operator            car)
-  (define procedure-body        caddr)
-  (define procedure-environment cadddr)
-  (define procedure-parameters  cadr)
-  (define rest-exps           cdr)
-  (define rest-frames         cdr)
-  (define rest-operands       cdr)
-  (define text-of-quotation   cadr)
-  (define the-empty-environment null)
+  (define application?             pair?)
+  (define assignment-value         caddr)
+  (define assignment-variable      cadr)
+  (define begin-actions            cdr)
+  (define cond-actions             cdr)
+  (define cond-clauses             cdr)
+  (define cond-predicate           car)
+  (define enclosing-environment    cdr)
+  (define false                    #f)
+  (define first-exp                car)
+  (define first-frame              car)
+  (define first-operand            car)
+  (define frame-values             cdr)
+  (define frame-variables          car)
+  (define if-consequent            caddr)
+  (define if-predicate             cadr)
+  (define lambda-body              cddr)
+  (define lambda-parameters        cadr)
+  (define no-operands?             null?)
+  (define null                     '())
+  (define operands                 cdr)
+  (define operator                 car)
+  (define primitive-implementation cadr)
+  (define procedure-body           caddr)
+  (define procedure-environment    cadddr)
+  (define procedure-parameters     cadr)
+  (define rest-exps                cdr)
+  (define rest-frames              cdr)
+  (define rest-operands            cdr)
+  (define text-of-quotation        cadr)
+  (define the-empty-environment    null)
+  (define true                     #t)
 
   ;; Support Functions (sorted):
+
+  (define (add-binding-to-frame! var val frame)
+    (set-car! frame (cons var (car frame)))
+    (set-cdr! frame (cons val (cdr frame))))
+
+  (define (apply-primitive-procedure proc args)
+    (scheme-apply (primitive-implementation proc) args))
 
   (define (assignment? exp)
     (tagged-list? exp 'set))
 
   (define (begin? exp)
     (tagged-list? exp 'begin))
+
+  (define (compound-procedure? exp)
+    (tagged-list? exp 'proc))
 
   (define (cond->if exp)
     (expand-clauses (cond-clauses exp)))
@@ -160,6 +178,17 @@
 
   (define (cond? exp)
     (tagged-list? exp 'cond))
+
+  (define (define-variable! var val env)
+    (let ((frame (first-frame env)))
+      (define (scan vars vals)
+        (cond ((null? vars)
+               (add-binding-to-frame! var val frame))
+              ((eq? var (car vars))
+               (set-car! vals val))
+              (else (scan (cdr vars) (cdr vals)))))
+      (scan (frame-variables frame)
+            (frame-values frame))))
 
   (define (definition-value exp)
     (if (symbol? (cadr exp))
@@ -209,14 +238,15 @@
                        (sequence->exp (cond-actions first))
                        (expand-clauses rest))))))
 
+  (define (extend-environment vars vals base-env)
+    (if (= (length vars) (length vals))
+        (cons (make-frame vars vals) base-env)
+        (if (< (length vars) (length vals))
+            (error "Too many arguments supplied" vars vals)
+            (error "Too few arguments supplied"  vars vals))))
+
   (define (false? exp)
     (eq? exp false))
-
-  (define (make-procedure params body env)
-    (list 'proc params body env))
-
-  (define (compound-procedure? exp)
-    (tagged-list? exp 'proc))
 
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
@@ -237,53 +267,6 @@
         (cons (eval (first-operand exps) env)
               (list-of-values (rest-operands exps) env))))
 
-  (define (make-begin seq)
-    (cons 'begin seq))
-
-  (define (make-if predicate consequent alternative)
-    (if alternative
-        (list 'if predicate consequent alternative)
-        (list 'if predicate consequent)))
-
-  (define (make-lambda parameters body)
-    (cons 'lambda (cons parameters body))) ;; TODO: list?
-
-  (define (quoted? exp)
-    (tagged-list? exp 'quote))
-
-  (define (self-evaluating? exp)
-    (or (number? exp) (string? exp)))
-
-  (define (sequence->exp seq)
-    (cond ((null? seq) seq)
-          ((last-exp? seq)
-           (first-exp seq))
-          (else (make-begin seq))))
-
-  (define (tagged-list? exp tag)
-    (if (pair? exp)
-        (eq? (car exp) tag)
-        false))
-
-  (define (true? exp)
-    (not (eq? exp false)))
-
-  (define (variable? exp) (symbol? exp))
-
-  (define (make-frame vars vals)
-    (cons vars vals))
-
-  (define (add-binding-to-frame! var val frame)
-    (set-car! frame (cons var (car frame)))
-    (set-cdr! frame (cons val (cdr frame))))
-
-  (define (extend-environment vars vals base-env)
-    (if (= (length vars) (length vals))
-        (cons (make-frame vars vals) base-env)
-        (if (< (length vars) (length vals))
-            (error "Too many arguments supplied" vars vals)
-            (error "Too few arguments supplied"  vars vals))))
-
   (define (lookup-variable-value var env)
     (define (env-loop env)
       (define (scan vars vals)
@@ -298,6 +281,43 @@
             (scan (frame-variables frame)
                   (frame-values frame)))))
     (env-loop env))
+
+  (define (make-begin seq)
+    (cons 'begin seq))
+
+  (define (make-frame vars vals)
+    (cons vars vals))
+
+  (define (make-if predicate consequent alternative)
+    (if alternative
+        (list 'if predicate consequent alternative)
+        (list 'if predicate consequent)))
+
+  (define (make-lambda parameters body)
+    (cons 'lambda (cons parameters body))) ;; TODO: list?
+
+  (define (make-procedure params body env)
+    (list 'proc params body env))
+
+  (define (primitive-procedure-names)   (map car primitive-procedures))
+
+  (define (primitive-procedure-objects)
+    (map (lambda (x) (list 'prim (cadr x))) primitive-procedures))
+
+  (define (primitive-procedure? exp)
+    (tagged-list? exp 'prim))
+
+  (define (quoted? exp)
+    (tagged-list? exp 'quote))
+
+  (define (self-evaluating? exp)
+    (or (number? exp) (string? exp)))
+
+  (define (sequence->exp seq)
+    (cond ((null? seq) seq)
+          ((last-exp? seq)
+           (first-exp seq))
+          (else (make-begin seq))))
 
   (define (set-variable-value! var val env)
     (define (env-loop env)
@@ -314,20 +334,28 @@
                   (frame-values frame)))))
     (env-loop env))
 
-  (define (define-variable! var val env)
-    (let ((frame (first-frame env)))
-      (define (scan vars vals)
-        (cond ((null? vars)
-               (add-binding-to-frame! var val frame))
-              ((eq? var (car vars))
-               (set-car! vals val))
-              (else (scan (cdr vars) (cdr vals)))))
-      (scan (frame-variables frame)
-            (frame-values frame))))
+  (define (setup-environment)
+    (let ((initial-env (extend-environment (primitive-procedure-names)
+                                           (primitive-procedure-objects)
+                                           the-empty-environment)))
+      (define-variable! 'true true initial-env)
+      (define-variable! 'false false initial-env)
+      initial-env))
 
-  ;; Undefined Expressions
+  (define (tagged-list? exp tag)
+    (if (pair? exp)
+        (eq? (car exp) tag)
+        false))
 
-  (define (apply-primitive-procedure proc args) null)
-  (define (primitive-procedure?      exp) null)
+  (define (true? exp)
+    (not (eq? exp false)))
+
+  (define (variable? exp) (symbol? exp))
+
+  (define primitive-procedures
+    (list (list 'car car)
+          (list 'cdr cdr)
+          (list 'cons cons)
+          (list 'null? null?)))
   )
 

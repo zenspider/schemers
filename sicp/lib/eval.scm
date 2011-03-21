@@ -82,16 +82,16 @@
   (import
 
    (only scheme
-         * + - / < = and caadr caar cadddr caddr cadr car cdadr cdddr cddr cdr
-         cond cons define eq? if lambda length let list map not null?
-         number? or pair? quote set-car! set-cdr! string? symbol?)
+         * + - / < = and append caadr caar cadddr caddr cadr car cdadr
+         cdddr cddr cdr cond cons define eq? if lambda length let list
+         map not null? number? or pair? quote set-car! set-cdr! string?
+         symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
-   (only srfi-1 zip)
    (only chicken error use))
 
-  (use srfi-1)
+  (use (only srfi-1 zip))
 
   (define (eval exp env)
     (cond ((self-evaluating? exp) exp)
@@ -308,7 +308,7 @@
         (list 'if predicate consequent)))
 
   (define (make-lambda params body)
-    (list 'lambda params body))
+    (append (list 'lambda params) body))
 
   (define (make-procedure params body env)
     (list 'proc params body env))

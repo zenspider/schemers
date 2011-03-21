@@ -35,13 +35,17 @@
                    (make-begin (append body (list (list tmp))))
                    #f))))
 
-(test '(for-each (lambda (i) body1 body2) list)
-      (for->for-each '(for i in list body1 body2)))
+(test-group "4.09"
+  (test '(lambda (a b c) (e1) (e2) (e3))
+        (make-lambda '(a b c) '((e1) (e2) (e3))))
 
-(test '(let temp1 ()
-         (if (tst)
-             (begin
-              body1
-              body2
-              (temp1))))
-      (while->named-let '(while tst do body1 body2)))
+  (test '(for-each (lambda (i) body1 body2) list)
+        (for->for-each '(for i in list body1 body2)))
+
+  (test '(let temp1 ()
+           (if (tst)
+               (begin
+                 body1
+                 body2
+                 (temp1))))
+        (while->named-let '(while tst do body1 body2))))

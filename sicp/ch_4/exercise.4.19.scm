@@ -32,3 +32,18 @@
 ;; be 15, and the result should be 20.  Which (if any) of these
 ;; viewpoints do you support?  Can you devise a way to implement
 ;; internal definitions so that they behave as Eva prefers?(3)
+
+;; A: In order to support mutual recursion and for cleaner, more
+;;    consistent semantics, I prefer Eva's preference: simultaneous
+;;    definition. I find it conceptually cleaner. I'm not sure how to
+;;    implement it, except maybe by making the application lazy so
+;;    that b isn't truly defined until it is used. Futures could do
+;;    this well I guess. But I think you could probably do this via
+;;    transformation alone. Eg:
+
+;; (let ((a 1))
+;;   (define (f x)
+;;     (letrec ((b (lambda () (+ a x)))
+;;              (a 5))
+;;       (+ a (b))))
+;;   (f 10))

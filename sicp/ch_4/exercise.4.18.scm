@@ -27,6 +27,13 @@
 ;;        (define dy (stream-map f y))
 ;;        y)
 ;;
-;; Will this procedure work if internal definitions are scanned out
-;; as shown in this exercise?  What if they are scanned out as shown
-;; in the text?  Explain.
+;; Will this procedure work if internal definitions are scanned out as
+;; shown in this exercise?
+
+;; A: Yes, it should work fine this way or with the letrec. They
+;;    should be entirely equivalent.
+
+;; What if they are scanned out as shown in the text? Explain.
+
+;; A: AFAIK, that is entirely dependent upon the implementation of the
+;; scheme you're using, as described in footnote 2.

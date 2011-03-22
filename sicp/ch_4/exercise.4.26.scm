@@ -15,3 +15,5 @@
 ;; and give an example of a situation where it might be useful to
 ;; have `unless' available as a procedure, rather than as a special
 ;; form.
+
+;; discussed in seminar

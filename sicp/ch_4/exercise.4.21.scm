@@ -25,6 +25,30 @@
 ;;   a. Check (by evaluating the expression) that this really does
 ;;      compute factorials.  Devise an analogous expression for
 ;;      computing Fibonacci numbers.
+
+;;     ;;; M-Eval input:
+;;      ((lambda (n)
+;;         ((lambda (fact)
+;;            (fact fact n))
+;;          (lambda (ft k)
+;;            (if (= k 1)
+;;                1
+;;                (* k (ft ft (- k 1)))))))
+;;       10)
+;;
+;;     ;;; M-Eval value:
+;;     3628800
+;;
+;;     ;;; M-Eval input:
+;;     (* 10 9 8 7 6 5 4 3 2 1)
+;;
+;;     ;;; M-Eval value:
+;;     3628800
+
+;; (holy shit!)
+
+
+
 ;;
 ;;   b. Consider the following procedure, which includes mutually
 ;;      recursive internal definitions:

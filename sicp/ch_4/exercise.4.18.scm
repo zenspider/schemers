@@ -33,7 +33,11 @@
 ;; A: Yes, it should work fine this way or with the letrec. They
 ;;    should be entirely equivalent.
 
+;; FALSE: according to aja, this does NOT work because let isn't
+;; simultaneous and the inner let a/b winds up using undefined values
+;; in their definitions.
+
 ;; What if they are scanned out as shown in the text? Explain.
 
 ;; A: AFAIK, that is entirely dependent upon the implementation of the
-;; scheme you're using, as described in footnote 2.
+;; scheme you're using, as described in footnote 25.

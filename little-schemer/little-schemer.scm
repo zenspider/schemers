@@ -1075,7 +1075,7 @@
 (test '(shrimp salad and salad) ((rember-f eq?) 'tuna
                                          '(shrimp salad and tuna salad)))
 
-;; pg 130
+;; pg 130-133
 
 (test '(equal? eqan? eqlist? eqpair?)
               ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? eqpair?)))
@@ -1096,7 +1096,68 @@
 
 (test '(a b c z d e)       ((insertR-f eq?) 'z 'c '(a b c d e)))
 (test '(a b c d e f g d h) ((insertR-f eq?) 'e 'd '(a b c d f g d h)))
-(test '(a b z c d e)
-              ((insertL-f eq?) 'z 'c '(a b c d e)))
-(test '(a b c e d f g d h)
-              ((insertL-f eq?) 'e 'd '(a b c d f g d h)))
+(test '(a b z c d e)       ((insertL-f eq?) 'z 'c '(a b c d e)))
+(test '(a b c e d f g d h) ((insertL-f eq?) 'e 'd '(a b c d f g d h)))
+
+(define insertX-f
+  (lambda (match!)
+    (lambda (test?)
+      (lambda (new old lat)
+        (cond ((null? lat) '())
+              ((test? (car lat) old) (match! new old (cdr lat)))
+              (else (cons (car lat)
+                          (((insertX-f match!) test?) new old (cdr lat)))))))))
+
+(define seqR (lambda (new old l) (cons old (cons new l))))
+(define seqL (lambda (new old l) (cons new (cons old l))))
+
+(define insertR-fm (insertX-f seqR))
+(define insertL-fm (insertX-f seqL))
+
+(test '(a b c z d e)       ((insertR-fm eq?) 'z 'c '(a b c d e)))
+(test '(a b c d e f g d h) ((insertR-fm eq?) 'e 'd '(a b c d f g d h)))
+(test '(a b z c d e)       ((insertL-fm eq?) 'z 'c '(a b c d e)))
+(test '(a b c e d f g d h) ((insertL-fm eq?) 'e 'd '(a b c d f g d h)))
+
+;; pg 134-135
+
+(define atom-to-function
+  (lambda (x)
+    (cond ((eq? x '+) +)
+          ((eq? x '*) *)
+          (else **))))
+
+(define value
+  (lambda (exp)
+    (cond
+     ((atom? exp) exp)
+     (else
+      ((atom-to-function (operator exp))
+       (value (1st-sub-exp exp))
+       (value (2nd-sub-exp exp)))))))
+
+(test #t (eq? 4 (value '(+ 1 3))))
+(test #t (eq? 13 (value '(+ 1 (* 3 4)))))
+
+(define multirember-f
+  (lambda (test?)
+    (lambda (a lat)
+      (cond ((null? lat) '())
+            ((test? (car lat) a)  ((multirember-f test?) a (cdr lat)))
+            (else (cons (car lat) ((multirember-f test?) a (cdr lat))))))))
+
+(test '(a c d e) (multirember 'b '(b a b c b d b e b)))
+
+;; pg 137
+
+(define multirember&co
+  (lambda (a lat col)
+    (cond ((null? lat) (col null null))
+          ((eq? (car lat) a)
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (col newlat (cons (car lat) seen)))))
+          (else
+           (multirember&co a (cdr lat)
+                           (lambda (newlat seen)
+                             (col (cons (car lat) newlat) seen)))))))

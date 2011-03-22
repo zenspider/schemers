@@ -15,3 +15,15 @@
 ;;
 ;; What happens if we attempt to evaluate `(factorial 5)'?  Will our
 ;; definitions work in a normal-order language?
+
+;; (define (unless. t a b)
+;;   (if (not t) a b))
+;;
+;; (define (factorial n)
+;;   (unless. (= n 1)
+;;     (* n (factorial (- n 1)))
+;;     1))
+;;
+;; (factorial 5)
+
+;; ...infinite loop... but we knew that from chapter 1. what's the point?

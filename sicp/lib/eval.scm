@@ -77,7 +77,8 @@
         the-empty-environment
         true
         true?
-        variable?)
+        variable?
+        )
 
   (import
 
@@ -358,4 +359,3 @@
   (define (variable? exp) (symbol? exp))
 
   )
-

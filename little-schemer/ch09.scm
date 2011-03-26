@@ -273,13 +273,31 @@
 
 (test-length "meta6-length" meta6-length meta6-length meta6-length)
 
-;; extract out Y combinator
+;; raw Y combinator... a tad opaque... try to clean up
+(define (Y outer)
+  ((lambda (f) (f f))
+   (lambda (f) (outer (lambda (x) ((f f) x))))))
 
-(define Y
-  (lambda (le)
-     ((lambda (f) (f f))
-      (lambda (f)
-        (le (lambda (x) ((f f) x)))))))
+;; extract arg to outer as apply
+(define (Y outer)
+  ((lambda (f) (f f))
+   (lambda (f)
+     (define (apply x) ((f f) x))
+     (outer apply))))
+
+;; extract all of innards as call
+(define (Y outer)
+  (define (call f)
+    (define (apply x) ((f f) x))
+    (outer apply))
+  ((lambda (f) (f f)) call))
+
+;; apply call to lambda-f
+(define (Y outer)
+  (define (call f)
+    (define (apply x) ((f f) x))
+    (outer apply))
+  (call call))
 
 (define meta7-length
   (Y
@@ -289,4 +307,28 @@
              (else (add1 (length (cdr l)))))))))
 
 (test-length "meta7-length" meta7-length meta7-length meta7-length)
+(test 10 (meta7-length '(a b c d e f g h i j)))
 
+;;    (define (f x)           ...)
+;;    (define  f  (lambda (x) ...))
+;; (Y (lambda (f) (lambda (x) ...)))
+
+(test-group "y combinator"
+  (define fact
+    (lambda (n)
+      (if (= n 1) 1
+          (* n (fact (- n 1))))))
+
+  (test 3628800 (fact 10))
+
+  (test 3628800 ((lambda (n)
+                   ((lambda (fact)
+                      (fact fact n))
+                    (lambda (ft k)
+                      (if (= k 1) 1
+                          (* k (ft ft (- k 1))))))) 10))
+
+  (test 3628800 ((Y (lambda (fact)
+                      (lambda (n)
+                        (if (= n 1) 1
+                            (* n (fact (- n 1))))))) 10)))

@@ -27,6 +27,8 @@
 ;; Give the responses both when the evaluator memoizes and when it
 ;; does not.
 
+;; since aja was lazy, so am I: fib
+
 (define env (setup-environment))
 
 (define-syntax test-eval

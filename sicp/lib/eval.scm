@@ -85,7 +85,7 @@
    (only scheme
          * + - / < = and append caadr caar cadddr caddr cadr car cdadr
          cdddr cddr cdr cond cons define eq? if lambda length let list
-         map not null? number? or pair? quote set-car! set-cdr! string?
+         map not null? number? or pair? quote set! set-car! set-cdr! string?
          symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
@@ -257,9 +257,6 @@
         (if (< (length vars) (length vals))
             (error "Too many arguments supplied" vars vals)
             (error "Too few arguments supplied"  vars vals))))
-
-  (define (false? exp)
-    (eq? exp false))
 
   (define (find-pair-in-env env var)
     (if (eq? env the-empty-environment) null

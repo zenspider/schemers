@@ -28,18 +28,24 @@
 ;; does not.
 
 (define env (setup-environment))
-(test 'ok (eval '(define count 0) env))
-(test 'ok (eval '(define (id x) (set count (+ count 1)) x) env))
-(test 'ok (eval '(define (square x) (* x x)) env))
-(test 'ok (eval '(define s10 (square (id 10))) env))
-(test   1 (eval 'count            env))
-(test 100 (eval 's10              env))
-(test   1 (eval 'count            env))
-(test 100 (eval 's10              env))
-(test   1 (eval 'count            env))
-(test 100 (eval '(square (id 10)) env))
-(test   2 (eval 'count            env))
-(test 100 (eval '(square (id 10)) env))
-(test   3 (eval 'count            env))
+
+(define-syntax test-eval
+  (syntax-rules ()
+    ((_ exp ast) (test exp (eval ast env)))))
+
+(test-group "4.29"
+  (test-eval 'ok '(define count 0))
+  (test-eval 'ok '(define (id x) (set count (+ count 1)) x))
+  (test-eval 'ok '(define (square x) (* x x)))
+  (test-eval 'ok '(define s10 (square (id 10))))
+  (test-eval   1 'count)
+  (test-eval 100 's10)
+  (test-eval   1 'count)
+  (test-eval 100 's10)
+  (test-eval   1 'count)
+  (test-eval 100 '(square (id 10)))
+  (test-eval   2 'count)
+  (test-eval 100 '(square (id 10)))
+  (test-eval   3 'count))
 
 ;; idgi

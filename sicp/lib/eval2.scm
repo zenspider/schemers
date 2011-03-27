@@ -51,7 +51,6 @@
   (define first-exp                car)
   (define first-frame              car)
   (define first-operand            car)
-  (define frame-values             cdr)
   (define if-consequent            caddr)
   (define if-predicate             cadr)
   (define lambda-body              cddr)

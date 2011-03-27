@@ -2,82 +2,10 @@
 
 (module lazy-eval
 
-  (eval add-binding-to-frame!
-        application?
-        apply
-        apply-primitive-procedure
-        assignment-value
-        assignment-variable
-        assignment?
-        begin-actions
-        begin?
-        compound-procedure?
-        cond->if
-        cond-actions
-        cond-clauses
-        cond-else-clause?
-        cond-predicate
-        cond?
-        define-variable!
-        definition-value
-        definition-variable
-        definition?
-        enclosing-environment
-        eval-assignment
-        eval-definition
-        eval-if
-        eval-sequence
-        expand-clauses
-        extend-environment
-        false
-        find-pair-in-env
-        find-pair-in-frame
-        first-exp
-        first-frame
-        first-operand
-        frame-values
-        frame-variables
-        if-alternative
-        if-consequent
-        if-predicate
-        if?
-        lambda-body
-        lambda-params
-        lambda?
-        last-exp?
-        list-of-values
-        lookup-variable-value
-        make-begin
-        make-frame
-        make-if
-        make-lambda
-        make-procedure
-        no-operands?
-        null
-        operands
-        operator
-        primitive-procedure-names
-        primitive-procedure-objects
-        primitive-procedure?
-        primitive-procedures
-        procedure-body
-        procedure-environment
-        procedure-params
-        quoted?
-        rest-exps
-        rest-frames
-        rest-operands
-        self-evaluating?
-        sequence->exp
-        set-variable-value!
-        set-variable-value!
+  (eval actual-value
+        eval
         setup-environment
-        tagged-list?
-        text-of-quotation
-        the-empty-environment
-        true
-        true?
-        variable?
+        compound-procedure?
         )
 
   (import
@@ -105,19 +33,20 @@
                                                   (lambda-body exp) env))
           ((begin?           exp) (eval-sequence (begin-actions exp) env))
           ((cond?            exp) (eval (cond->if exp) env))
-          ((application?     exp) (apply (eval (operator exp) env)
-                                         (list-of-values (operands exp) env)))
+          ((application?     exp) (apply (actual-value (operator exp) env)
+                                         (operands exp)
+                                         env))
           ((eq? #!eof exp) '*done*)
           (else
            (error "Unknown expression type -- EVAL" exp))))
 
-  (define (apply proc args)
+  (define (apply proc args env)
     (cond ((primitive-procedure? proc)
-           (apply-primitive-procedure proc args))
+           (apply-primitive-procedure proc (list-of-arg-values args env)))
           ((compound-procedure? proc)
            (eval-sequence (procedure-body proc)
                           (extend-environment (procedure-params proc)
-                                              args
+                                              (list-of-delayed-args args env)
                                               (procedure-environment proc))))
           (else
            (error "Unknown procedure type -- APPLY" proc))))
@@ -131,13 +60,10 @@
   (define cond-actions             cdr)
   (define cond-clauses             cdr)
   (define cond-predicate           car)
-  (define enclosing-environment    cdr)
   (define false                    #f)
   (define first-exp                car)
   (define first-frame              car)
   (define first-operand            car)
-  (define frame-values             cdr)
-  (define frame-variables          car)
   (define if-consequent            caddr)
   (define if-predicate             cadr)
   (define lambda-body              cddr)
@@ -155,6 +81,9 @@
   (define rest-operands            cdr)
   (define text-of-quotation        cadr)
   (define the-empty-environment    null)
+  (define thunk-env                caddr)
+  (define thunk-exp                cadr)
+  (define thunk-value              cadr)
   (define true                     #t)
 
   ;; Other Values:
@@ -171,6 +100,9 @@
           (list 'null? null?)))
 
   ;; Support Functions (sorted):
+
+  (define (actual-value exp env)
+    (force-it (eval exp env)))
 
   (define (add-binding-to-frame! var val frame)
     (set-cdr! frame (cons (car frame) (cdr frame)))
@@ -217,6 +149,9 @@
   (define (definition? exp)
     (tagged-list? exp 'define))
 
+  (define (delay-it exp env)
+    (list 'thunk exp env))
+
   (define (eval-assignment exp env)
     (set-variable-value! (assignment-variable exp)
                          (eval (assignment-value exp) env)
@@ -230,7 +165,7 @@
     'ok)
 
   (define (eval-if exp env)
-    (if (true? (eval (if-predicate exp) env))
+    (if (true? (actual-value (if-predicate exp) env))
         (eval (if-consequent exp) env)
         (eval (if-alternative exp) env)))
 
@@ -238,6 +173,9 @@
     (cond ((last-exp? exps) (eval (first-exp exps) env))
           (else (eval (first-exp exps) env)
                 (eval-sequence (rest-exps exps) env))))
+
+  (define (evaluated-thunk? x)
+    (tagged-list? x 'evaluated-thunk))
 
   (define (expand-clauses clauses)
     (if (null? clauses) 'false
@@ -269,6 +207,17 @@
           ((eq? var (caar frame)) (car frame))
           (else (find-pair-in-frame (cdr frame) var))))
 
+  (define (force-it x)
+    (cond ((thunk? x)
+           (let ((result (actual-value (thunk-exp x) (thunk-env x))))
+             (set-car! x 'evaluated-thunk)
+             (set-car! (cdr x) result)
+             (set-cdr! (cdr x) '())
+             result))
+          ((evaluated-thunk? x)
+           (thunk-value x))
+          (else x)))
+
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
         (cadddr exp)
@@ -282,6 +231,16 @@
 
   (define (last-exp? seq)
     (null? (cdr seq)))
+
+  (define (list-of-arg-values exps env)
+    (if (no-operands? exps) null
+        (cons (actual-value (first-operand exps) env)
+              (list-of-arg-values (rest-operands exps) env))))
+
+  (define (list-of-delayed-args exps env)
+    (if (no-operands? exps) null
+        (cons (delay-it (first-operand exps) env)
+              (list-of-delayed-args (rest-operands exps) env))))
 
   (define (list-of-values exps env)
     (if (no-operands? exps) null
@@ -349,6 +308,9 @@
     (if (pair? exp)
         (eq? (car exp) tag)
         false))
+
+  (define (thunk? x)
+    (tagged-list? x 'thunk))
 
   (define (true? exp)
     (not (eq? exp false)))

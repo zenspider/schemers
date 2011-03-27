@@ -37,3 +37,5 @@
 ;; execution procedure produced by the program in the text above?
 ;; How do the two versions compare for a sequence with two
 ;; expressions?
+
+;; no

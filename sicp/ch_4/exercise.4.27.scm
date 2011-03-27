@@ -1,6 +1,8 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(require-library lazy-eval)
+(import lazy-eval)
 
 ;;; Exercise 4.27
 
@@ -32,3 +34,17 @@
 ;;      count
 ;;      ;;; L-Eval value:
 ;;      <RESPONSE>
+
+(define env (setup-environment))
+(test 'ok (eval '(define count 0) env))
+(test 'ok (eval '(define (id x)
+                   (set count (+ count 1))
+                   x) env))
+(test 'ok (eval '(define w (id (id 10))) env))
+
+;; define w calls inner id, incrementing count
+
+(test 1 (eval 'count env))
+(test 10 (actual-value 'w env))         ; calls outer id, incrementing count
+(test 2 (eval 'count env))
+

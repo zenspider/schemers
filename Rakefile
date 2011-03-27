@@ -34,6 +34,11 @@ task :run do
   end
 end
 
+task :lint, [:f] do |t, args|
+  f = args.f
+  sh "csc -to-stdout -S #{f} > /dev/null"
+end
+
 task :debug do
   sh "drracket #{newer_files.join(" ")}"
 end

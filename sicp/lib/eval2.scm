@@ -1,6 +1,6 @@
 ;; (put 'scheme-define 'scheme-indent-function 1)
 
-(module eval
+(module eval2
 
   (eval add-binding-to-frame!
         application?
@@ -23,9 +23,6 @@
         definition-variable
         definition?
         enclosing-environment
-        eval-assignment
-        eval-definition
-        eval-if
         eval-sequence
         expand-clauses
         extend-environment
@@ -95,12 +92,16 @@
   (use (only srfi-1 zip))
 
   (define (eval exp env)
-    (cond ((self-evaluating? exp) exp)
-          ((variable?        exp) (lookup-variable-value exp env))
-          ((quoted?          exp) (text-of-quotation exp))
-          ((assignment?      exp) (eval-assignment exp env))
-          ((definition?      exp) (eval-definition exp env))
-          ((if?              exp) (eval-if exp env))
+    ((analyze exp) env))
+
+  (define (analyze exp)
+    (define env 'junk)
+    (cond ((self-evaluating? exp) (analyze-self-evaluating exp))
+          ((quoted?          exp) (analyze-quoted exp))
+          ((variable?        exp) (analyze-variable exp))
+          ((assignment?      exp) (analyze-assignment exp))
+          ((definition?      exp) (analyze-definition exp))
+          ((if?              exp) (analyze-if exp))
           ((lambda?          exp) (make-procedure (lambda-params exp)
                                                   (lambda-body exp) env))
           ((begin?           exp) (eval-sequence (begin-actions exp) env))
@@ -176,6 +177,39 @@
     (set-cdr! frame (cons (car frame) (cdr frame)))
     (set-car! frame (list var val)))
 
+  (define (analyze-assignment exp)
+    (let ((var (assignment-variable exp))
+          (vproc (analyze (assignment-value exp))))
+      (lambda (env)
+        (set-variable-value! var (vproc env) env)
+        'ok)))
+
+  (define (analyze-definition exp)
+    (let ((var (definition-variable exp))
+          (vproc (analyze (definition-value exp))))
+      (lambda (env)
+        (define-variable! var (vproc env) env)
+        'ok)))
+
+  (define (analyze-if exp)
+    (let ((pproc (analyze (if-predicate exp)))
+          (cproc (analyze (if-consequent exp)))
+          (aproc (analyze (if-alternative exp))))
+      (lambda (env)
+        (if (true? (pproc env))
+            (cproc env)
+            (aproc env)))))
+
+  (define (analyze-quoted exp)
+    (let ((val (text-of-quotation exp)))
+      (lambda (env) val)))
+
+  (define (analyze-self-evaluating exp)
+    (lambda (env) exp))
+
+  (define (analyze-variable exp)
+    (lambda (env) (lookup-variable-value exp env)))
+
   (define (apply-primitive-procedure proc args)
     (scheme-apply (primitive-implementation proc) args))
 
@@ -216,23 +250,6 @@
 
   (define (definition? exp)
     (tagged-list? exp 'define))
-
-  (define (eval-assignment exp env)
-    (set-variable-value! (assignment-variable exp)
-                         (eval (assignment-value exp) env)
-                         env)
-    'ok)
-
-  (define (eval-definition exp env)
-    (define-variable! (definition-variable exp)
-      (eval (definition-value exp) env)
-      env)
-    'ok)
-
-  (define (eval-if exp env)
-    (if (true? (eval (if-predicate exp) env))
-        (eval (if-consequent exp) env)
-        (eval (if-alternative exp) env)))
 
   (define (eval-sequence exps env)
     (cond ((last-exp? exps) (eval (first-exp exps) env))

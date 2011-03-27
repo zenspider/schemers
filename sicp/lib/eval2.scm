@@ -10,7 +10,7 @@
    (only scheme
          * + - / < = and append caadr caar cadddr caddr cadr car cdadr
          cdddr cddr cdr cond cons define eq? if lambda length let list
-         map not null? number? or pair? quote set-car! set-cdr! string?
+         map not null? number? or pair? quote set-car! set-cdr! string? set!
          symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
@@ -39,33 +39,19 @@
           (else
            (error "Unknown expression type -- EVAL" exp))))
 
-  (define (apply proc args)
-    (cond ((primitive-procedure? proc)
-           (apply-primitive-procedure proc args))
-          ((compound-procedure? proc)
-           (eval-sequence (procedure-body proc)
-                          (extend-environment (procedure-params proc)
-                                              args
-                                              (procedure-environment proc))))
-          (else
-           (error "Unknown procedure type -- APPLY" proc))))
-
   ;; Simple Aliases:
 
   (define application?             pair?)
   (define assignment-value         caddr)
   (define assignment-variable      cadr)
-  (define begin-actions            cdr)
   (define cond-actions             cdr)
   (define cond-clauses             cdr)
   (define cond-predicate           car)
-  (define enclosing-environment    cdr)
   (define false                    #f)
   (define first-exp                car)
   (define first-frame              car)
   (define first-operand            car)
   (define frame-values             cdr)
-  (define frame-variables          car)
   (define if-consequent            caddr)
   (define if-predicate             cadr)
   (define lambda-body              cddr)
@@ -250,9 +236,6 @@
         (if (< (length vars) (length vals))
             (error "Too many arguments supplied" vars vals)
             (error "Too few arguments supplied"  vars vals))))
-
-  (define (false? exp)
-    (eq? exp false))
 
   (define (find-pair-in-env env var)
     (if (eq? env the-empty-environment) null

@@ -5,6 +5,8 @@
   (eval actual-value
         eval
         setup-environment
+        procedure-params
+        procedure-body
         compound-procedure?
         )
 

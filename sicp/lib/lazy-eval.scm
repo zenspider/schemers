@@ -20,6 +20,7 @@
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
+   (only extras printf)
    (only chicken error use))
 
   (use (only srfi-1 zip))
@@ -99,6 +100,7 @@
           (list 'car   car)
           (list 'cdr   cdr)
           (list 'cons  cons)
+          (list 'printf printf)
           (list 'null? null?)))
 
   ;; Support Functions (sorted):

@@ -1,6 +1,7 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(use numbers)
 (require-library lazy-eval)
 (import lazy-eval)
 
@@ -12,47 +13,55 @@
 
 (define env (setup-environment))
 
+(define-syntax eval-define
+  (syntax-rules ()
+    ((_ ast) (eval (quote ast) env))))
+
 (define-syntax test-eval
   (syntax-rules ()
-    ((_ exp ast) (test exp (eval ast env)))))
+    ((_ exp ast) (test exp (eval (quote ast) env)))))
 
-(test-eval 'ok '(define (cons x y) (lambda (m) (m x y))))
-(test-eval 'ok '(define (car z) (z (lambda (p q) p))))
-(test-eval 'ok '(define (cdr z) (z (lambda (p q) q))))
-(test-eval 'ok '(define (list-ref items n)
-                  (if (= n 0)
-                      (car items)
-                      (list-ref (cdr items) (- n 1)))))
-(test-eval 'ok '(define (map proc items)
-                  (if (null? items) '()
-                      (cons (proc (car items))
-                            (map proc (cdr items))))))
-(test-eval 'ok '(define (scale-list items n)
-                  (map (lambda (x) (* x n)) items)))
-(test-eval 'ok '(define (add-lists l1 l2)
-                  (cond ((null? l1) l2)
-                        ((null? l2) l1)
-                        (else (cons (+ (car l1) (car l2))
-                                    (add-lists (cdr l1) (cdr l2)))))))
+(define-syntax test-real
+  (syntax-rules ()
+    ((_ exp ast) (test exp (actual-value (quote ast) env)))))
 
-(test-eval 'ok '(define ones     (cons 1 ones)))
-(test-eval 'ok '(define integers (cons 1 (add-lists ones integers))))
+(eval-define (define (cons x y) (lambda (m) (m x y))))
+(eval-define (define (car z) (z (lambda (p q) p))))
+(eval-define (define (cdr z) (z (lambda (p q) q))))
+(eval-define (define (list-ref items n)
+               (if (= n 0)
+                   (car items)
+                   (list-ref (cdr items) (- n 1)))))
+(eval-define (define (map proc items)
+               (if (null? items) '()
+                   (cons (proc (car items))
+                         (map proc (cdr items))))))
+(eval-define (define (scale-list items n)
+               (map (lambda (x) (* x n)) items)))
+(eval-define (define (add-lists l1 l2)
+               (cond ((null? l1) l2)
+                     ((null? l2) l1)
+                     (else (cons (+ (car l1) (car l2))
+                                 (add-lists (cdr l1) (cdr l2)))))))
 
-(test 18 (actual-value '(list-ref integers 17) env))
-(test 36 (actual-value '(list-ref (map (lambda (x) (* x 2)) integers) 17) env))
-(test 36 (actual-value '(list-ref (scale-list integers 2) 17) env))
+(eval-define (define ones     (cons 1 ones)))
+(eval-define (define integers (cons 1 (add-lists ones integers))))
 
-(test-eval 'ok '(define (integral integrand initial-value dt)
-                  (define int
-                    (cons initial-value
-                          (add-lists (scale-list integrand dt) int)))
-                  int))
+(test-real 18 (list-ref integers 17))
+(test-real 36 (list-ref (map (lambda (x) (* x 2)) integers) 17))
+(test-real 36 (list-ref (scale-list integers 2) 17))
 
-(test 1.055 (actual-value '(list-ref (integral integers 1 0.001) 10) env))
+(eval-define (define (integral integrand initial-value dt)
+               (define int
+                 (cons initial-value
+                       (add-lists (scale-list integrand dt) int)))
+               int))
 
-(test-eval 'ok '(define (solve f y0 dt)
-                  (define y  (integral dy y0 dt))
-                  (define dy (map f y))
-                  y))
+(test-real 1.055 (list-ref (integral integers 1 0.001) 10))
 
-(test-eval 2.716924 '(list-ref (solve (lambda (x) x) 1 0.001) 10))
+(eval-define (define (solve f y0 dt)
+               (define y  (integral dy y0 dt))
+               (define dy (map f y))
+               y))
+
+(test-real 1.10512 (list-ref (solve (lambda (x) x) 1 0.001) 100))

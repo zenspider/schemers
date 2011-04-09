@@ -2,17 +2,17 @@
 
 (use test)
 
-(define is-first?
+(define is-first-b?
   (lambda (a lat)
     (cond ((null? lat) #f)
-          (else (eq? (car lat) a)))))
+          (else (or (eq? (car lat) a)
+                    (two-in-a-row? lat))))))
 
 (define two-in-a-row?
   (lambda (lat)
     (cond ((null? lat) #f)
           (else
-           (or (is-first? (car lat) (cdr lat))
-               (two-in-a-row? (cdr lat)))))))
+           (is-first-b? (car lat) (cdr lat))))))
 
 (test-group "two-in-a-row?"
  (test #f (two-in-a-row? '(a b c)))

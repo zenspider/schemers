@@ -1,19 +1,23 @@
 (module streams
   (export integers
+          list->stream
           ones
+          stream->list
           stream-add
           stream-car
           stream-cdr
           stream-cons
           stream-display
           stream-enumerate-interval
-          stream-head
           stream-filter
           stream-for-each
+          stream-head
           stream-map
           stream-null?
           stream-ref
-          stream-scale)
+          stream-scale
+          the-empty-stream
+          )
 
   (import scheme chicken extras)
 
@@ -83,5 +87,16 @@
 
   (define (stream-scale s n)
     (stream-map (lambda (x) (* x n)) s))
+
+  (define (list->stream l)
+    (if (null? l) the-empty-stream
+        (stream-cons (car l) (list->stream (cdr l)))))
+
+  (define (stream->list stream)
+    (if (stream-null? stream)
+        '()
+        (cons (stream-car stream)
+              (stream->list (stream-cdr stream)))))
+
 
   (define the-empty-stream '()))

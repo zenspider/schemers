@@ -18,7 +18,8 @@
 
    (only chicken error use))
 
-  (use (only extras printf))
+  (use (only extras printf random))
+  (use (only data-structures shuffle))
   (use (only srfi-1 zip))
 
   (define (eval exp env succeed fail)
@@ -36,6 +37,7 @@
           ((cond?            exp) (analyze                 (cond->if exp)))
           ((let?             exp) (analyze         (let->combination exp)))
           ((amb?             exp) (analyze-amb             exp))
+          ((ramb?            exp) (analyze-ramb            exp))
           ((application?     exp) (analyze-application     exp))
           ((eq? #!eof exp)        (lambda (x y z) '*done*))
           (else
@@ -99,10 +101,24 @@
 
   (define (amb-choices exp) (cdr exp))
 
+  (define (ramb-choices exp) (shuffle (cdr exp) random))
+
   (define (amb? exp) (tagged-list? exp 'amb))
+
+  (define (ramb? exp) (tagged-list? exp 'ramb))
 
   (define (analyze-amb exp)
     (let ((cprocs (map analyze (amb-choices exp))))
+      (lambda (env succeed fail)
+        (define (try-next choices)
+          (if (null? choices) (fail)
+              ((car choices) env
+               succeed
+               (lambda () (try-next (cdr choices))))))
+        (try-next cprocs))))
+
+  (define (analyze-ramb exp)            ; REFACTOR: against analyze-amb
+    (let ((cprocs (map analyze (ramb-choices exp))))
       (lambda (env succeed fail)
         (define (try-next choices)
           (if (null? choices) (fail)

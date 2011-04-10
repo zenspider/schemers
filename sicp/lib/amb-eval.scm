@@ -154,8 +154,8 @@
                    (set-variable-value! var val env)
                    (succeed 'ok
                             (lambda ()
-                              (set-variable-value! var old-value env))
-                            (fail2))))
+                              (set-variable-value! var old-value env)
+                              (fail2)))))
                fail))))
 
   (define (analyze-p-assignment exp)
@@ -163,7 +163,13 @@
           (vproc (analyze (assignment-value exp))))
       (lambda (env succeed fail)
         (set-variable-value! var (vproc env succeed fail) env)
-        (succeed 'ok fail))))
+        (succeed 'ok fail))
+      (lambda (env succeed fail)
+        (vproc env
+               (lambda (val fail2)
+                 (set-variable-value! var val env)
+                 (succeed 'ok (lambda () (fail2))))
+               fail))))
 
   (define (analyze-definition exp)
     (let ((var (definition-variable exp))

@@ -30,7 +30,7 @@
       (if (eq? input 'try-again) (try-again)
           (begin
             (newline)
-            (display ";;; Startinga new problem ")
+            (display ";;; Starting a new problem ")
             (eval input
                   the-global-environment
                   (lambda (val next-alt)

@@ -34,11 +34,11 @@
     (amb-assert (not (= fletcher 5)))                                  ; 4
     (amb-assert (not (= fletcher 1)))                                  ; 4
 
-    (list (list 'baker baker)
-          (list 'cooper cooper)
+    (list (list 'baker    baker)
+          (list 'cooper   cooper)
           (list 'fletcher fletcher)
-          (list 'miller miller)
-          (list 'smith smith))))
+          (list 'miller   miller)
+          (list 'smith    smith))))
 
 ;; original = 1716 checks
 ;; above    = 1614 checks

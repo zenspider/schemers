@@ -10,13 +10,13 @@
 
    (only scheme
          * + - / < = > abs and append caadr caar cadddr caddr cadr car
-         cdadr cdddr cddr cdr cond cons define eq? if lambda length let list
-         map member not null? number? or pair? quote set! set-car!
+         cdadr cdddr cddr cdr cond cons define eq? if lambda length let
+         list map member not null? number? or pair? quote set! set-car!
          set-cdr! string? symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
-   (only chicken error use))
+   (only chicken error use exit))
 
   (use (only extras printf random))
   (use (only data-structures shuffle))
@@ -30,6 +30,7 @@
           ((quoted?          exp) (analyze-quoted          exp))
           ((variable?        exp) (analyze-variable        exp))
           ((assignment?      exp) (analyze-assignment      exp))
+          ((p-assignment?    exp) (analyze-p-assignment    exp))
           ((definition?      exp) (analyze-definition      exp))
           ((if?              exp) (analyze-if              exp))
           ((lambda?          exp) (analyze-lambda          exp))
@@ -39,7 +40,7 @@
           ((amb?             exp) (analyze-amb             exp))
           ((ramb?            exp) (analyze-ramb            exp))
           ((application?     exp) (analyze-application     exp))
-          ((eq? #!eof exp)        (lambda (x y z) '*done*))
+          ((eq? #!eof exp)        (printf "~Ndone~N") (exit))
           (else
            (error "Unknown expression type -- EVAL" exp))))
 
@@ -82,15 +83,18 @@
     (list (list '*      *)
           (list '+      +)
           (list '-      -)
-          (list '>      >)
           (list '/      /)
           (list '=      =)
+          (list '>      >)
+          (list 'abs    abs)
           (list 'car    car)
           (list 'cdr    cdr)
           (list 'cons   cons)
+          (list 'eq?    eq?)
           (list 'list   list)
           (list 'member member)
-          (list 'abs    abs)
+          (list 'printf printf)
+          (list 'not    not)
           (list 'null?  null?)))
 
   ;; Support Functions (sorted):
@@ -154,6 +158,13 @@
                             (fail2))))
                fail))))
 
+  (define (analyze-p-assignment exp)
+    (let ((var   (assignment-variable exp))
+          (vproc (analyze (assignment-value exp))))
+      (lambda (env succeed fail)
+        (set-variable-value! var (vproc env succeed fail) env)
+        (succeed 'ok fail))))
+
   (define (analyze-definition exp)
     (let ((var (definition-variable exp))
           (vproc (analyze (definition-value exp))))
@@ -212,6 +223,9 @@
 
   (define (assignment? exp)
     (tagged-list? exp 'set))
+
+  (define (p-assignment? exp)
+    (tagged-list? exp 'permanent-set))
 
   (define (begin? exp)
     (tagged-list? exp 'begin))

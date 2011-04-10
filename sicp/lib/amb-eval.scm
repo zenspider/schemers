@@ -3,7 +3,8 @@
 (module amb-eval
 
   (eval eval
-        setup-environment)
+        setup-environment
+        compound-procedure?)
 
   (import
 
@@ -20,8 +21,8 @@
   (use (only extras printf))
   (use (only srfi-1 zip))
 
-  (define (eval exp env)
-    ((analyze exp) env))
+  (define (eval exp env succeed fail)
+    ((analyze exp) env succeed fail))
 
   (define (analyze exp)
     (cond ((self-evaluating? exp) (analyze-self-evaluating exp))
@@ -34,8 +35,9 @@
           ((begin?           exp) (analyze-sequence        exp))
           ((cond?            exp) (analyze                 (cond->if exp)))
           ((let?             exp) (analyze         (let->combination exp)))
+          ((amb?             exp) (analyze-amb             exp))
           ((application?     exp) (analyze-application     exp))
-          ((eq? #!eof exp) '*done*)
+          ((eq? #!eof exp)        (lambda (x y z) '*done*))
           (else
            (error "Unknown expression type -- EVAL" exp))))
 
@@ -55,6 +57,8 @@
   (define if-predicate             cadr)
   (define lambda-body              cddr)
   (define lambda-params            cadr)
+  (define let-body                 cddr)
+  (define let-params               cadr)
   (define no-operands?             null?)
   (define null                     '())
   (define operands                 cdr)
@@ -89,51 +93,88 @@
     (set-cdr! frame (cons (car frame) (cdr frame)))
     (set-car! frame (list var val)))
 
+  (define (amb-choices exp) (cdr exp))
+
+  (define (amb? exp) (tagged-list? exp 'amb))
+
+  (define (analyze-amb exp)
+    (let ((cprocs (map analyze (amb-choices exp))))
+      (lambda (env succeed fail)
+        (define (try-next choices)
+          (if (null? choices) (fail)
+              ((car choices) env
+               succeed
+               (lambda () (try-next (cdr choices))))))
+        (try-next cprocs))))
+
   (define (analyze-application exp)
-    (let ((fproc (analyze (operator exp)))
+    (let ((fproc  (analyze (operator exp)))
           (aprocs (map analyze (operands exp))))
-      (lambda (env)
-        (execute-application (fproc env)
-                             (map (lambda (aproc) (aproc env)) aprocs)))))
+      (lambda (env succeed fail)
+        (fproc env
+               (lambda (proc fail2)
+                 (get-args aprocs
+                           env
+                           (lambda (args fail3)
+                             (execute-application proc args succeed fail3))
+                           fail2))
+               fail))))
 
   (define (analyze-assignment exp)
-    (let ((var (assignment-variable exp))
+    (let ((var   (assignment-variable exp))
           (vproc (analyze (assignment-value exp))))
-      (lambda (env)
-        (set-variable-value! var (vproc env) env)
-        'ok)))
+      (lambda (env succeed fail)
+        (vproc env
+               (lambda (val fail2)
+                 (let ((old-value (lookup-variable-value var env)))
+                   (set-variable-value! var val env)
+                   (succeed 'ok
+                            (lambda ()
+                              (set-variable-value! var old-value env))
+                            (fail2))))
+               fail))))
 
   (define (analyze-definition exp)
     (let ((var (definition-variable exp))
           (vproc (analyze (definition-value exp))))
-      (lambda (env)
-        (define-variable! var (vproc env) env)
-        'ok)))
+      (lambda (env succeed fail)
+        (vproc env
+               (lambda (val fail2)
+                 (define-variable! var val env)
+                 (succeed 'ok fail2))
+               fail))))
 
   (define (analyze-if exp)
     (let ((pproc (analyze (if-predicate exp)))
           (cproc (analyze (if-consequent exp)))
           (aproc (analyze (if-alternative exp))))
-      (lambda (env)
-        (if (true? (pproc env))
-            (cproc env)
-            (aproc env)))))
+      (lambda (env succeed fail)
+        (pproc env
+               ;; success continuation for evaluating the predicate to obtain pred--value
+               (lambda (pred-value fail2)
+                 (if (true? pred-value)
+                     (cproc env succeed fail2)
+                     (aproc env succeed fail2)))
+               fail))))
 
   (define (analyze-lambda exp)
     (let ((vars (lambda-params exp))
           (bproc (analyze-sequence (lambda-body exp))))
-      (lambda (env) (make-procedure vars bproc env))))
+      (lambda (env succeed fail)
+        (succeed (make-procedure vars bproc env) fail))))
 
   (define (analyze-quoted exp)
     (let ((val (text-of-quotation exp)))
-      (lambda (env) val)))
+      (lambda (env succeed fail)
+        (succeed val fail))))
 
   (define (analyze-self-evaluating exp)
-    (lambda (env) exp))
+    (lambda (env succeed fail) (succeed exp fail)))
 
   (define (analyze-sequence exps)
     (define (sequentially p1 p2)
-      (lambda (env) (p1 env) (p2 env)))
+      (lambda (env succeed fail)
+        (p1 env (lambda (a-value fail2) (p2 env succeed fail2)) fail)))
     (define (loop p1 p*)
       (if (null? p*) p1
           (loop (sequentially p1 (car p*)) (cdr p*))))
@@ -143,22 +184,8 @@
       (loop (car procs) (cdr procs))))
 
   (define (analyze-variable exp)
-    (lambda (env) (lookup-variable-value exp env)))
-
-  (define let-params cadr)
-  (define let-body   cddr)
-
-  (define (let-args exp)
-    (map car (let-params exp)))
-
-  (define (let-vals exp)
-    (map cadr (let-params exp)))
-
-  (define (let->call args vals body)
-    (append (list (append (list 'lambda args) body)) vals))
-
-  (define (let->combination exp)
-    (let->call (let-args exp) (let-vals exp) (let-body exp)))
+    (lambda (env succeed fail)
+      (succeed (lookup-variable-value exp env) fail)))
 
   (define (apply-primitive-procedure proc args)
     (scheme-apply (primitive-implementation proc) args))
@@ -206,14 +233,15 @@
           (else (eval (first-exp exps) env)
                 (eval-sequence (rest-exps exps) env))))
 
-  (define (execute-application proc args)
+  (define (execute-application proc args succeed fail)
     (cond ((primitive-procedure? proc)
-           (apply-primitive-procedure proc args))
+           (succeed (apply-primitive-procedure proc args) fail))
           ((compound-procedure? proc)
            ((procedure-body proc)
             (extend-environment (procedure-params proc)
                                 args
-                                (procedure-environment proc))))
+                                (procedure-environment proc))
+            succeed fail))
           (else
            (error "Unknown procedure type -- APPLY" proc))))
 
@@ -247,6 +275,16 @@
           ((eq? var (caar frame)) (car frame))
           (else (find-pair-in-frame (cdr frame) var))))
 
+  (define (get-args aprocs env succeed fail)
+    (if (null? aprocs) (succeed '() fail)
+        ((car aprocs) env (lambda (arg fail2)
+                            (get-args (cdr aprocs)
+                                      env
+                                      (lambda (args fail3)
+                                        (succeed (cons arg args) fail3))
+                                      fail2))
+         fail)))
+
   (define (if-alternative exp)
     (if (not (null? (cdddr exp)))
         (cadddr exp)
@@ -260,6 +298,18 @@
 
   (define (last-exp? seq)
     (null? (cdr seq)))
+
+  (define (let->call args vals body)
+    (append (list (append (list 'lambda args) body)) vals))
+
+  (define (let->combination exp)
+    (let->call (let-args exp) (let-vals exp) (let-body exp)))
+
+  (define (let-args exp)
+    (map car (let-params exp)))
+
+  (define (let-vals exp)
+    (map cadr (let-params exp)))
 
   (define (let? exp)
     (tagged-list? exp 'let))

@@ -1,13 +1,13 @@
 #!/usr/bin/env csi -s
 
-(require-library lazy-eval)
-(import lazy-eval)
+(require-library amb-eval)
+(import amb-eval)
 
 (define the-global-environment (setup-environment))
 
-(define input-prompt ";;; L-Eval input:")
+(define input-prompt ";;; Amb-Eval input:")
 
-(define output-prompt ";;; L-Eval value:")
+(define output-prompt ";;; Amb-Eval value:")
 
 (define (prompt-for-input string)
   (newline) (newline) (display string) (newline))
@@ -24,12 +24,27 @@
       (display obj)))
 
 (define (driver-loop)
-  (prompt-for-input input-prompt)
-  (let ((input (read)))
-    (let ((output (actual-value input the-global-environment)))
-      (announce-output output-prompt)
-      (user-print output)
-      (if (not (eq? '*done* output))
-          (driver-loop)))))
+  (define (internal-loop try-again)
+    (prompt-for-input input-prompt)
+    (let ((input (read)))
+      (if (eq? input 'try-again) (try-again)
+          (begin
+            (newline)
+            (display ";;; Startinga new problem ")
+            (eval input
+                  the-global-environment
+                  (lambda (val next-alt)
+                    (announce-output output-prompt)
+                    (user-print val)
+                    (internal-loop next-alt))
+                  (lambda ()
+                    (announce-output ";;; There are no more values of")
+                    (user-print input)
+                    (driver-loop)))))))
+  (internal-loop
+   (lambda ()
+     (newline)
+     (display ";;; There is no current problem")
+     (driver-loop))))
 
 (driver-loop)

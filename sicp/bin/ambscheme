@@ -1,0 +1,35 @@
+#!/usr/bin/env csi -s
+
+(require-library lazy-eval)
+(import lazy-eval)
+
+(define the-global-environment (setup-environment))
+
+(define input-prompt ";;; L-Eval input:")
+
+(define output-prompt ";;; L-Eval value:")
+
+(define (prompt-for-input string)
+  (newline) (newline) (display string) (newline))
+
+(define (announce-output string)
+  (newline) (display string) (newline))
+
+(define (user-print obj)
+  (if (compound-procedure? obj)
+      (display (list 'compound-procedure
+                     (procedure-params obj)
+                     (procedure-body obj)
+                     '<procedure-env>))
+      (display obj)))
+
+(define (driver-loop)
+  (prompt-for-input input-prompt)
+  (let ((input (read)))
+    (let ((output (actual-value input the-global-environment)))
+      (announce-output output-prompt)
+      (user-print output)
+      (if (not (eq? '*done* output))
+          (driver-loop)))))
+
+(driver-loop)

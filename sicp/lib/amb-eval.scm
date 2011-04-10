@@ -9,10 +9,10 @@
   (import
 
    (only scheme
-         * + - / < = and append caadr caar cadddr caddr cadr car cdadr
-         cdddr cddr cdr cond cons define eq? if lambda length let list
-         map not null? number? or pair? quote set-car! set-cdr! string? set!
-         symbol?)
+         * + - / < = > abs and append caadr caar cadddr caddr cadr car
+         cdadr cdddr cddr cdr cond cons define eq? if lambda length let list
+         map member not null? number? or pair? quote set! set-car!
+         set-cdr! string? symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
@@ -77,15 +77,19 @@
   ;; Other Values:
 
   (define primitive-procedures
-    (list (list '*     *)
-          (list '+     +)
-          (list '-     -)
-          (list '/     /)
-          (list '=     =)
-          (list 'car   car)
-          (list 'cdr   cdr)
-          (list 'cons  cons)
-          (list 'null? null?)))
+    (list (list '*      *)
+          (list '+      +)
+          (list '-      -)
+          (list '>      >)
+          (list '/      /)
+          (list '=      =)
+          (list 'car    car)
+          (list 'cdr    cdr)
+          (list 'cons   cons)
+          (list 'list   list)
+          (list 'member member)
+          (list 'abs    abs)
+          (list 'null?  null?)))
 
   ;; Support Functions (sorted):
 

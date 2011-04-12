@@ -30,7 +30,7 @@ end
 
 task :run do
   with_newer_files do |file|
-    sh "X=1 time timeout csi -q -I lib < #{file} 2>&1"
+    sh "X=1 time timeout csi -q -I lib -I ../lib < #{file} 2>&1"
   end
 end
 
@@ -45,7 +45,7 @@ end
 
 task :test do
   with_newer_files do |file|
-    sh "X=1 time timeout csi -I lib -s #{file} 2>&1"
+    sh "X=1 time timeout csi -I lib -I ../lib -s #{file} 2>&1"
   end
 
   update_touch_file

@@ -88,3 +88,7 @@ task :commit, [:n] => [:default] do |t, args|
   f = Dir["*/*#{n}.scm"].first
   sh "git commit -m #{n.inspect} #{f}"
 end
+
+task :logic do
+  sh "csi -q -I lib -I ../lib ../bin/logic.scm"
+end

@@ -4,9 +4,6 @@
 
 (require-library logic-eval)
 (import logic-eval)
-(require-library streams)
-(import streams)
-
 (initialize-data-base microshaft-data-base)
 
 ;;; Exercise 4.55

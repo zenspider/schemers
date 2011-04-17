@@ -18,32 +18,14 @@
 ;;   b. all people who can replace someone who is being paid more
 ;;      than they are, together with the two salaries.
 
-(define-rule '(same ?x ?x))
+(assert! '(rule (can-replace ?p1 ?p2)
+                (and (or (and (job ?p1 ?x)
+                              (job ?p2 ?x))
+                         (and (job ?p1 ?x)
+                              (job ?p2 ?y)
+                              (can-do-job ?x ?y)))
+                     (not (same ?p1 ?p2)))))
 
-(define-rule '(outranked-by ?staff-person ?boss)
-  '(or      (supervisor ?staff-person ?boss)
-       (and (supervisor ?staff-person ?middle-manager)
-            (outranked-by ?middle-manager ?boss))))
-
-(define-rule '(wtf ?p1)
-  '(job ?p1 ?x))
-
-;; passes
-(test '((outranked-by (Fect Cy D) (Bitdiddle Ben))
-        (outranked-by (Fect Cy D) (Warbucks Oliver)))
-      (all-of '(outranked-by (Fect Cy D) ?boss)))
-
-;; passes
-(test '((and (job (Hacker Alyssa P) (computer programmer))
-             (not (same (Fect Cy D) (Hacker Alyssa P)))))
-      (all-of '(and (job ?p2 (computer programmer))
-                    (not (same (Fect Cy D) ?p2)))))
-
-;; fails:
-(test (all-of '(job (Fect Cy D) ?job))
-      (all-of '(wtf (Fect Cy D))))
-
-;; fails:
-(test (all-of '(and (job ?p2 (computer programmer))
-                    (not (same (Fect Cy D) ?p2))))
-      (all-of '(same-job ?p (Fect Cy D))))
+(test '((can-replace (Bitdiddle Ben)   (Fect Cy D))
+        (can-replace (Hacker Alyssa P) (Fect Cy D)))
+      (all-of '(can-replace ?p (Fect Cy D))))

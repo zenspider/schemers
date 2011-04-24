@@ -59,3 +59,5 @@
       (accumulation-function cons '() '?who '(salary ?who ?amount)))
 
 ;; maybe he's just a bad programmer?
+
+;; I'd call it stream-map-fold personally

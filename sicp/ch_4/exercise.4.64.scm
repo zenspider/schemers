@@ -22,3 +22,10 @@
 ;;
 ;; After answering, the system goes into an infinite loop.  Explain
 ;; why.
+
+;; A: Easy answer: because louis is too stupid to use version control.
+;;
+;; A: Real answer: because the interpreter evaluates depth-first, it
+;;    will evaluate the inner-outranked-by before it prunes w/
+;;    supervisor. This causes an infinite loop because there are no
+;;    bindings on middle-manager or boss at that time.

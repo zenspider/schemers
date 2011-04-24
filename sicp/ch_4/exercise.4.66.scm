@@ -1,6 +1,9 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(require-library logic-eval)
+(import logic-eval)
+(initialize-data-base microshaft-data-base)
 
 ;;; Exercise 4.66
 
@@ -32,3 +35,27 @@
 ;;
 ;; What has Ben just realized?  Outline a method he can use to
 ;; salvage the situation.
+
+;; No clue what he just realized, but it can't be that hard, because
+;; we did most of it via all-of:
+
+(test 458000 (fold + 0 (map third (all-of '(salary ?who ?amount)))))
+
+(define (accumulation-function fun identity var query)
+  (let ((index (list-index (lambda (x) (eq? var x)) query)))
+    (fold fun identity (map (lambda (l) (list-ref l index)) (all-of query)))))
+
+(test 458000 (accumulation-function + 0 '?amount '(salary ?who ?amount)))
+
+(test '((Bitdiddle Ben)
+        (Hacker Alyssa P)
+        (Fect Cy D)
+        (Tweakit Lem E)
+        (Reasoner Louis)
+        (Warbucks Oliver)
+        (Scrooge Eben)
+        (Cratchet Robert)
+        (Aull DeWitt))
+      (accumulation-function cons '() '?who '(salary ?who ?amount)))
+
+;; maybe he's just a bad programmer?

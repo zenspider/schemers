@@ -43,7 +43,7 @@
 
 (define sqrt1
   (make-machine
-   '(x guess t)
+   '(x guess)
    (list (list 'good-enough?
                (lambda (guess x) (< (abs (- (square guess) x)) 0.001)))
          (list 'improve
@@ -53,14 +53,14 @@
      sqrt
        (test (op good-enough?) (reg guess) (reg x))
        (branch (label sqrt-done))
-       (assign t (op improve) (reg guess) (reg x))
-       (assign guess (reg t))
+       (assign guess (op improve) (reg guess) (reg x))
+
        (goto (label sqrt))
      sqrt-done)))
 
 (define sqrt2
   (make-machine
-   '(x guess improve t)
+   '(x guess t)
    (list (list '/ /)
          (list 'average average)
          (list 'good-enough?
@@ -73,15 +73,14 @@
 
        ;; improve
        (assign t (op /) (reg x) (reg guess))
-       (assign improve (op average) (reg guess) (reg t))
+       (assign guess (op average) (reg guess) (reg t))
 
-       (assign guess (reg improve))
        (goto (label sqrt))
      sqrt-done)))
 
 (define sqrt3
   (make-machine
-   '(x guess improve good-enough? guess2 diff t)
+   '(x guess improve t)
    (list (list '- -)
          (list '/ /)
          (list '< <)
@@ -93,17 +92,16 @@
      sqrt
 
        ;; good-enough?
-       (assign guess2       (op square) (reg guess))
-       (assign diff         (op -)      (reg guess2) (reg x))
-       (assign good-enough? (op abs)    (reg diff))
-       (test                (op <)      (reg good-enough?) (const 0.001))
+       (assign t (op square) (reg guess))
+       (assign t (op -)      (reg t) (reg x))
+       (assign t (op abs)    (reg t))
+       (test     (op <)      (reg t) (const 0.001))
        (branch (label sqrt-done))
 
        ;; improve
-       (assign t (op /) (reg x) (reg guess))
-       (assign improve (op average) (reg guess) (reg t))
+       (assign t       (op /)       (reg x) (reg guess))
+       (assign guess (op average) (reg guess) (reg t))
 
-       (assign guess (reg improve))
        (goto (label sqrt))
      sqrt-done)))
 

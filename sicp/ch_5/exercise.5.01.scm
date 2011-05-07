@@ -16,3 +16,5 @@
 ;;              (iter (* counter product)
 ;;                    (+ counter 1))))
 ;;        (iter 1 1))
+
+;; see exercise.5.01.graffle

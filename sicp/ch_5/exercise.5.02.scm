@@ -26,11 +26,4 @@
        (goto (label factorial-top))
      factorial-done)))
 
-(define (assert-machine machine inputs output expected)
-  (map (lambda (input)
-         (set-register-contents! machine (car input) (cadr input)))
-       inputs)
-  (start machine)
-  (test expected (get-register-contents machine output)))
-
 (assert-machine factorial '((n 5)) 'product 120)

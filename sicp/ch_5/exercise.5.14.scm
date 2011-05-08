@@ -46,17 +46,22 @@
        (goto (reg continue))
      fact-done)))
 
-(assert-machine factorial '((n 1)) 'product 1)
-(assert-machine factorial '((n 2)) 'product 2)
-(assert-machine factorial '((n 3)) 'product 6)
-(assert-machine factorial '((n 4)) 'product 24)
-(assert-machine factorial '((n 5)) 'product 120)
+(test-group "5.14"
+  (define (test-stats machine depth pushes)
+    (test (list 'stack (list (list 'max-depth depth)
+                             (list 'number-pushes pushes)))
+          (assoc 'stack (machine 'statistics))))
 
-;; 1 = ((max-depth 0) (number-pushes 0))
-;; 2 = ((max-depth 2) (number-pushes 2))
-;; 3 = ((max-depth 4) (number-pushes 4))
-;; 4 = ((max-depth 6) (number-pushes 6))
-;; 5 = ((max-depth 8) (number-pushes 8))
-;;
+  (assert-machine factorial '((n 1)) 'product 1)
+  (test-stats factorial 0 0)
+  (assert-machine factorial '((n 2)) 'product 2)
+  (test-stats factorial 2 2)
+  (assert-machine factorial '((n 3)) 'product 6)
+  (test-stats factorial 4 4)
+  (assert-machine factorial '((n 4)) 'product 24)
+  (test-stats factorial 6 6)
+  (assert-machine factorial '((n 5)) 'product 120)
+  (test-stats factorial 8 8))
+
 ;; max-depth = 2*(n-1)
 ;; pushes    = 2*(n-1)

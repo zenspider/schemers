@@ -1,6 +1,8 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(require-library machine)
+(import machine)
 
 ;;; Exercise 5.9
 
@@ -9,3 +11,10 @@
 ;; Modify the expression-processing procedures to enforce the
 ;; condition that operations can be used only with registers and
 ;; constants.
+
+(test-error
+ (make-machine
+  '(a)
+  (list (list '+ +))
+  '(a
+    (perform (op +) (label a)))))

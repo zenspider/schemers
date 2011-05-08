@@ -185,6 +185,7 @@
             (flag (make-register 'flag))
             (stack (make-stack))
             (the-instruction-sequence '())
+            (tracing #f)
             (instruction-count 0))
         (let ((the-ops (list (list 'initialize-stack
                                    (lambda () (stack 'initialize)))
@@ -210,6 +211,8 @@
               (if (null? insts)
                   'done
                   (begin
+                    (if tracing
+                        (printf "[~s] ~s~n" instruction-count (caar insts)))
                     ((instruction-execution-proc (car insts)))
                     (execute)))))
 
@@ -221,6 +224,12 @@
           (define (get-statistics)
             (list (list 'instruction-count instruction-count)
                   (list 'stack (stack 'statistics))))
+
+          (define (trace-on)
+            (set! tracing #t))
+
+          (define (trace-off)
+            (set! tracing #f))
 
           (define (dispatch message)
             (case message
@@ -235,6 +244,8 @@
                (lambda (ops) (set! the-ops (append the-ops ops))))
               ((stack) stack)
               ((statistics) (get-statistics))
+              ((trace-on)  (trace-on))
+              ((trace-off) (trace-off))
               ((operations) the-ops)
               (else (error "Unknown request -- MACHINE" message))))
 

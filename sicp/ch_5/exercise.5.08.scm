@@ -1,6 +1,8 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(require-library machine)
+(import machine)
 
 ;;; Exercise 5.8
 
@@ -21,3 +23,17 @@
 ;; `a' be when control reaches `there'? Modify the `extract-labels'
 ;; procedure so that the assembler will signal an error if the same
 ;; label name is used to indicate two different locations.
+
+(test-error
+ (make-machine
+  '(a)
+  '()
+  '(start
+    (goto (label here))
+    here
+    (assign a (const 3))
+    (goto (label there))
+    here
+    (assign a (const 4))
+    (goto (label there))
+    there)))

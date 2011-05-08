@@ -108,9 +108,11 @@
                           (lambda (insts labels)
                             (let ((next-inst (car text)))
                               (if (label? next-inst)
-                                  (receive insts
-                                    (cons (make-label-entry next-inst insts)
-                                          labels))
+                                  (if (assoc next-inst labels)
+                                      (error "Duplicate label: " next-inst)
+                                      (receive insts
+                                        (cons (make-label-entry next-inst insts)
+                                              labels)))
                                   (receive (cons (make-instruction next-inst)
                                                  insts)
                                     labels)))))))

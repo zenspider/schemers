@@ -213,8 +213,12 @@
 
           (define (dispatch message)
             (case message
+          (define (initialize)
+            (stack 'initialize)
+            (set-contents! pc the-instruction-sequence))
+
               ((start)
-               (set-contents! pc the-instruction-sequence)
+               (initialize)
                (execute))
               ((install-instruction-sequence)
                (lambda (seq) (set! the-instruction-sequence seq)))

@@ -54,9 +54,9 @@
 
 ;; 1 = ((max-depth 0) (number-pushes 0))
 ;; 2 = ((max-depth 2) (number-pushes 2))
-;; 3 = ((max-depth 4) (number-pushes 6))
-;; 4 = ((max-depth 6) (number-pushes 12))
-;; 5 = ((max-depth 8) (number-pushes 20))
+;; 3 = ((max-depth 4) (number-pushes 4))
+;; 4 = ((max-depth 6) (number-pushes 6))
+;; 5 = ((max-depth 8) (number-pushes 8))
 ;;
 ;; max-depth = 2*(n-1)
-;; pushes    = n^2 - n
+;; pushes    = 2*(n-1)

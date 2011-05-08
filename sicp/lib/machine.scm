@@ -184,7 +184,8 @@
       (let ((pc (make-register 'pc))
             (flag (make-register 'flag))
             (stack (make-stack))
-            (the-instruction-sequence '()))
+            (the-instruction-sequence '())
+            (instruction-count 0))
         (let ((the-ops (list (list 'initialize-stack
                                    (lambda () (stack 'initialize)))
                              (list 'print-stack-statistics
@@ -205,18 +206,24 @@
 
           (define (execute)
             (let ((insts (get-contents pc)))
+              (set! instruction-count (+ 1 instruction-count))
               (if (null? insts)
                   'done
                   (begin
                     ((instruction-execution-proc (car insts)))
                     (execute)))))
 
-          (define (dispatch message)
-            (case message
           (define (initialize)
             (stack 'initialize)
+            (set! instruction-count 0)
             (set-contents! pc the-instruction-sequence))
 
+          (define (get-statistics)
+            (list (list 'instruction-count instruction-count)
+                  (list 'stack (stack 'statistics))))
+
+          (define (dispatch message)
+            (case message
               ((start)
                (initialize)
                (execute))
@@ -227,6 +234,7 @@
               ((install-operations)
                (lambda (ops) (set! the-ops (append the-ops ops))))
               ((stack) stack)
+              ((statistics) (get-statistics))
               ((operations) the-ops)
               (else (error "Unknown request -- MACHINE" message))))
 
@@ -317,7 +325,7 @@
             ((pop)              (pop))
             ((initialize)       (initialize))
             ((print-statistics) (print-statistics))
-            ((get-statistics)   (get-statistics))
+            ((statistics)       (get-statistics))
             (else (error "Unknown request -- STACK" message))))
         dispatch))
 

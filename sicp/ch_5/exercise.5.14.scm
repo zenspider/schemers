@@ -1,6 +1,9 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(use extras)
+(require-library machine)
+(import machine)
 
 ;;; Exercise 5.14
 
@@ -18,3 +21,42 @@
 ;; GCD machine in *Note Figure 5-4::), so that you will not have to
 ;; repeatedly invoke `get-register-contents',
 ;; `set-register-contents!', and `start'.
+
+(define factorial
+  (make-machine
+   '(n continue product)
+   (list (list '= =) (list '- -) (list '* *))
+   '(controller
+       (assign continue (label fact-done))
+     fact-loop
+       (test (op =) (reg n) (const 1))
+       (branch (label base-case))
+       (save continue)
+       (save n)
+       (assign n (op -) (reg n) (const 1))
+       (assign continue (label after-fact))
+       (goto (label fact-loop))
+     after-fact
+       (restore n)
+       (restore continue)
+       (assign product (op *) (reg n) (reg product))
+       (goto (reg continue))
+     base-case
+       (assign product (const 1))
+       (goto (reg continue))
+     fact-done)))
+
+(assert-machine factorial '((n 1)) 'product 1)
+(assert-machine factorial '((n 2)) 'product 2)
+(assert-machine factorial '((n 3)) 'product 6)
+(assert-machine factorial '((n 4)) 'product 24)
+(assert-machine factorial '((n 5)) 'product 120)
+
+;; 1 = ((max-depth 0) (number-pushes 0))
+;; 2 = ((max-depth 2) (number-pushes 2))
+;; 3 = ((max-depth 4) (number-pushes 6))
+;; 4 = ((max-depth 6) (number-pushes 12))
+;; 5 = ((max-depth 8) (number-pushes 20))
+;;
+;; max-depth = 2*(n-1)
+;; pushes    = n^2 - n

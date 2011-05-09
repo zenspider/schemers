@@ -18,6 +18,8 @@
      set-register-contents!
      get-register-contents
      start
+     trace-register-on
+     trace-register-off
      assert-machine)
 
     (import scheme chicken test)
@@ -45,6 +47,12 @@
 
     (define (start machine)
       (machine 'start))
+
+    (define (trace-register-on machine name)
+      (((machine 'get-register) name) 'trace-on))
+
+    (define (trace-register-off machine name)
+      (((machine 'get-register) name) 'trace-off))
 
     (define-syntax assert-machine
       (syntax-rules ()
@@ -283,11 +291,17 @@
             (else (error "Unknown expression type --ASSEMBLE" exp))))
 
     (define (make-register name)
-      (let ((contents '*unassigned*))
+      (let ((contents '*unassigned*)
+            (tracing #f))
         (define (dispatch message)
           (case message
             ((get) contents)
-            ((set) (lambda (value) (set! contents value)))
+            ((set) (lambda (value)
+                     (when tracing
+                       (printf "register: ~s = ~s~n" name value))
+                     (set! contents value)))
+            ((trace-on)  (set! tracing #t))
+            ((trace-off) (set! tracing #f))
             (else  (error "Unknown request -- REGISTER" message))))
         dispatch))
 

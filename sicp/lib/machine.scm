@@ -18,6 +18,8 @@
      set-register-contents!
      get-register-contents
      start
+     trace-on
+     trace-off
      trace-register-on
      trace-register-off
      assert-machine)
@@ -47,6 +49,12 @@
 
     (define (start machine)
       (machine 'start))
+
+    (define (trace-on machine)
+      (machine 'trace-on))
+
+    (define (trace-off machine)
+      (machine 'trace-off))
 
     (define (trace-register-on machine name)
       (((machine 'get-register) name) 'trace-on))

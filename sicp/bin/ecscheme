@@ -1,0 +1,8 @@
+#!/usr/bin/env csi -s
+
+(require-library machine)
+(import machine)
+(require-library ec-eval)
+(import ec-eval)
+
+(start ec-eval)

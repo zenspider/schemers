@@ -306,7 +306,8 @@
             ((get) contents)
             ((set) (lambda (value)
                      (when tracing
-                       (printf "register: ~s = ~s~n" name value))
+                       (printf "register: ~s = ~s~n" name
+                               (if (eq? name 'exp) value '...)))
                      (set! contents value)))
             ((trace-on)  (set! tracing #t))
             ((trace-off) (set! tracing #f))

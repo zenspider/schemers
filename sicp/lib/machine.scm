@@ -65,7 +65,7 @@
     (define-syntax assert-machine
       (syntax-rules ()
         ((_ machine inputs output expected)
-         (let* ((args (map cadr inputs))
+         (let* ((args (map car inputs))
                 (call (append (list (quote machine)) args))
                 (desc (sprintf "(assert-machine ~s ~s)" expected call)))
            (for-each (lambda (in)

@@ -89,15 +89,17 @@
   ;; Other Values:
 
   (define primitive-procedures
-    (list (list '*     *)
-          (list '+     +)
-          (list '-     -)
-          (list '/     /)
-          (list '=     =)
-          (list 'car   car)
-          (list 'cdr   cdr)
-          (list 'cons  cons)
-          (list 'null? null?)))
+    (list (list '*      *)
+          (list '+      +)
+          (list '-      -)
+          (list '/      /)
+          (list '=      =)
+          (list 'car    car)
+          (list 'cdr    cdr)
+          (list 'cons   cons)
+          (list 'eq?    eq?)
+          (list 'length length)
+          (list 'null?  null?)))
 
   ;; Support Functions (sorted):
 

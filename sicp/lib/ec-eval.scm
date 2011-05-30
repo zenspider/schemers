@@ -57,20 +57,19 @@
   (define assignment-value         caddr)
   (define assignment-variable      cadr)
   (define begin-actions            cdr)
-  ;; (define cond-actions             cdr)
-  ;; (define cond-clauses             cdr)
-  ;; (define cond-predicate           car)
-  ;; (define enclosing-environment    cdr)
+  (define cond-actions             cdr)
+  (define cond-clauses             cdr)
+  (define cond-predicate           car)
   (define false                    #f)
   (define first-exp                car)
   (define first-frame              car)
   (define first-operand            car)
-  ;; (define frame-values             cdr)
-  ;; (define frame-variables          car)
   (define if-consequent            caddr)
   (define if-predicate             cadr)
   (define lambda-body              cddr)
   (define lambda-params            cadr)
+  (define let-body                 cddr)
+  (define let-params               cadr)
   (define no-operands?             null?)
   (define null                     '())
   (define operands                 cdr)
@@ -119,14 +118,14 @@
   (define (compound-procedure? exp)
     (tagged-list? exp 'proc))
 
-  ;; (define (cond->if exp)
-  ;;   (expand-clauses (cond-clauses exp)))
-  ;;
-  ;; (define (cond-else-clause? clause)
-  ;;   (eq? (cond-predicate clause) 'else))
-  ;;
-  ;; (define (cond? exp)
-  ;;   (tagged-list? exp 'cond))
+  (define (cond->if exp)
+    (expand-clauses (cond-clauses exp)))
+
+  (define (cond-else-clause? clause)
+    (eq? (cond-predicate clause) 'else))
+
+  (define (cond? exp)
+    (tagged-list? exp 'cond))
 
   (define (define-variable! var val env)
     (let ((pair (find-pair-in-frame (first-frame env) var)))
@@ -148,39 +147,17 @@
   (define (definition? exp)
     (tagged-list? exp 'define))
 
-  ;; (define (eval-assignment exp env)
-  ;;   (set-variable-value! (assignment-variable exp)
-  ;;                        (eval (assignment-value exp) env)
-  ;;                        env)
-  ;;   'ok)
-  ;;
-  ;; (define (eval-definition exp env)
-  ;;   (define-variable! (definition-variable exp)
-  ;;     (eval (definition-value exp) env)
-  ;;     env)
-  ;;   'ok)
-  ;;
-  ;; (define (eval-if exp env)
-  ;;   (if (true? (eval (if-predicate exp) env))
-  ;;       (eval (if-consequent exp) env)
-  ;;       (eval (if-alternative exp) env)))
-  ;;
-  ;; (define (eval-sequence exps env)
-  ;;   (cond ((last-exp? exps) (eval (first-exp exps) env))
-  ;;         (else (eval (first-exp exps) env)
-  ;;               (eval-sequence (rest-exps exps) env))))
-  ;;
-  ;; (define (expand-clauses clauses)
-  ;;   (if (null? clauses) 'false
-  ;;       (let ((first (car clauses))
-  ;;             (rest  (cdr clauses)))
-  ;;         (if (cond-else-clause? first)
-  ;;             (if (null? rest)
-  ;;                 (sequence->exp (cond-actions first))
-  ;;                 (error "ELSE clause isn't last --COND->IF" clauses))
-  ;;             (make-if (cond-predicate first)
-  ;;                      (sequence->exp (cond-actions first))
-  ;;                      (expand-clauses rest))))))
+  (define (expand-clauses clauses)
+    (if (null? clauses) 'false
+        (let ((first (car clauses))
+              (rest  (cdr clauses)))
+          (if (cond-else-clause? first)
+              (if (null? rest)
+                  (sequence->exp (cond-actions first))
+                  (error "ELSE clause isn't last --COND->IF" clauses))
+              (make-if (cond-predicate first)
+                       (sequence->exp (cond-actions first))
+                       (expand-clauses rest))))))
 
   (define (extend-environment vars vals base-env)
     (if (= (length vars) (length vals))
@@ -196,8 +173,8 @@
               pair))))
 
   (define (find-pair-in-frame frame var)
-    (cond ((null? frame)          null)
-          ((eq? var (caar frame)) (car frame))
+    (cond ((null? frame)            null)
+          ((eq? var (caar frame))   (car frame))
           (else (find-pair-in-frame (cdr frame) var))))
 
   (define (if-alternative exp)
@@ -214,6 +191,21 @@
   (define (last-exp? seq)
     (null? (cdr seq)))
 
+  (define (let? exp)
+    (tagged-list? exp 'let))
+
+  (define (let-args exp)
+    (map car (let-params exp)))
+
+  (define (let-vals exp)
+    (map cadr (let-params exp)))
+
+  (define (let->call args vals body)
+    (append (list (append (list 'lambda args) body)) vals))
+
+  (define (let->combination exp)
+    (let->call (let-args exp) (let-vals exp) (let-body exp)))
+
   ;; (define (list-of-values exps env)
   ;;   (if (no-operands? exps) null
   ;;       (cons (eval (first-operand exps) env)
@@ -225,16 +217,16 @@
           (error "Unbound variable" var)
           (cadr pair))))
 
-  ;; (define (make-begin seq)
-  ;;   (cons 'begin seq))
+  (define (make-begin seq)
+    (cons 'begin seq))
 
   (define (make-frame vars vals)
     (zip vars vals))
 
-  ;; (define (make-if predicate consequent alternative)
-  ;;   (if alternative
-  ;;       (list 'if predicate consequent alternative)
-  ;;       (list 'if predicate consequent)))
+  (define (make-if predicate consequent alternative)
+    (if alternative
+        (list 'if predicate consequent alternative)
+        (list 'if predicate consequent)))
 
   (define (make-lambda params body)
     (append (list 'lambda params) body))
@@ -256,11 +248,11 @@
   (define (self-evaluating? exp)
     (or (number? exp) (string? exp)))
 
-  ;; (define (sequence->exp seq)
-  ;;   (cond ((null? seq) seq)
-  ;;         ((last-exp? seq)
-  ;;          (first-exp seq))
-  ;;         (else (make-begin seq))))
+  (define (sequence->exp seq)
+    (cond ((null? seq) seq)
+          ((last-exp? seq)
+           (first-exp seq))
+          (else (make-begin seq))))
 
   (define (set-variable-value! var val env)
     (let ((pair (find-pair-in-env env var)))
@@ -304,6 +296,8 @@
      (list 'car                       car)
      (list 'cdr                       cdr)
      (list 'compound-procedure?       compound-procedure?)
+     (list 'cond->if                  cond->if)
+     (list 'cond?                     cond?)
      (list 'cons                      cons)
      (list 'define-variable!          define-variable!)
      (list 'definition-value          definition-value)
@@ -324,6 +318,8 @@
      (list 'lambda?                   lambda?)
      (list 'last-exp?                 last-exp?)
      (list 'last-operand?             last-operand?)
+     (list 'let->combination          let->combination)
+     (list 'let?                      let?)
      (list 'lookup-variable-value     lookup-variable-value)
      (list 'make-procedure            make-procedure)
      (list 'no-operands?              no-operands?)
@@ -390,6 +386,13 @@
        (branch (label ev-lambda))
        (test (op begin?) (reg exp))
        (branch (label ev-begin))
+
+       (test (op cond?) (reg exp))
+       (branch (label ev-cond))
+
+       (test (op let?) (reg exp))
+       (branch (label ev-let))
+
        (test (op application?) (reg exp))
        (branch (label ev-application))
        (test (op eof?) (reg exp))
@@ -417,6 +420,11 @@
        (assign exp (op lambda-body) (reg exp))
        (assign val (op make-procedure) (reg unev) (reg exp) (reg env))
        (goto (reg continue))
+
+       ev-let
+
+       (assign exp (op let->combination) (reg exp))
+       ;; fall through to ev-application
 
        ev-application
 
@@ -519,6 +527,11 @@
 
        (restore continue)
        (goto (label eval-dispatch))
+
+       ev-cond
+
+       (assign exp (op cond->if) (reg exp))
+       ;; fall through to ev-if
 
        ev-if
 

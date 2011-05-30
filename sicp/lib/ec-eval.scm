@@ -53,13 +53,16 @@
 
   ;; Simple Aliases:
 
+  (define (cdar x) (cdr (car x)))
+
   (define application?             pair?)
   (define assignment-value         caddr)
   (define assignment-variable      cadr)
   (define begin-actions            cdr)
-  (define cond-actions             cdr)
+  (define cond-actions             cdar)
   (define cond-clauses             cdr)
-  (define cond-predicate           car)
+  (define cond-predicate           caar)
+  (define cond-rest                cdr)
   (define false                    #f)
   (define first-exp                car)
   (define first-frame              car)
@@ -118,9 +121,6 @@
   (define (compound-procedure? exp)
     (tagged-list? exp 'proc))
 
-  (define (cond->if exp)
-    (expand-clauses (cond-clauses exp)))
-
   (define (cond-else-clause? clause)
     (eq? (cond-predicate clause) 'else))
 
@@ -146,18 +146,6 @@
 
   (define (definition? exp)
     (tagged-list? exp 'define))
-
-  (define (expand-clauses clauses)
-    (if (null? clauses) 'false
-        (let ((first (car clauses))
-              (rest  (cdr clauses)))
-          (if (cond-else-clause? first)
-              (if (null? rest)
-                  (sequence->exp (cond-actions first))
-                  (error "ELSE clause isn't last --COND->IF" clauses))
-              (make-if (cond-predicate first)
-                       (sequence->exp (cond-actions first))
-                       (expand-clauses rest))))))
 
   (define (extend-environment vars vals base-env)
     (if (= (length vars) (length vals))
@@ -281,9 +269,13 @@
   (define (unassigned? exp)
     (eq? '*unassigned* exp))
 
+  (define (debug-exp label exp)
+    (printf "~s = ~s~n" label exp)
+    #f)
+
   (define eceval-operations
     (list
-     (list 'unassigned?               unassigned?)
+     (list 'debug-exp                 debug-exp)
      (list 'adjoin-arg                adjoin-arg)
      (list 'announce-output           announce-output)
      (list 'application?              application?)
@@ -296,7 +288,10 @@
      (list 'car                       car)
      (list 'cdr                       cdr)
      (list 'compound-procedure?       compound-procedure?)
-     (list 'cond->if                  cond->if)
+     (list 'cond-actions              cond-actions)
+     (list 'cond-clauses              cond-clauses)
+     (list 'cond-predicate            cond-predicate)
+     (list 'cond-rest                 cond-rest)
      (list 'cond?                     cond?)
      (list 'cons                      cons)
      (list 'define-variable!          define-variable!)
@@ -339,6 +334,7 @@
      (list 'set-variable-value!       set-variable-value!)
      (list 'text-of-quotation         text-of-quotation)
      (list 'true?                     true?)
+     (list 'unassigned?               unassigned?)
      (list 'user-print                user-print)
      (list 'variable?                 variable?)))
 
@@ -370,7 +366,7 @@
 
        eval-dispatch
 
-       (perform (op debug-exp) (const eval-dispatch) (reg exp))
+       ;; (perform (op debug-exp) (const eval-dispatch) (reg exp))
 
        (test (op self-evaluating?) (reg exp)) (branch (label ev-self-eval))
        (test (op variable?)        (reg exp)) (branch (label ev-variable))
@@ -517,8 +513,45 @@
 
        ev-cond
 
-       (assign exp (op cond->if) (reg exp))
-       ;; fall through to ev-if
+       ;; skip over 'cond'
+       (assign exp (op cond-clauses) (reg exp))
+       (save exp)
+       (save env)
+       (save continue)
+       (assign continue (label ev-cond-decide))
+       (assign exp (op cond-predicate) (reg exp))
+       ;; haha cheating! FIX: I think this isn't a push/pop :(
+       (perform (op define-variable!) (const else) (const true) (reg env))
+       (goto (label eval-dispatch))
+
+       ev-cond-decide
+
+       (restore continue)
+       (restore env)
+       (restore exp)
+       (test (op true?) (reg val))
+       (branch (label ev-cond-true))
+       (assign exp (op cond-rest) (reg exp))
+       (test (op null?) (reg exp))
+       (branch (label ev-cond-done))
+       (save exp)
+       (save env)
+       (save continue)
+       (assign continue (label ev-cond-decide))
+       (assign exp (op cond-predicate) (reg exp))
+       (goto (label eval-dispatch))
+
+       ev-cond-true
+
+       (assign exp (op cond-actions) (reg exp))
+       (assign unev (reg exp))
+       (save continue)
+       (goto (label ev-sequence))
+
+       ev-cond-done
+
+       (assign val (const *undefined*))
+       (goto (reg continue))
 
        ev-if
 
@@ -608,7 +641,6 @@
        (perform (op user-print) (reg val))
        (perform (op announce-output) (const "Bye!"))
        (goto (label done))
-       ;; (goto (label read-eval-print-loop))
 
        done
 

@@ -286,8 +286,12 @@
 
   (define (variable? exp) (symbol? exp))
 
+  (define (unassigned? exp)
+    (eq? '*unassigned* exp))
+
   (define eceval-operations
     (list
+     (list 'unassigned?               unassigned?)
      (list 'adjoin-arg                adjoin-arg)
      (list 'announce-output           announce-output)
      (list 'application?              application?)
@@ -346,7 +350,20 @@
     (make-machine
      '(exp env val proc argl continue unev)
      eceval-operations
-     '(read-eval-print-loop
+     '(testing-or-repl
+
+       (test (op unassigned?) (reg exp))
+       (branch (label read-eval-print-loop))
+
+       testing
+
+       ;; exp is already assigned
+       (perform (op initialize-stack))
+       (assign env (op get-global-environment))
+       (assign continue (label done))
+       (goto (label eval-dispatch))
+
+       read-eval-print-loop
 
        (perform (op initialize-stack))
        (perform (op prompt-for-input) (const ";;; EC-Eval Input:"))
@@ -589,12 +606,12 @@
        signal-error
 
        (perform (op user-print) (reg val))
+       (perform (op announce-output) (const "Bye!"))
        (goto (label done))
        ;; (goto (label read-eval-print-loop))
 
        done
 
-       (perform (op announce-output) (const "Bye!"))
        )))
 
   (define the-global-environment

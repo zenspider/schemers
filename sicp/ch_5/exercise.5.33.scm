@@ -1,7 +1,10 @@
 #!/usr/bin/env csi -s
 
 (use test)
-(require-library eval)
+
+(require-library ec-eval)
+(import ec-eval)
+
 (require-library machine)
 (import machine)
 
@@ -23,7 +26,8 @@
   *
 
   (import
-   eval
+   ec-eval
+   machine
 
    (only scheme
          * + - / < = and append caadr caar cadddr caddr cadr car cdadr
@@ -55,10 +59,8 @@
           (else
            (error "Unknown expression type -- COMPILE" exp))))
 
-;;; Stupid renamesa and simple definitions
+;;; Stupid renames and simple definitions
 
-  (define compiled-procedure-entry cadr)
-  (define compiled-procedure-env  caddr)
   (define label-counter 0)
   (define all-regs '(env proc val argl continue))
 
@@ -94,7 +96,7 @@
     (append-instruction-sequences
      (car operand-codes)
      (make-instruction-sequence '(val) '(argl)
-                                '((assign argl (op list (reg val)))))))
+                                '((assign argl (op list) (reg val))))))
 
   (define (code-to-get-rest-args operand-codes)
     (let ((code-for-next-arg (code-for-next-arg operand-codes)))
@@ -212,7 +214,7 @@
            (make-instruction-sequence
             '(proc) all-regs
             `((assign continue (label ,linkage))
-              (assign val (op copmiled-procedure-entry) (reg proc))
+              (assign val (op compiled-procedure-entry) (reg proc))
               (goto (reg val)))))
           ((and (not (eq? target 'val)) (not (eq? linkage 'return)))
            (let ((proc-return (make-label 'proc-return)))
@@ -284,9 +286,6 @@
       '(env)
       (list target)
       `((assign ,target (op lookup-variable-value) (const ,exp) (reg env))))))
-
-  (define (compiled-procedure? proc)
-    (tagged-list? proc 'compiled-procedure))
 
   (define (construct-arglist operand-codes) ; FIX: I don't understand this
     (let ((operand-codes (reverse operand-codes)))
@@ -377,7 +376,42 @@
     (make-instruction-sequence
      (registers-needed seq)
      (registers-modified seq)
-     (append (statements seq) (statements body-seq)))))
+     (append (statements seq) (statements body-seq))))
+
+
+  ;; TODO: move this around
+  (append-operations ec-eval
+                     'false?                    false?
+                     'make-compiled-procedure   make-compiled-procedure))
+
+;; TODO: figure out why this can't be inside the module
+(define-syntax assert-compile
+  (syntax-rules ()
+    ((_ var expected expr)
+     (let* ((desc (sprintf "(assert-compile ~s ~s ~s)" var expected expr))
+            (code (assemble (statements (compile expr 'val 'next))
+                            ec-eval)))
+
+       (set! the-global-environment (setup-environment))
+       (set-register-contents! ec-eval 'val  code)
+       (set-register-contents! ec-eval 'flag true) ; outside control
+       (start ec-eval)
+       (test desc expected (lookup-variable-value
+                            var
+                            (get-register-contents ec-eval 'env)))))
+    ((_ expected expr)
+     (let* ((desc (sprintf "(assert-compile ~s ~s)" expected expr))
+            (code (assemble (statements (compile expr 'val 'next))
+                            ec-eval)))
+
+       (set! the-global-environment (setup-environment))
+       (set-register-contents! ec-eval 'val  code)
+       (set-register-contents! ec-eval 'flag true) ; outside control
+       (start ec-eval)
+       (test desc expected (get-register-contents ec-eval 'val))))))
+
+
+
 
 (import compiler)
 
@@ -416,28 +450,107 @@
     (test-compile-var 'var 'xxxx   '((assign x
                                              (op lookup-variable-value)
                                              (const var) (reg env))
-                                     (goto (label xxxx))))))
+                                     (goto (label xxxx)))))
+
+  (test-group "compile-and-run"
+    (assert-compile 'x 3
+                    '(define x (+ 1 2)))
+
+    (assert-compile 3
+                    '(begin
+                       (define x (+ 1 2))
+                       x))
 
 
-;; (assert-machine expt-recursive '((b 2) (n 3)) 'product 8)
-;; (assert-machine expt-iterative '((b 2) (n 3)) 'product 8)
+    (assert-compile 120
+                    '(begin
+                       (define (factorial n)
+                                (if (= n 1)
+                                    1
+                                    (* (factorial (- n 1)) n)))
+                       (factorial 5)))
 
-(let ((obj-code (compile '(define (factorial n)
-                            (if (= n 1)
-                                1
-                                (* (factorial (- n 1)) n)))
-                         'x 'next)))
-  (let ((needed (car   obj-code))
-        (vars   (cadr  obj-code))
-        (code   (caddr obj-code)))
-    (make-machine vars
-                  (list (list '= =)
-                        (list '* *)
-                        (list '- -)
-                        (list 'make-compiled-procedure make-compiled-procedure))
-                  code)))
+    )
+  )
 
-;; ((env) (val x)
+(define (compile-and-go expression)
+  (let ((instructions (assemble (statements
+                                 (compile expression 'val 'return))
+                                ec-eval)))
+    (set! the-global-environment (setup-environment))
+    (set-register-contents! ec-eval 'val instructions)
+    (set-register-contents! ec-eval 'flag true)
+    (start ec-eval)))
+
+(define (compile-and-go2 expression)
+  (let ((instructions (assemble (statements
+                                 (compile expression 'val 'next))
+                                ec-eval)))
+    (set! the-global-environment (setup-environment))
+    (set-register-contents! ec-eval 'val instructions)
+    (set-register-contents! ec-eval 'flag true)
+    (start ec-eval)))
+
+(define (get-env machine var)
+  (lookup-variable-value var (get-register-contents machine 'env)))
+
+;; (test '((env)
+;;         (env proc argl continue val y)
+;;
+;;         ((assign proc (op lookup-variable-value) (const +) (reg env))
+;;          (assign val (const 2))
+;;          (assign argl (op list (reg val)))
+;;          (assign val (const 1))
+;;          (assign argl (op cons) (reg val) (reg argl))
+;;          (test (op primitive-procedure?) (reg proc))
+;;          (branch (label primitive-branch1))
+;;
+;;          compiled-branch2
+;;
+;;          (assign continue (label after-call3))
+;;          (assign val (op compiled-procedure-entry) (reg proc))
+;;          (goto (reg val))
+;;
+;;          primitive-branch1
+;;
+;;          (assign val (op apply-primitive-procedure) (reg proc) (reg argl))
+;;
+;;          after-call3
+;;
+;;          (perform (op define-variable!) (const x) (reg val) (reg env))
+;;          (assign y (const ok))))
+;;       (compile '(define x (+ 1 2)) 'y 'next))
+
+;; (let ((obj-code (compile '(define (factorial n)
+;;                             (if (= n 1)
+;;                                 1
+;;                                 (* (factorial (- n 1)) n)))
+;;                          'x 'next)))
+;;   (let ((need (car   obj-code))
+;;         (mods (cadr  obj-code))
+;;         (code (caddr obj-code)))
+;;     (let ((f (make-machine
+;;               (list-union all-regs mods)
+;;               (list (list '= =)
+;;                     (list '* *)
+;;                     (list '- -)
+;;                     (list 'apply-primitive-procedure apply-primitive-procedure)
+;;                     (list 'compiled-procedure-entry  compiled-procedure-entry)
+;;                     (list 'compiled-procedure-env    compiled-procedure-env)
+;;                     (list 'cons                      cons)
+;;                     (list 'define-variable!          define-variable!)
+;;                     (list 'extend-environment        extend-environment)
+;;                     (list 'false?                    false?)
+;;                     (list 'list                      list)
+;;                     (list 'lookup-variable-value     lookup-variable-value)
+;;                     (list 'make-compiled-procedure   make-compiled-procedure)
+;;                     (list 'primitive-procedure?      primitive-procedure?))
+;;               code)))
+;;       (assert-machine f '((n 5)) 'val 120))))
+
+;; ((env)                                  ; needs
+;;  (val x)                                ; modifies
+;;  ;; statements:
 ;;   ((assign val (op make-compiled-procedure) (label entry1) (reg env))
 ;;    (goto (label after-lambda2))
 ;;    entry1

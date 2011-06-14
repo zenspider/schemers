@@ -54,6 +54,9 @@
     (define (trace-register-off machine name)
       (((machine 'get-register) name) 'trace-off))
 
+    (define (append-operations machine . operations)
+      ((machine 'install-operations) (chop operations 2)))
+
     (define-syntax assert-machine
       (syntax-rules ()
         ((_ machine inputs output expected)
@@ -64,6 +67,7 @@
                        (let ((key (car in)) (val (cadr in)))
                          (set-register-contents! machine key val)))
                      inputs)
+           (set-register-contents! ec-eval 'flag true) ; outside control
            (start machine)
            (test desc expected (get-register-contents machine output))))))
 
@@ -93,9 +97,12 @@
       (and (pair? exp) (eq? (car exp) tag)))
 
     (define (constant-exp?  exp) (tagged-list? exp 'const))
+
     (define (label-exp?     exp) (tagged-list? exp 'label))
+
     (define (operation-exp? exp)
       (and (pair? exp) (tagged-list? (car exp) 'op)))
+
     (define (register-exp?  exp) (tagged-list? exp 'reg))
 
 ;;; Support Functions:
@@ -262,9 +269,7 @@
     (define (make-operation-exp exp machine labels operations)
       (let ((op (lookup-prim (operation-exp-op exp) operations))
             (aprocs (map (lambda (e)
-                           (if (or (register-exp? e) (constant-exp? e))
-                               (make-primitive-exp e machine labels)
-                               (error "invalid arg: " e)))
+                           (make-primitive-exp e machine labels))
                          (operation-exp-operands exp))))
         (lambda () (apply op (map (lambda (p) (p)) aprocs)))))
 

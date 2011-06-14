@@ -3,8 +3,7 @@
 (require-library machine)
 
 (module ec-eval
-
-  (ec-eval setup-environment)
+  *
 
   (import
 
@@ -16,12 +15,12 @@
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
-   (only chicken error use))
+   (only chicken error use)
+
+   machine)
 
   (use extras)
   (use (only srfi-1 zip))
-
-  (import machine)
 
   (define (empty-arglist) '())
 
@@ -59,7 +58,10 @@
   (define assignment-value         caddr)
   (define assignment-variable      cadr)
   (define begin-actions            cdr)
+  (define compiled-procedure-entry cadr)
+  (define compiled-procedure-env   caddr)
   (define cond-actions             cdar)
+  (define cond-clauses             cdr)
   (define cond-clauses             cdr)
   (define cond-predicate           caar)
   (define cond-rest                cdr)
@@ -87,6 +89,7 @@
   (define text-of-quotation        cadr)
   (define the-empty-environment    null)
   (define true                     #t)
+
 
   ;; Other Values:
 
@@ -117,6 +120,9 @@
 
   (define (begin? exp)
     (tagged-list? exp 'begin))
+
+  (define (compiled-procedure? proc)
+    (tagged-list? proc 'compiled-procedure))
 
   (define (compound-procedure? exp)
     (tagged-list? exp 'proc))
@@ -194,11 +200,6 @@
   (define (let->combination exp)
     (let->call (let-args exp) (let-vals exp) (let-body exp)))
 
-  ;; (define (list-of-values exps env)
-  ;;   (if (no-operands? exps) null
-  ;;       (cons (eval (first-operand exps) env)
-  ;;             (list-of-values (rest-operands exps) env))))
-
   (define (lookup-variable-value var env)
     (let ((pair (find-pair-in-env env var)))
       (if (null? pair)
@@ -256,10 +257,21 @@
       (define-variable! 'false false initial-env)
       initial-env))
 
-  (define (tagged-list? exp tag)
-    (if (pair? exp)
-        (eq? (car exp) tag)
-        false))
+  (define (cond->if exp)
+    (expand-clauses (cond-clauses exp)))
+
+  (define (expand-clauses clauses)
+    (if (null? clauses) 'false
+        (let ((first (car clauses))
+              (rest  (cdr clauses)))
+          (if (cond-else-clause? first)
+              (if (null? rest)
+                  (sequence->exp (cond-actions first))
+                  (error "ELSE clause isn't last --COND->IF" clauses))
+              (make-if (cond-predicate first)
+                       (sequence->exp (cond-actions first))
+                       (expand-clauses rest))))))
+
 
   (define (true? exp)
     (not (eq? exp false)))
@@ -273,9 +285,11 @@
     (printf "~s = ~s~n" label exp)
     #f)
 
+  (define (false? exp)
+    (eq? exp false))
+
   (define eceval-operations
     (list
-     (list 'debug-exp                 debug-exp)
      (list 'adjoin-arg                adjoin-arg)
      (list 'announce-output           announce-output)
      (list 'application?              application?)
@@ -287,6 +301,9 @@
      (list 'begin?                    begin?)
      (list 'car                       car)
      (list 'cdr                       cdr)
+     (list 'compiled-procedure-entry  compiled-procedure-entry)
+     (list 'compiled-procedure-env    compiled-procedure-env)
+     (list 'compiled-procedure?       compiled-procedure?)
      (list 'compound-procedure?       compound-procedure?)
      (list 'cond-actions              cond-actions)
      (list 'cond-clauses              cond-clauses)
@@ -294,6 +311,7 @@
      (list 'cond-rest                 cond-rest)
      (list 'cond?                     cond?)
      (list 'cons                      cons)
+     (list 'debug-exp                 debug-exp)
      (list 'define-variable!          define-variable!)
      (list 'definition-value          definition-value)
      (list 'definition-variable       definition-variable)
@@ -315,6 +333,7 @@
      (list 'last-operand?             last-operand?)
      (list 'let->combination          let->combination)
      (list 'let?                      let?)
+     (list 'list                      list)
      (list 'lookup-variable-value     lookup-variable-value)
      (list 'make-procedure            make-procedure)
      (list 'no-operands?              no-operands?)
@@ -338,22 +357,38 @@
      (list 'user-print                user-print)
      (list 'variable?                 variable?)))
 
+  ;; New Prelude:
+  ;;
+  ;; if flag is not set, start the repl
+  ;; if exp is assigned, evaluate exp
+  ;; if val is assigned, execute val
+
   (define ec-eval
     (make-machine
      '(exp env val proc argl continue unev)
      eceval-operations
-     '(testing-or-repl
+     '(compile-and-go
 
-       (test (op unassigned?) (reg exp))
-       (branch (label read-eval-print-loop))
+       (branch (label external-entry))       ; branches if `flag' is set
+       (goto (label read-eval-print-loop))
 
-       testing
+       external-entry
 
-       ;; exp is already assigned
        (perform (op initialize-stack))
        (assign env (op get-global-environment))
+       (test (op unassigned?) (reg exp))
+       (branch (label execute-external-entry))
+
+       evaluate-external-entry
+
+       ;; exp is already assigned
        (assign continue (label done))
        (goto (label eval-dispatch))
+
+       execute-external-entry
+
+       (assign continue (label print-result))
+       (goto (reg val))
 
        read-eval-print-loop
 
@@ -467,6 +502,8 @@
        (branch (label primitive-apply))
        (test (op compound-procedure?) (reg proc))
        (branch (label compound-apply))
+       (test (op compiled-procedure?) (reg proc))
+       (branch (label compiled-apply))
        (goto (label unknown-procedure-type))
 
        primitive-apply
@@ -482,6 +519,12 @@
        (assign env  (op extend-environment)    (reg unev) (reg argl) (reg env))
        (assign unev (op procedure-body)        (reg proc))
        (goto (label ev-sequence))
+
+       compiled-apply
+
+       (restore continue)
+       (assign val (op compiled-procedure-entry) (reg proc))
+       (goto (reg val))
 
        ev-begin
 

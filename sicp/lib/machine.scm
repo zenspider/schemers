@@ -14,19 +14,11 @@
 ;; (test (op <name>) <input> ...)
 
 (module machine
-    (make-machine
-     set-register-contents!
-     get-register-contents
-     start
-     trace-on
-     trace-off
-     trace-register-on
-     trace-register-off
-     assert-machine)
+  *
 
-    (import scheme chicken test)
+  (import scheme chicken test data-structures)
 
-    (use extras)
+  (use extras)
 
 ;;; Top-level Machine Functions:
 

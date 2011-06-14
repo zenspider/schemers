@@ -12,7 +12,7 @@
 ;; condition that operations can be used only with registers and
 ;; constants.
 
-(test-error
+#;(test-error
  (make-machine
   '(a)
   (list (list '+ +))

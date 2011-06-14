@@ -202,6 +202,9 @@
             (the-instruction-sequence '())
             (tracing #f)
             (instruction-count 0))
+
+        ((flag 'set) #f)
+
         (let ((the-ops (list (list 'initialize-stack
                                    (lambda () (stack 'initialize)))
                              (list 'print-stack-statistics

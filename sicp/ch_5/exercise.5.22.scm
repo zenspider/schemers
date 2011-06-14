@@ -3,6 +3,8 @@
 (use test)
 (require-library machine)
 (import machine)
+(require-library ec-eval)
+(import ec-eval)
 (use srfi-1)                            ; append!
 
 ;;; Exercise 5.22

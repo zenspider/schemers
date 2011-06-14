@@ -67,3 +67,7 @@
 ;;      after-lambda15
 ;;        (perform (op define-variable!) (const f) (reg val) (reg env))
 ;;        (assign val (const ok))
+
+;; I think it is this:
+(define (f x)
+  (+ x (g (+ x 2))))

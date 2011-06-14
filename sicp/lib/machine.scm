@@ -306,8 +306,15 @@
             ((get) contents)
             ((set) (lambda (value)
                      (when tracing
-                       (printf "register: ~s = ~s~n" name
-                               (if (eq? name 'exp) value '...)))
+                       (case name
+                         ((exp) (printf "register: ~s = ~s~n" name value))
+                         ((env)
+                          (printf "env-set:~n")
+                          (for-each (lambda (pair) (printf "  ~s = ~s~n"
+                                                           (car pair)
+                                                           (cadr pair)))
+                                    (car value)))
+                         (else  (printf "register: ~s = ...~n" name) )))
                      (set! contents value)))
             ((trace-on)  (set! tracing #t))
             ((trace-off) (set! tracing #f))

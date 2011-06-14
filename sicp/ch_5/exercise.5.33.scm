@@ -34,7 +34,7 @@
          cdddr cddr cdr cond cons define eq? if lambda length let list
          map not null? number? or pair? quote set! set-car! set-cdr! string?
          quasiquote unquote case eqv? number->string symbol->string string->symbol
-         string-append reverse memq
+         string-append reverse memq define-syntax syntax-rules
          symbol?)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
@@ -58,6 +58,31 @@
           ((eq? #!eof exp) '*done*)
           (else
            (error "Unknown expression type -- COMPILE" exp))))
+
+  (define-syntax assert-compile
+    (syntax-rules ()
+      ((_ var expected expr)
+       (let* ((desc (sprintf "(assert-compile ~s ~s ~s)" var expected expr))
+              (code (assemble (statements (compile expr 'val 'next))
+                              ec-eval)))
+
+         (set! the-global-environment (setup-environment))
+         (set-register-contents! ec-eval 'val  code)
+         (set-register-contents! ec-eval 'flag true) ; outside control
+         (start ec-eval)
+         (test desc expected (lookup-variable-value
+                              var
+                              (get-register-contents ec-eval 'env)))))
+      ((_ expected expr)
+       (let* ((desc (sprintf "(assert-compile ~s ~s)" expected expr))
+              (code (assemble (statements (compile expr 'val 'next))
+                              ec-eval)))
+
+         (set! the-global-environment (setup-environment))
+         (set-register-contents! ec-eval 'val  code)
+         (set-register-contents! ec-eval 'flag true) ; outside control
+         (start ec-eval)
+         (test desc expected (get-register-contents ec-eval 'val))))))
 
 ;;; Stupid renames and simple definitions
 
@@ -383,35 +408,6 @@
   (append-operations ec-eval
                      'false?                    false?
                      'make-compiled-procedure   make-compiled-procedure))
-
-;; TODO: figure out why this can't be inside the module
-(define-syntax assert-compile
-  (syntax-rules ()
-    ((_ var expected expr)
-     (let* ((desc (sprintf "(assert-compile ~s ~s ~s)" var expected expr))
-            (code (assemble (statements (compile expr 'val 'next))
-                            ec-eval)))
-
-       (set! the-global-environment (setup-environment))
-       (set-register-contents! ec-eval 'val  code)
-       (set-register-contents! ec-eval 'flag true) ; outside control
-       (start ec-eval)
-       (test desc expected (lookup-variable-value
-                            var
-                            (get-register-contents ec-eval 'env)))))
-    ((_ expected expr)
-     (let* ((desc (sprintf "(assert-compile ~s ~s)" expected expr))
-            (code (assemble (statements (compile expr 'val 'next))
-                            ec-eval)))
-
-       (set! the-global-environment (setup-environment))
-       (set-register-contents! ec-eval 'val  code)
-       (set-register-contents! ec-eval 'flag true) ; outside control
-       (start ec-eval)
-       (test desc expected (get-register-contents ec-eval 'val))))))
-
-
-
 
 (import compiler)
 

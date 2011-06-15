@@ -97,9 +97,7 @@
      (car operand-codes)
      (make-instruction-sequence '(val argl) '(argl)
                                 '((assign argl
-                                          (op cons)
-                                          (reg val)
-                                          (reg argl))))))
+                                          (op cons) (reg val) (reg argl))))))
 
   (define (code-to-get-last-arg operand-codes)
     (append-instruction-sequences

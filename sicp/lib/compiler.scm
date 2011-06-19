@@ -122,7 +122,7 @@
       (if (null? (cdr operand-codes))
           code-for-next-arg
           (preserving '(env)
-                      (code-to-get-last-arg operand-codes)
+                      code-for-next-arg
                       (code-to-get-rest-args (cdr operand-codes))))))
 
   (define (compile-application exp target linkage)

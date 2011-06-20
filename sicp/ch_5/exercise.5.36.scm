@@ -20,10 +20,8 @@
 ;; building up argl for an apply. You can see it in the generated code
 ;; below where it starts with calling y, not x.
 
-;; TODO: I have a bug: (statements (compile '(+ (x) (y) (z)) 'val 'return))
-
-(statements (compile '(+ (x) (y)) 'val 'return))
-
+;; (statements (compile '(+ (x) (y)) 'val 'return))
+;; =>
 ;; ((assign proc (op lookup-variable-value) (const +) (reg env))
 ;;   (save continue)
 ;;   (save proc)

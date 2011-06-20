@@ -10,6 +10,11 @@
 ;; Consider the following definition of a factorial procedure, which
 ;; is slightly different from the one given above:
 
+(define (factorial n)
+  (if (= n 1)
+      1
+      (* (factorial (- n 1)) n)))
+
 (define (factorial-alt n)
   (if (= n 1)
       1

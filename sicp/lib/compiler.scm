@@ -53,6 +53,7 @@
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)
          (set-register-contents! ec-eval 'flag true) ; outside control
+         ;; (trace-on ec-eval)
          (start ec-eval)
          (test desc expected (lookup-variable-value
                               var
@@ -77,6 +78,7 @@
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)
          (set-register-contents! ec-eval 'flag true) ; outside control
+         ;; (trace-on ec-eval)
          (start ec-eval)
          (test desc expected (get-register-contents ec-eval 'val))))))
 

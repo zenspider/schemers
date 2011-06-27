@@ -90,7 +90,6 @@
   (define the-empty-environment    null)
   (define true                     #t)
 
-
   ;; Other Values:
 
   (define primitive-procedures
@@ -365,7 +364,7 @@
 
   (define ec-eval
     (make-machine
-     '(exp env val proc argl continue unev)
+     '(exp env val proc argl continue unev arg1 arg2)
      eceval-operations
      '(compile-and-go
 

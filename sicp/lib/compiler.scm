@@ -27,6 +27,11 @@
 
   (use (only srfi-1 zip)) ;; FIX: probably remove
 
+  (define open-coded-ops '(= + - * /))
+
+  (define (open-coded? exp)
+    (memq (operator exp) open-coded-ops))
+
   (define (compile exp target linkage)
     (cond ((self-evaluating? exp) (compile-self-evaluating exp target linkage))
           ((quoted?          exp) (compile-quoted          exp target linkage))
@@ -38,10 +43,29 @@
           ((begin?           exp) (compile-sequence (begin-actions exp)
                                                     target linkage))
           ((cond?            exp) (compile (cond->if exp) target linkage))
+          ((open-coded?      exp) (compile-open-coded-op   exp target linkage))
           ((application?     exp) (compile-application     exp target linkage))
           ((eq? #!eof exp) '*done*)
           (else
            (error "Unknown expression type -- COMPILE" exp))))
+
+  (define (spread-arguments a b operation)
+    (preserving '(env)
+                (compile a 'arg1 'next)
+                (preserving '(arg1)
+                            (compile b 'arg2 'next)
+                            operation)))
+
+  (define (compile-open-coded-op exp target linkage)
+    (end-with-linkage
+     linkage
+     (spread-arguments
+      (car  (operands exp))
+      (cadr (operands exp))
+      (make-instruction-sequence
+       '(arg1 arg2)
+       (list target)
+       `((assign ,target (op ,(operator exp)) (reg arg1) (reg arg2)))))))
 
   (define-syntax assert-compile
     (syntax-rules ()
@@ -66,6 +90,7 @@
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)
          (set-register-contents! ec-eval 'flag true) ; outside control
+         ;; (trace-on ec-eval)
          (start ec-eval)
          (test desc expected (get-register-contents ec-eval 'val))))))
 
@@ -78,14 +103,13 @@
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)
          (set-register-contents! ec-eval 'flag true) ; outside control
-         ;; (trace-on ec-eval)
          (start ec-eval)
          (test desc expected (get-register-contents ec-eval 'val))))))
 
 ;;; Stupid renames and simple definitions
 
   (define label-counter 0)
-  (define all-regs '(env proc val argl continue))
+  (define all-regs '(env proc val argl continue arg1 arg2))
 
 ;;; Supporting functions
 
@@ -399,6 +423,10 @@
 
   ;; TODO: move this around
   (append-operations ec-eval
+                     '= =
+                     '* *
+                     '+ +
+                     '- -
                      'false?                    false?
                      'make-compiled-procedure   make-compiled-procedure)
 
@@ -412,5 +440,4 @@
       (start ec-eval)))
 
   (define (get-env machine var)
-    (lookup-variable-value var (get-register-contents machine 'env)))
-)
+    (lookup-variable-value var (get-register-contents machine 'env))))

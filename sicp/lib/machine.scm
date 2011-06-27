@@ -211,12 +211,14 @@
                                    (lambda () (stack 'print-statistics)))))
               (register-table (list (list 'pc pc)
                                     (list 'flag flag))))
+
           (define (allocate-register name)
             (if (assoc name register-table)
                 (error "Multiply defined register: " name)
                 (set! register-table (cons (list name (make-register name))
                                            register-table)))
             'register-allocated)
+
           (define (lookup-register name)
             (let ((val (assoc name register-table)))
               (if val

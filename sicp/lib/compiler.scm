@@ -96,6 +96,7 @@
        (list-union (registers-modified seq1)
                    (registers-modified seq2))
        (append (statements seq1) (statements seq2))))
+
     (define (append-seq-list seqs)
       (if (null? seqs)
           (empty-instruction-sequence)
@@ -129,13 +130,11 @@
     (let ((proc-code (compile (operator exp) 'proc 'next))
           (operand-codes (map (lambda (operand) (compile operand 'val 'next))
                               (operands exp))))
-      (preserving
-       '(env continue)
-       proc-code
-       (preserving
-        '(proc continue)
-        (construct-arglist operand-codes)
-        (compile-procedure-call target linkage)))))
+      (preserving '(env continue)
+                  proc-code
+                  (preserving '(proc continue)
+                              (construct-arglist operand-codes)
+                              (compile-procedure-call target linkage)))))
 
   (define (compile-assignment exp target linkage)
     (let ((var            (assignment-variable exp))
@@ -175,18 +174,16 @@
         (let ((p-code (compile (if-predicate   exp) 'val 'next))
               (c-code (compile (if-consequent  exp) target consequent-linkage))
               (a-code (compile (if-alternative exp) target linkage)))
-          (preserving
-           '(env continue)
-           p-code
-           (append-instruction-sequences
-            (make-instruction-sequence '(val)
-                                       '()
-                                       `((test (op false?) (reg val))
-                                         (branch (label ,f-branch))))
-            (parallel-instruction-sequences
-             (append-instruction-sequences t-branch c-code)
-             (append-instruction-sequences f-branch a-code))
-            after-if))))))
+          (preserving '(env continue)
+                      p-code
+                      (append-instruction-sequences
+                       (make-instruction-sequence '(val) '()
+                                                  `((test (op false?) (reg val))
+                                                    (branch (label ,f-branch))))
+                       (parallel-instruction-sequences
+                        (append-instruction-sequences t-branch c-code)
+                        (append-instruction-sequences f-branch a-code))
+                       after-if))))))
 
   (define (compile-lambda exp target linkage)
     (let ((proc-entry (make-label 'entry))

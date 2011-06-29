@@ -8,7 +8,7 @@
   (import
 
    (only scheme
-         * + - / < = and append caadr caar cadddr caddr cadr car cdadr
+         * + - / < = > and append caadr caar cadddr caddr cadr car cdadr
          cdddr cddr cdr cond cons define eq? if lambda length let list
          map not null? number? or pair? quote set! set-car! set-cdr! string?
          symbol? read display newline)
@@ -98,6 +98,7 @@
           (list '-      -)
           (list '/      /)
           (list '=      =)
+          (list '>      >)
           (list 'car    car)
           (list 'cdr    cdr)
           (list 'cons   cons)

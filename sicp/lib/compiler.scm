@@ -14,7 +14,7 @@
    machine
 
    (only scheme
-         * + - / < = and append caadr caar cadddr caddr cadr car cdadr
+         * + - / < = > and append caadr caar cadddr caddr cadr car cdadr
          cdddr cddr cdr cond cons define eq? if lambda length let list
          map not null? number? or pair? quote set! set-car! set-cdr! string?
          quasiquote unquote case eqv? number->string symbol->string string->symbol
@@ -27,7 +27,9 @@
 
   (use (only srfi-1 zip)) ;; FIX: probably remove
 
-  (define open-coded-ops '(= + - * /))
+  (if #t
+      (define open-coded-ops '(= + - * /))
+      (define open-coded-ops '()))
 
   (define (open-coded? exp)
     (memq (operator exp) open-coded-ops))
@@ -427,6 +429,7 @@
                      '* *
                      '+ +
                      '- -
+                     '> >
                      'false?                    false?
                      'make-compiled-procedure   make-compiled-procedure)
 

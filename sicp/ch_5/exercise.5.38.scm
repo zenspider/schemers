@@ -84,12 +84,12 @@
 ;; after: 56 lines long, 132 operations executed in trace.
 ;; ~51% the original size and ~59% the number of operations executed.
 
-;; (assert-compile 120 '(begin
-;;                        (define (factorial n)
-;;                          (if (= n 1)
-;;                              1
-;;                              (* (factorial (- n 1)) n)))
-;;                        (factorial 5)))
+(assert-compile 120 '(begin
+                       (define (factorial1 n)
+                         (if (= n 1)
+                             1
+                             (* (factorial1 (- n 1)) n)))
+                       (factorial1 5)))
 
 (assert-compile 120 '(begin
                        (define (factorial2 n)

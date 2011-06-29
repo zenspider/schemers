@@ -21,18 +21,22 @@
 ;; `factorial' that makes one process build up stack space and the
 ;; other run in constant stack space.
 
-;;  (define (factorial n)
-;;    (define (iter product counter)
-;;      (if (> counter n)
-;;          product
-;;          (iter (* counter product)
-;;                (+ counter 1))))
-;;    (iter 1 1))
+(assert-compile 120 '(begin
+                       (define (factorial-r n)
+                         (if (= n 1)
+                             1
+                             (* (factorial-r (- n 1)) n)))
+                       (factorial-r 5)))
 
-;;  (define (factorial n)
-;;    (if (= n 1)
-;;        1
-;;        (* (factorial (- n 1)) n)))
+(assert-compile 120 '(begin
+                       (define (factorial-i n)
+                         (define (iter product counter)
+                           (if (> counter n)
+                               product
+                               (iter (* counter product)
+                                     (+ counter 1))))
+                         (iter 1 1))
+                       (factorial-i 5)))
 
 ;; '((assign val (op make-compiled-procedure) (label entry1) (reg env))
 ;;   (goto (label after-lambda2))

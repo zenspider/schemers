@@ -184,7 +184,7 @@
        (preserving
         '(env)
         get-value-code
-        (make-instruction-sequence '()
+        (make-instruction-sequence '(env val)
                                    (list target)
                                    `((perform (op define-variable!)
                                               (const ,var)
@@ -304,7 +304,7 @@
   (define (compile-quoted exp target linkage)
     (end-with-linkage
      linkage
-     (make-instruction-sequence '() '()
+     (make-instruction-sequence '() (list target)
                                 `((assign ,target
                                           (const ,(text-of-quotation exp)))))))
 
@@ -318,7 +318,7 @@
     (if (last-exp? seq)
         (compile (first-exp seq) target linkage)
         (preserving '(env continue)
-                    (compile (first-exp seq) target linkage)
+                    (compile (first-exp seq) target 'next)
                     (compile-sequence (rest-exps seq) target linkage))))
 
   (define (compile-variable exp target linkage)

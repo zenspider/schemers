@@ -27,9 +27,7 @@
 
   (use (only srfi-1 zip)) ;; FIX: probably remove
 
-  (if #t
-      (define open-coded-ops '(= + - * /))
-      (define open-coded-ops '()))
+  (define open-coded-ops '(= + - * /))
 
   (define (open-coded? exp)
     (memq (operator exp) open-coded-ops))

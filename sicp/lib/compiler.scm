@@ -21,6 +21,8 @@
          string-append reverse memq define-syntax syntax-rules
          symbol?)
 
+   (only srfi-1 fold)
+
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
    (only chicken error use))
@@ -43,7 +45,8 @@
           ((begin?           exp) (compile-sequence (begin-actions exp)
                                                     target linkage))
           ((cond?            exp) (compile (cond->if exp) target linkage))
-          ((open-coded?      exp) (compile-open-coded-op   exp target linkage))
+          ((open-coded?      exp) (compile-open-coded-op (rewrite-binary-op exp)
+                                                         target linkage))
           ((application?     exp) (compile-application     exp target linkage))
           ((eq? #!eof exp) '*done*)
           (else
@@ -55,6 +58,10 @@
                 (preserving '(arg1)
                             (compile b 'arg2 'next)
                             operation)))
+
+  (define (rewrite-binary-op exp)
+    (let ((op (car exp)))
+      (fold (lambda (x l) (list op l x)) (cadr exp) (cddr exp))))
 
   (define (compile-open-coded-op exp target linkage)
     (end-with-linkage

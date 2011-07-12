@@ -13,3 +13,5 @@
 ;; metacircular interpreter to accomplish this by scanning out
 ;; internal definitions. Modify the compiler to perform the same
 ;; transformation before it compiles a procedure body.
+
+;; TODO

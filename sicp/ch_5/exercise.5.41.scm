@@ -1,6 +1,7 @@
 #!/usr/bin/env csi -s
 
 (use test)
+(use srfi-1)
 
 ;;; Exercise 5.41
 

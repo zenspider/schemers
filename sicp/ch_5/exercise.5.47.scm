@@ -29,3 +29,5 @@
 ;; procedure `g'. Use `compile-and-go' to compile the definition of
 ;; `f' and start the evaluator. Now, typing at the evaluator, define
 ;; `g' and try to call `f'.
+
+;; NO: I'd _much_ rather do 5.49 instead of this. This is just dumb.

@@ -45,7 +45,7 @@
 ;;
 ;; Fill in the missing expressions in the places marked <??> above.
 
-;; TODO: maybe: I think it'd be cleaner to produce: 2^i·3^j·5^k : [ijk] >= 0
+;; todo maybe: I think it'd be cleaner to produce: 2^i·3^j·5^k : [ijk] >= 0
 (define S (stream-cons 1 (stream-merge (stream-scale S 2)
                                        (stream-merge (stream-scale S 3)
                                                      (stream-scale S 5)))))

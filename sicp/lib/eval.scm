@@ -132,7 +132,7 @@
   (define cond-clauses             cdr)
   (define cond-predicate           car)
   (define enclosing-environment    cdr)
-  (define false                    #f)
+  (define false                    (not 1))
   (define first-exp                car)
   (define first-frame              car)
   (define first-operand            car)
@@ -155,7 +155,7 @@
   (define rest-operands            cdr)
   (define text-of-quotation        cadr)
   (define the-empty-environment    null)
-  (define true                     #t)
+  (define true                     (not false))
 
   ;; Other Values:
 

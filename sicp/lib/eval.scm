@@ -84,7 +84,7 @@
 
    (only scheme
          * + - / < = and append caadr caar cadddr caddr cadr car cdadr
-         cdddr cddr cdr cond cons define eq? if lambda length let list
+         cdddr cddr cdr cond cons define eof-object? eq? if lambda length let list
          map not null? number? or pair? quote set! set-car! set-cdr! string?
          symbol?)
 
@@ -107,7 +107,7 @@
           ((cond?            exp) (eval (cond->if exp) env))
           ((application?     exp) (apply (eval (operator exp) env)
                                          (list-of-values (operands exp) env)))
-          ((eq? #!eof exp) '*done*)
+          ((eof-object? exp) '*done*)
           (else
            (error "Unknown expression type -- EVAL" exp))))
 

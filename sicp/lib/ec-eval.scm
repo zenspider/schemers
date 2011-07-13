@@ -8,10 +8,10 @@
   (import
 
    (only scheme
-         * + - / < = > and append caadr caar cadddr caddr cadr car cdadr
-         cdddr cddr cdr cond cons define eq? if lambda length let list
-         map not null? number? or pair? quote set! set-car! set-cdr! string?
-         symbol? read display newline)
+         * + - / < = > and append caadr caar cadddr caddr cadr car
+         cdadr cdddr cddr cdr cond cons define eof-object? eq? if lambda length
+         let list map not null? number? or pair? quote set! set-car! set-cdr!
+         string? symbol? read display newline)
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
@@ -31,7 +31,7 @@
     (null? (cdr ops)))
 
   (define (eof? exp)
-    (eq? exp #!eof))
+    (eof-object? exp))
 
   (define (prompt-for-input string)
     (newline) (newline) (display string) (newline))

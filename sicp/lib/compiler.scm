@@ -14,12 +14,12 @@
    machine
 
    (only scheme
-         * + - / < = > and append caadr caar cadddr caddr cadr car cdadr
-         cdddr cddr cdr cond cons define eq? if lambda length let list
-         map not null? number? or pair? quote set! set-car! set-cdr! string?
-         quasiquote unquote case eqv? number->string symbol->string string->symbol
-         string-append reverse memq define-syntax syntax-rules
-         symbol?)
+         * + - / < = > and append caadr caar cadddr caddr cadr car case
+         cdadr cdddr cddr cdr cond cons define define-syntax eof-object? eq?
+         eqv? if lambda length let list map memq not null? number->string
+         number? or pair? quasiquote quote reverse set! set-car! set-cdr!
+         string->symbol string-append string? symbol? symbol->string
+         syntax-rules unquote)
 
    (only srfi-1 fold)
 
@@ -48,7 +48,7 @@
           ((open-coded?      exp) (compile-open-coded-op (rewrite-binary-op exp)
                                                          target linkage))
           ((application?     exp) (compile-application     exp target linkage))
-          ((eq? #!eof exp) '*done*)
+          ((eof-object?      exp) '*done*)
           (else
            (error "Unknown expression type -- COMPILE" exp))))
 

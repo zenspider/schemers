@@ -29,8 +29,9 @@ task :todo do
 end
 
 task :run do
+  size = (ENV["SIZE"] || 25).to_i
   with_newer_files do |file|
-    sh "X=1 time timeout csi -q -:a25 -I lib -I ../lib < #{file} 2>&1"
+    sh "X=1 time timeout csi -q -:a#{size} -I lib -I ../lib < #{file} 2>&1"
   end
 end
 

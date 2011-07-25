@@ -15,6 +15,8 @@
 
    (prefix (only scheme apply) scheme-) ; scheme-apply
 
+   (only data-structures chop)
+
    (only chicken error use)
 
    machine)
@@ -91,19 +93,23 @@
 
   ;; Other Values:
 
-  (define primitive-procedures
-    (list (list '*      *)
-          (list '+      +)
-          (list '-      -)
-          (list '/      /)
-          (list '=      =)
-          (list '>      >)
-          (list 'car    car)
-          (list 'cdr    cdr)
-          (list 'cons   cons)
-          (list 'eq?    eq?)
-          (list 'length length)
-          (list 'null?  null?)))
+  (define primitive-procedures '())
+
+  (define (append-primitive-procedures . pairs)
+    (set! primitive-procedures (append primitive-procedures (chop pairs 2))))
+
+  (append-primitive-procedures '*      *
+                               '+      +
+                               '-      -
+                               '/      /
+                               '=      =
+                               '>      >
+                               'car    car
+                               'cdr    cdr
+                               'cons   cons
+                               'eq?    eq?
+                               'length length
+                               'null?  null?)
 
   ;; Support Functions (sorted):
 

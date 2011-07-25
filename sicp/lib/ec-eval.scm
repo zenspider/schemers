@@ -205,10 +205,13 @@
   (define (let->combination exp)
     (let->call (let-args exp) (let-vals exp) (let-body exp)))
 
+  (define (env-as-names env)
+    (map (lambda (frame) (map car frame)) env))
+
   (define (lookup-variable-value var env)
     (let ((pair (find-pair-in-env env var)))
       (if (null? pair)
-          (error "Unbound variable" var)
+          (error (sprintf "Unbound variable '~s in ~s" var (env-as-names env)))
           (cadr pair))))
 
   (define (make-begin seq)

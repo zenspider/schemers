@@ -81,6 +81,9 @@
               (code (assemble (statements (compile expr 'val 'next))
                               ec-eval)))
 
+         (if (> (string-length desc) 69)
+             (set! desc (string-append (substring desc 0 65) " ...")))
+
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)
          (set-register-contents! ec-eval 'flag true) ; outside control
@@ -93,6 +96,9 @@
        (let* ((desc (sprintf "(assert-compile ~s ~s)" expected expr))
               (code (assemble (statements (compile expr 'val 'next))
                               ec-eval)))
+
+         (if (> (string-length desc) 69)
+             (set! desc (string-append (substring desc 0 65) " ...")))
 
          (set! the-global-environment (setup-environment))
          (set-register-contents! ec-eval 'val  code)

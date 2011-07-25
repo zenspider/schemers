@@ -328,7 +328,11 @@
     (tagged-list? exp 'quote))
 
   (define (self-evaluating? exp)
-    (or (number? exp) (string? exp)))
+    (cond ((number? exp) true)
+          ((string? exp) true)
+          ((eq? true exp) true)         ; HACK - should be a var
+          ((eq? false exp) true)        ; HACK - should be a var
+          (else false)))
 
   (define (sequence->exp seq)
     (cond ((null? seq) seq)

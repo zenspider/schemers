@@ -311,6 +311,11 @@
   (define (make-procedure params body env)
     (list 'proc params body env))
 
+  (define (map proc items)              ; needed to run compiled procs
+    (if (null? items) '()
+        (cons (proc (car items))
+              (map proc (cdr items)))))
+
   (define (primitive-procedure-names)   (map car primitive-procedures))
 
   (define (primitive-procedure-objects)

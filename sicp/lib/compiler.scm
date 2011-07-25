@@ -45,6 +45,7 @@
           ((begin?           exp) (compile-sequence (begin-actions exp)
                                                     target linkage))
           ((cond?            exp) (compile (cond->if exp) target linkage))
+          ((let?           exp) (compile (let->combination exp) target linkage))
           ((open-coded?      exp) (compile-open-coded-op (rewrite-binary-op exp)
                                                          target linkage))
           ((application?     exp) (compile-application     exp target linkage))

@@ -1,5 +1,7 @@
 (* chapter 1 *)
 
+(* First Moral: Use datatype to describe types. When a type contains lots of values, the datatype definition refers to itself. Use 'a with datatype to define shapes *)
+
 (* this is a comment *)
 
 val x = 34;

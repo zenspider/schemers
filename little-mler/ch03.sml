@@ -1,5 +1,7 @@
 (* chapter 3 *)
 
+(* Third Moral: Functions that produce values of a datatype must use the associated constrctors to build data of that type. *)
+
 Control.Print.printDepth := 20;
 
 datatype pizza = Crust

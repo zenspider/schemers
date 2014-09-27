@@ -1,5 +1,7 @@
 (* chapter 2 *)
 
+(* Second Moral: The number and order of the patterns in the definition of a function should match that of the definition of the consumed datatype. *)
+
 datatype shish_kebab = Skewer
                      | Onion of shish_kebab
                      | Lamb of shish_kebab

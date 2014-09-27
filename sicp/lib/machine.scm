@@ -83,7 +83,7 @@
     (define label-exp-label                 cadr)
     (define label?                          symbol?)
     (define make-label-entry                cons)
-    (define operation-exp-op                cadar) ;; test: (cadr (car exp))
+    (define (operation-exp-op x) (cadr (car x))) ;; cadar == (cadr (car exp)) ?
     (define operation-exp-operands          cdr)
     (define perform-action                  cdr)
     (define register-exp-reg                cadr)

@@ -111,7 +111,7 @@
     (define-syntax assert-assemble
     (syntax-rules ()
       ((_ expected expr)
-       (let* ((desc (sprintf "(assert-compile ~s ~s)" expected expr))
+       (let* ((desc (sprintf "(assert-assemble ~s ~s)" expected expr))
               (code (assemble expr ec-eval)))
 
          (set! the-global-environment (setup-environment))

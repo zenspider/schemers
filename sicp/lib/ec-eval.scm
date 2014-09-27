@@ -118,6 +118,9 @@
     (set-car! frame (list var val)))
 
   (define (apply-primitive-procedure proc args)
+    (if (not (primitive-procedure? proc))
+        (error "Wtf" proc))
+
     (scheme-apply (primitive-implementation proc) args))
 
   (define (assignment? exp)

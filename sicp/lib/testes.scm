@@ -1,5 +1,3 @@
-
-
 (module testes *
 
         (import scheme chicken test)

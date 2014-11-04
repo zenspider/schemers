@@ -1,6 +1,12 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(require-extension test)
+(module+ test (require rackunit))
+
+(define-syntax test
+  (syntax-rules ()
+    ((_ exp act)
+     (module+ test
+       (check-equal? act exp)))))
 
 ;;; Laws & Commandments:
 

@@ -7,7 +7,7 @@ end
 def newer_files touch_file = ".gitignore"
   t0 = File.mtime(touch_file) rescue Time.at(0)
 
-  Dir["{ch*,little-schemer}/*.scm"].find_all { |file| t0 <= File.mtime(file) }
+  Dir["{sicp/ch*,little-*}/*.{scm,rkt}"].find_all { |file| t0 <= File.mtime(file) }.sort
 end
 
 def with_newer_files touch_file = ".gitignore"
@@ -25,7 +25,7 @@ def update_touch_file touch_file = ".gitignore"
 end
 
 task :todo do
-  system "grep TODO **/*.scm"
+  system "grep TODO **/*.scm **/*.rkt"
 end
 
 task :run do
@@ -46,7 +46,14 @@ end
 
 task :test do
   with_newer_files do |file|
-    sh "X=1 time timeout csi -I lib -I ../lib -s #{file} 2>&1"
+    case file
+    when /\.scm$/ then
+      sh "X=1 time timeout csi -I sicp/lib -s #{file} 2>&1"
+    when /\.rkt$/ then
+      sh "X=1 time raco test #{file} 2>&1"
+    else
+      raise "Unhandled file: #{file}"
+    end
   end
 
   update_touch_file
@@ -91,5 +98,5 @@ task :commit, [:n] => [:default] do |t, args|
 end
 
 task :logic do
-  sh "csi -q -I lib -I ../lib ../bin/logic.scm"
+  sh "csi -q -I lib -I sicp/lib sicp/bin/logic.scm"
 end

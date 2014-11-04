@@ -772,22 +772,22 @@
   (lambda (exp)
     (car exp)))
 
-(define value
+(define value3
   (lambda (exp)
     (cond
      ((atom? exp) exp)
      ((eq? (operator exp) '+)
-      (+ (value (1st-sub-exp exp))
-         (value (2nd-sub-exp exp))))
+      (+ (value3 (1st-sub-exp exp))
+         (value3 (2nd-sub-exp exp))))
      ((eq? (operator exp) '*)
-      (* (value (1st-sub-exp exp))
-         (value (2nd-sub-exp exp))))
+      (* (value3 (1st-sub-exp exp))
+         (value3 (2nd-sub-exp exp))))
      ((eq? (operator exp) '^)
-      (** (value (1st-sub-exp exp))
-          (value (2nd-sub-exp exp)))))))
+      (** (value3 (1st-sub-exp exp))
+          (value3 (2nd-sub-exp exp)))))))
 
-(test #t (eq? 4 (value '(+ 1 3))))
-(test #t (eq? 13 (value '(+ 1 (* 3 4)))))
+(test #t (eq? 4 (value3 '(+ 1 3))))
+(test #t (eq? 13 (value3 '(+ 1 (* 3 4)))))
 
 ;; pg 107
 
@@ -1127,17 +1127,17 @@
           ((eq? x '*) *)
           (else **))))
 
-(define value
+(define value4
   (lambda (exp)
     (cond
      ((atom? exp) exp)
      (else
       ((atom-to-function (operator exp))
-       (value (1st-sub-exp exp))
-       (value (2nd-sub-exp exp)))))))
+       (value4 (1st-sub-exp exp))
+       (value4 (2nd-sub-exp exp)))))))
 
-(test #t (eq? 4 (value '(+ 1 3))))
-(test #t (eq? 13 (value '(+ 1 (* 3 4)))))
+(test #t (eq? 4 (value4 '(+ 1 3))))
+(test #t (eq? 13 (value4 '(+ 1 (* 3 4)))))
 
 (define multirember-f
   (lambda (test?)

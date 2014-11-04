@@ -1,12 +1,6 @@
 #lang racket/base
 
-(module+ test (require rackunit))
-
-(define-syntax test
-  (syntax-rules ()
-    ((_ exp act)
-     (module+ test
-       (check-equal? act exp)))))
+(require "../sicp/lib/test.rkt")
 
 ;;; Laws & Commandments:
 

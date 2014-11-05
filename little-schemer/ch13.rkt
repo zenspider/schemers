@@ -1,7 +1,7 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
-(use miscmacros)                        ; call/cc
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 (define member?                         ; from ch12.scm
   (lambda (a lat)
@@ -15,14 +15,14 @@
            (test #f (member? 42 '(a b c)))
            (test #t (member? 'b '(a b c))))
 
-(define intersect
+(define intersect1
   (lambda (set1 set2)
     (cond ((null? set1) '())
           ((member? (car set1) set2)
-           (cons (car set1) (intersect (cdr set1) set2)))
-          (else             (intersect (cdr set1) set2)))))
+           (cons (car set1) (intersect1 (cdr set1) set2)))
+          (else             (intersect1 (cdr set1) set2)))))
 
-(define intersect
+(define intersect2
   (lambda (set1 set2)
     (letrec ((I (lambda (set)
                   (cond ((null? set) '())
@@ -31,32 +31,32 @@
                         (else            (I (cdr set)))))))
       (I set1))))
 
-(define intersectall
+(define intersectall1
   (lambda (lset)
     (letrec ((I (lambda (lset)
                   (cond ((null? (cdr lset)) (car lset))
-                        (else (intersect (car lset) (I (cdr lset))))))))
+                        (else (intersect2 (car lset) (I (cdr lset))))))))
       (cond ((null? lset) '())
             (else (I lset))))))
 
-(define intersectall
+(define intersectall2
   (lambda (lset)
     (let/cc hop
             (letrec
                 ((I (lambda (lset)
                       (cond ((null? (car lset)) (hop '()))
                             ((null? (cdr lset)) (car lset))
-                            (else (intersect (car lset) (I (cdr lset))))))))
+                            (else (intersect2 (car lset) (I (cdr lset))))))))
               (cond ((null? lset) '())
                     (else (I lset)))))))
 
-(test '(b) (intersectall '((a b c) (b c) (b))))
+(test '(b) (intersectall2 '((a b c) (b c) (b))))
 
 ;;; 14th Commandment:
 ;;
 ;; Use (letcc ...) to return values abruptly and promptly.
 
-(define intersect
+(define intersect3
   (lambda (set1 set2)
     (letrec ((I (lambda (set)
                   (cond ((null? set) '())
@@ -67,14 +67,14 @@
        ((null? set2) '())
        (else (I set1))))))
 
-(define intersectall
+(define intersectall3
   (lambda (lset)
     (let/cc hop
      (letrec
          ((A (lambda (lset)
                (cond ((null? (car lset)) (hop '()))
                      ((null? (cdr lset)) (car lset))
-                     (else (intersect (car lset) (A (cdr lset)))))))
+                     (else (intersect3 (car lset) (A (cdr lset)))))))
           (I (lambda (s1 s2)
                (letrec ((J (lambda (s1)
                              (cond ((null? s1) '())
@@ -86,7 +86,7 @@
        (cond ((null? lset) '())
              (else (A lset)))))))
 
-(test '(b) (intersectall '((a b c) (b c) (b))))
+(test '(b) (intersectall3 '((a b c) (b c) (b))))
 
 (define rember
   (lambda (a lat)
@@ -110,7 +110,7 @@
 
 (test '(a b c) (rember-beyond-first 'd '(a b c d e f g)))
 
-(define rember-upto-last
+(define rember-upto-last1
   (lambda (a orig-lat)
     (letrec ((R (lambda (lat)
                   (cond ((null? lat) orig-lat)
@@ -118,10 +118,10 @@
                         (else (R (cdr lat)))))))
       (R orig-lat))))
 
-(test '(e f g) (rember-upto-last 'd '(a b c d e f g)))
-(test '(a b c d e f g) (rember-upto-last 'z '(a b c d e f g)))
+(test '(e f g) (rember-upto-last1 'd '(a b c d e f g)))
+(test '(a b c d e f g) (rember-upto-last1 'z '(a b c d e f g)))
 
-(define rember-upto-last
+(define rember-upto-last2
   (lambda (a lat)
     (let/cc
      skip
@@ -131,5 +131,5 @@
                          (else (cons (car lat) (R (cdr lat))))))))
        (R lat)))))
 
-(test '(e f g) (rember-upto-last 'd '(a b c d e f g)))
-(test '(a b c d e f g) (rember-upto-last 'z '(a b c d e f g)))
+(test '(e f g) (rember-upto-last2 'd '(a b c d e f g)))
+(test '(a b c d e f g) (rember-upto-last2 'z '(a b c d e f g)))

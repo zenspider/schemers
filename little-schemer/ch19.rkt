@@ -1,8 +1,9 @@
 ;;; Chapter 16: Ready, Set, Bang!
 
-(use test)
-(use data-structures)
-(use miscmacros)
+#lang racket/base
+
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 (define (I x) x) ; just for testing
 
@@ -10,7 +11,7 @@
   (cond ((zero? m) 'pizza)
         (else (cons (deep (sub1 m)) '()))))
 
-(define toppings)
+(define toppings #f)
 (define (deepB m)
   (cond ((zero? m)
          (let/cc jump
@@ -23,13 +24,13 @@
 (define x (deepB 6))
 (test '((((((pizza)))))) (I x))
 
-(define x (toppings 'mozzarella))
+(set! x (toppings 'mozzarella))
 (test '((((((mozzarella)))))) (I x))
 
-(define x (toppings 'cake))
+(set! x (toppings 'cake))
 (test '((((((cake)))))) (I x))
 
-(define x (cons (toppings 'cake) '()))
+(set! x (cons (toppings 'cake) '()))
 (test '((((((cake)))))) (I x))
 
 (define (deep&co m k)
@@ -47,7 +48,7 @@
 
 (test '((((pizza)))) (deep&coB 4 I))
 
-(define x (cons (toppings 'cake) (toppings 'cake)))
+(set! x (cons (toppings 'cake) (toppings 'cake)))
 (test '(((((cake)))) (((cake)))) (I x))
 
 ;;; 20th Commandment
@@ -56,10 +57,10 @@
 ;; the function that is equivalent but does not forget. Then, when you
 ;; use it, remember to forget.
 
-(define x (cons (toppings 'cake) (toppings 'cake)))
+(set! x (cons (toppings 'cake) (toppings 'cake)))
 (test '(((((cake)))) (((cake)))) (I x))
 
-(define leave)
+(define leave #f)
 (define (walk l)
   (cond ((null? l) '())
         ((atom? (car l)) (leave (car l)))
@@ -71,7 +72,7 @@
     (set! leave here)
     (walk l)))
 
-(define x (start-it '((potato) (chips (chips (with))) fish)))
+(set! x (start-it '((potato) (chips (chips (with))) fish)))
 (test 'potato (I x))
 
 (define two-in-a-row*?
@@ -107,5 +108,5 @@
                    (leave '()))))
         (if (atom? fst) (T? fst) #f)))))
 
-(define x (two-in-a-row*? '(((food) ()) (((food))))))
+(set! x (two-in-a-row*? '(((food) ()) (((food))))))
 (test #t (I x))

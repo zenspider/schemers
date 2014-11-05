@@ -1,9 +1,9 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
-(use miscmacros)                        ; call/cc
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
-(define atom?
+(define-me-maybe atom?
   (lambda (x)
     (and (not (pair? x))
          (not (null? x)))))
@@ -14,32 +14,32 @@
      (test 'a (f '(((a) b) (c d))))
      (test 'a (f '(((() a) ())))))))
 
-(define leftmost
+(define leftmost1
   (lambda (l)
     (cond ((null? l) '())
           ((atom? (car l)) (car l))
-          (else (let ((a (leftmost (car l))))
+          (else (let ((a (leftmost1 (car l))))
                   (cond ((atom? a) a)
-                        (else (leftmost (cdr l)))))))))
+                        (else (leftmost1 (cdr l)))))))))
 
-(test-leftmost leftmost "leftmost1")
+(test-leftmost leftmost1 "leftmost1")
 
 ;;; 15th Commandment (preliminary)
 ;;
 ;; Use (let ...) to name the values of repeated expressions.
 
-(define depth*
+(define depth1*
   (lambda (l)
     (cond ((null? l) 1)
-          ((atom? (car l)) (depth* (cdr l)))
+          ((atom? (car l)) (depth1* (cdr l)))
           (else
-           (let ((a (add1 (depth* (car l))))
-                 (d (depth* (cdr l))))
+           (let ((a (add1 (depth1* (car l))))
+                 (d (depth1* (cdr l))))
              (cond
               ((> d a) d)
               (else a)))))))
 
-(test 2 (depth* '((a) b (c d))))
+(test 2 (depth1* '((a) b (c d))))
 
 ;;; 15th Commandment (revised)
 ;;
@@ -51,15 +51,15 @@
   (lambda (n m)
     (if (> n m) n m)))
 
-(define depth*
+(define depth2*
   (lambda (l)
     (cond ((null? l) 1)
-          ((atom? (car l)) (depth* (cdr l)))
+          ((atom? (car l)) (depth2* (cdr l)))
           (else
-           (max (add1 (depth* (car l)))
-                (depth* (cdr l)))))))
+           (max (add1 (depth2* (car l)))
+                (depth2* (cdr l)))))))
 
-(define leftmost
+(define leftmost2
   (lambda (l)
     (let/cc skip
       (letrec ((lm (lambda (l)
@@ -70,7 +70,7 @@
                                    (lm (cdr l))))))))
         (lm l)))))
 
-(test-leftmost leftmost "leftmost-callcc")
+(test-leftmost leftmost2 "leftmost-callcc")
 
 (define-syntax try
   (syntax-rules ()
@@ -88,43 +88,43 @@
 ;;
 ;; (try )
 
-(define rm
+(define rm1
   (lambda (a l oh)
     (cond ((null? l) (oh 'no))
           ((atom? (car l)) (if (eq? (car l) a)
                                (cdr l)
-                               (cons (car l) (rm a (cdr l) oh))))
+                               (cons (car l) (rm1 a (cdr l) oh))))
           (else
-           (let ((new-car (let/cc oh (rm a (car l) oh))))
+           (let ((new-car (let/cc oh (rm1 a (car l) oh))))
              (if (atom? new-car)
-                 (cons (car l) (rm a (cdr l) oh))
+                 (cons (car l) (rm1 a (cdr l) oh))
                  (cons new-car (cdr l))))))))
 
 (define rember1*
   (lambda (a l)
-    (let ((new-l (let/cc oh (rm a l oh))))
+    (let ((new-l (let/cc oh (rm1 a l oh))))
       (if (atom? new-l)
           l
           new-l))))
 
-(test 'no (let/cc Say (rm 'noodles '((food) more (food)) Say)))
+(test 'no (let/cc Say (rm1 'noodles '((food) more (food)) Say)))
 (test '((food) more (food)) (rember1* 'noodles '((food) more (food))))
 
-(define rember1*
+(define rember2*
   (lambda (a l)
-    (try oh (rm a l oh) l)))
+    (try oh (rm1 a l oh) l)))
 
-(test '((food) more (food)) (rember1* 'noodles '((food) more (food))))
+(test '((food) more (food)) (rember2* 'noodles '((food) more (food))))
 
-(define rm
+(define rm2
   (lambda (a l oh)
     (cond ((null? l) (oh 'no))
           ((atom? (car l)) (if (eq? (car l) a)
                                (cdr l)
-                               (cons (car l) (rm a (cdr l) oh))))
+                               (cons (car l) (rm2 a (cdr l) oh))))
           (else
            (try oh2
-                (cons (rm a (car l) oh2) (cdr l))
-                (cons (car l) (rm a (cdr l) oh)))))))
+                (cons (rm2 a (car l) oh2) (cdr l))
+                (cons (car l) (rm2 a (cdr l) oh)))))))
 
-(test '((food) more (food)) (rember1* 'noodles '((food) more (food))))
+(test '((food) more (food)) (rember2* 'noodles '((food) more (food))))

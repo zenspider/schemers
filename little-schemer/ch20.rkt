@@ -1,18 +1,19 @@
 ;;; Chapter 16: Ready, Set, Bang!
 
-(use test)
-(use data-structures)
-(use miscmacros)
+#lang racket/base
+
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 ;;; Miscellany
 
 (define (puts name . vals)
-  (if #f
+  (when #f
    (printf "~s~n" (cons name vals))))
 
-(define abort)                          ; for call/cc
+(define abort #f)                          ; for call/cc
 
-(define global-table)
+(define global-table #f)
 
 (define (a-prim p)
   (lambda (args-in-a-list) (p (car args-in-a-list))))

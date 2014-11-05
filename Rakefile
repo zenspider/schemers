@@ -7,7 +7,9 @@ end
 def newer_files touch_file = ".gitignore"
   t0 = File.mtime(touch_file) rescue Time.at(0)
 
-  Dir["{sicp/ch*,little-*}/*.{scm,rkt}"].find_all { |file| t0 <= File.mtime(file) }.sort
+  glob = Dir["{sicp/ch*,little-*}/*.{scm,rkt}"]
+  glob = Dir["{little-*}/*.{scm,rkt}"]
+  glob.find_all { |file| t0 <= File.mtime(file) }.sort
 end
 
 def with_newer_files touch_file = ".gitignore"

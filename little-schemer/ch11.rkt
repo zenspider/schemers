@@ -1,6 +1,7 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 (define two-in-a-row-b?
   (lambda (preceding lat)

@@ -1,6 +1,7 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
+(require "../sicp/lib/test.rkt")
+(require rackunit)
 
 (define length
   (lambda (l)
@@ -17,14 +18,14 @@
 (define test-length
   (lambda (name f0 f1 f2)
     (test-group name
-      (test 0 (f0 '()))
+      (test-eq 0 (f0 '()))
 
-      (test 0 (f1 '()))
-      (test 1 (f1 '(a)))
+      (test-eq 0 (f1 '()))
+      (test-eq 1 (f1 '(a)))
 
-      (test 0 (f2 '()))
-      (test 1 (f2 '(a)))
-      (test 2 (f2 '(a b))))))
+      (test-eq 0 (f2 '()))
+      (test-eq 1 (f2 '(a)))
+      (test-eq 2 (f2 '(a b))))))
 
 (define length0
   (lambda (l)
@@ -274,33 +275,33 @@
 (test-length "meta6-length" meta6-length meta6-length meta6-length)
 
 ;; raw Y combinator... a tad opaque... try to clean up
-(define (Y outer)
+(define (Y1 outer)
   ((lambda (f) (f f))
    (lambda (f) (outer (lambda (x) ((f f) x))))))
 
 ;; extract arg to outer as apply
-(define (Y outer)
+(define (Y2 outer)
   ((lambda (f) (f f))
    (lambda (f)
      (define (apply x) ((f f) x))
      (outer apply))))
 
 ;; extract all of innards as call
-(define (Y outer)
+(define (Y3 outer)
   (define (call f)
     (define (apply x) ((f f) x))
     (outer apply))
   ((lambda (f) (f f)) call))
 
 ;; apply call to lambda-f
-(define (Y outer)
+(define (Y4 outer)
   (define (call f)
     (define (apply x) ((f f) x))
     (outer apply))
   (call call))
 
 (define meta7-length
-  (Y
+  (Y4
    (lambda (length)
      (lambda (l)
        (cond ((null? l) 0)
@@ -311,7 +312,7 @@
 
 ;;    (define (f x)           ...)
 ;;    (define  f  (lambda (x) ...))
-;; (Y (lambda (f) (lambda (x) ...)))
+;; (Y4 (lambda (f) (lambda (x) ...)))
 
 (test-group "y combinator"
   (define fact
@@ -319,16 +320,16 @@
       (if (= n 1) 1
           (* n (fact (- n 1))))))
 
-  (test 3628800 (fact 10))
+  (test-eq 3628800 (fact 10))
 
-  (test 3628800 ((lambda (n)
+  (test-eq 3628800 ((lambda (n)
                    ((lambda (fact)
                       (fact fact n))
                     (lambda (ft k)
                       (if (= k 1) 1
                           (* k (ft ft (- k 1))))))) 10))
 
-  (test 3628800 ((Y (lambda (fact)
+  (test-eq 3628800 ((Y4 (lambda (fact)
                       (lambda (n)
                         (if (= n 1) 1
                             (* n (fact (- n 1))))))) 10)))

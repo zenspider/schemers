@@ -76,7 +76,7 @@
 
 (define null '())
 
-(define atom?
+(define-me-maybe atom?
   (lambda (x)
     (and (not (pair? x))
          (not (null? x)))))

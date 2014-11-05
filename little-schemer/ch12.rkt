@@ -1,6 +1,7 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 (define (Y outer)                       ; taken from ch09.scm
   (define (call f)
@@ -8,7 +9,7 @@
     (outer apply))
   (call call))
 
-(define multirember
+(define multirember1
   (lambda (a lat)
     ((Y (lambda (mr)
           (lambda (lat)
@@ -27,7 +28,7 @@
 
 (length '(1 2 3))
 
-(define multirember
+(define multirember2
   (lambda (a lat)
     (letrec ((mr (lambda (lat)
                    (cond ((null? lat) '())
@@ -35,7 +36,7 @@
                          (else (cons (car lat) (mr (cdr lat))))))))
       (mr lat))))
 
-(multirember 2 '(1 2 3 2 4 2 5))
+(multirember2 2 '(1 2 3 2 4 2 5))
 
 ;;; 12th Commandment
 ;;
@@ -49,7 +50,7 @@
             ((test? (car lat) a) ((multirember-f test?) a (cdr lat)))
             (else (cons (car lat) ((multirember-f test?) a (cdr lat))))))))
 
-(define multirember-f
+(define multirember-f2
   (lambda (test?)
     (letrec ((m-f (lambda (a lat)
                     (cond
@@ -58,7 +59,7 @@
                      (else (cons (car lat) (m-f a (cdr lat))))))))
       m-f)))
 
-(define member?
+(define member1?
   (lambda (a lat)
     ((letrec ((yes? (lambda (l)
                       (cond ((null? l) #f)
@@ -67,7 +68,7 @@
        yes?)
      lat)))
 
-(define member?
+(define member2?
   (lambda (a lat)
     ((letrec ((yes? (lambda (l)
                       (cond ((null? l) #f)
@@ -75,17 +76,17 @@
                             (else (yes? (cdr l)))))))
        (yes? lat)))))
 
-(define union
+(define union1
   (lambda (set1 set2)
     (cond ((null? set1) set2)
-          ((member? (car set1) set2) (union (cdr set1) set2))
-          (else (cons (car set1)     (union (cdr set1) set2))))))
+          ((member2? (car set1) set2) (union1 (cdr set1) set2))
+          (else (cons (car set1)     (union1 (cdr set1) set2))))))
 
-(define union
+(define union2
   (lambda (set1 set2)
     (letrec ((U (lambda (set)
                   (cond ((null? set) set2)
-                        ((member? (car set) set2) (U (cdr set)))
+                        ((member2? (car set) set2) (U (cdr set)))
                         (else (cons (car set) (U (cdr set))))))))
       (U set1))))
 
@@ -93,7 +94,7 @@
 ;;
 ;; Use (letrec ...) to hide and to protect functions
 
-(define union
+(define union3
   (lambda (set1 set2)
     (letrec ((U (lambda (set)
                   (cond ((null? set) set2)

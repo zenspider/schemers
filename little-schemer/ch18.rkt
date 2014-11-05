@@ -1,6 +1,9 @@
 ;;; Chapter 16: Ready, Set, Bang!
 
-(use test)
+#lang racket/base
+
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 (define (bons kar)
   (let ((kdr '()))
@@ -25,11 +28,24 @@
     (set-kdr c d)
     c))
 
-(define k)
+(define k #f)
 (define (set-kounter n)
   (set! k n))
 (set-kounter 0)
 (define (kounter) k)
+
+(define konsC
+  (let ((N 0))
+    (set! kounter
+          (lambda ()
+            N))
+    (set! set-kounter
+          (lambda (x)
+            (set! N x)))
+    (lambda (x y)
+      (set! N (add1 N))
+      (kons x y))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (lots m)
@@ -53,13 +69,13 @@
     (A l)
     l))
 
-(test '(egg egg egg) (lots 3))
-(test 3 (lenkth (lots 3)))
-
-(set-kounter 0)
-(test '(egg egg egg egg) (add-at-end (lots 3)))
-(test 3 (kounter))
-
-(set-kounter 0)
-(test '(egg egg egg egg) (add-at-end-too (lots 3)))
-(test 0 (kounter))
+;; (test '(egg egg egg) (lots 3))
+;; (test 3 (lenkth (lots 3)))
+;; 
+;; (set-kounter 0)
+;; (test '(egg egg egg egg) (add-at-end (lots 3)))
+;; (test 3 (kounter))
+;; 
+;; (set-kounter 0)
+;; (test '(egg egg egg egg) (add-at-end-too (lots 3)))
+;; (test 0 (kounter))

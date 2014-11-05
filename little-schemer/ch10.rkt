@@ -1,35 +1,35 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
+(module minimum racket/base
+  (provide #%module-begin #%app #%datum #%top require
+           prefix-in only-in provide))
 
-(module eval
+(module eval (submod ".." minimum)
 
-  (value *application
-         *cond
-         *const
-         *identifier
-         *lambda
-         *quote
-         apply1
-         apply-closure
-         apply-primitive
-         expression-to-action
-         function-of
-         meaning)
+  (provide *application
+           *cond
+           *const
+           *identifier
+           *lambda
+           *quote
+           apply-closure
+           apply-primitive
+           apply1
+           expression-to-action
+           function-of
+           meaning
+           value)
 
-  (import
-   (only scheme
-         * + - / < = and append caadr caar cadddr caddr cadr car cdadr
-         cdddr cddr cdr cond cons define eq? expt if lambda length let let*
-         list map not null? number? or pair? quote set! set-car! set-cdr!
-         string? symbol? zero?)
+  (require (only-in racket/base
+                    * + add1 and car cdr cond cons define else eq? expt lambda
+                    let let* not null? number? pair? quote sub1 zero?))
 
-   (prefix (only scheme apply) scheme-) ; scheme-apply
+  (require (only-in racket/list first second third))
 
-   (only chicken error use sub1 add1))
-
-  (use (only srfi-1 zip first second third))
-  (use (only data-structures atom?))
+  (define atom?
+    (lambda (x)
+      (and (not (pair? x))
+           (not (null? x)))))
 
   (define *application
     (lambda (e table)
@@ -58,7 +58,6 @@
   (define *quote
     (lambda (e table)
       (text-of e)))
-
 
   (define :atom?
     (lambda (x)
@@ -213,58 +212,64 @@
     (lambda (e)
       (meaning e '()))))
 
-(import eval)
+(module+ test
+  (require racket/base)
+  (require rackunit)
+  (require "../sicp/lib/test.rkt")
+  (require (submod ".." eval))
 
-(test-group "ch10"
-  (test '(a b c) (cons 'a (cons 'b (cons 'c '()))))
-  (test '(car (quote (a b c)))
-        (cons 'car (cons
-                    (cons 'quote (cons
-                                  (cons 'a (cons 'b (cons 'c '())))
-                                  '()))
-                    '())))
-  (test 'a (car (quote (a b c))))
-  (test 'a               (value '(car (quote (a b c)))))
-  (test '(car (quote (a b c))) (value '(quote (car (quote (a b c))))))
-  (test 7                (value '(add1 6)))
-  (test 7                (value 7))
-  (test 'nothing         (value '(quote nothing)))
-  (test '((from nothing comes something))
-                         (value '((lambda (nothing) (cons nothing (quote ())))
-                                  (quote (from nothing comes something)))))
-  (test 'something (value '((lambda (nothing) (cond (nothing (quote something))
-                                                    (else (quote nothing))))
-                            #t)))
-  (test #f               (value #f))
-  (test '(primitive car) (value 'car))
+  (test-group "ch10"
+              (test '(a b c) (cons 'a (cons 'b (cons 'c '()))))
+              (test '(car (quote (a b c)))
+                    (cons 'car (cons
+                                (cons 'quote (cons
+                                              (cons 'a (cons 'b (cons 'c '())))
+                                              '()))
+                                '())))
+              (test 'a (car (quote (a b c))))
+              (test 'a               (value '(car (quote (a b c)))))
+              (test '(car (quote (a b c))) (value '(quote (car (quote (a b c))))))
+              (test 7                (value '(add1 6)))
+              (test 7                (value 7))
+              (test 'nothing         (value '(quote nothing)))
+              (test '((from nothing comes something))
+                    (value '((lambda (nothing) (cons nothing (quote ())))
+                             (quote (from nothing comes something)))))
+              (test 'something (value '((lambda (nothing) (cond (nothing (quote something))
+                                                           (else (quote nothing))))
+                                        #t)))
+              (test #f               (value #f))
+              (test '(primitive car) (value 'car))
 
-  (define type expression-to-action)
+              (define type expression-to-action)
 
-  (test *const       (type 6))
-  (test *const       (type #f))
-  (test *const       (type 'cons))
-  (test *quote       (type '(quote nothing)))
-  (test *identifier  (type 'nothing))
-  (test *lambda      (type '(lambda (x y (cons x y)))))
-  (test *application (type '((lambda (nothing)
-                               (cond (nothing (quote something))
-                                     (else (quote nothing))))
-                             #t)))
-  (test *cond        (type '(cond (nothing (quote something))
-                                  (else (quote nothing)))))
+              (test *const       (type 6))
+              (test *const       (type #f))
+              (test *const       (type 'cons))
+              (test *quote       (type '(quote nothing)))
+              (test *identifier  (type 'nothing))
+              (test *lambda      (type '(lambda (x y (cons x y)))))
+              (test *application (type '((lambda (nothing)
+                                           (cond (nothing (quote something))
+                                                 (else (quote nothing))))
+                                         #t)))
+              (test *cond        (type '(cond (nothing (quote something))
+                                         (else (quote nothing)))))
 
-  (test 5 (*cond '(cond (coffee klatsch) (else party))
-                 '(((coffee) (#t))
-                   ((klatsch party) (5 (6))))))
+              (test 5 (*cond '(cond (coffee klatsch) (else party))
+                             '(((coffee) (#t))
+                               ((klatsch party) (5 (6))))))
 
-  (test 'cons (function-of '(cons z x)))
-  (test '(primitive cons) (meaning (function-of '(cons z x)) '()))
+              (test 'cons (function-of '(cons z x)))
+              (test '(primitive cons) (meaning (function-of '(cons z x)) '()))
 
-  (test '(6 a b c) (apply-closure '((((u v w) (1 2 3))
-                                     ((x y z) (4 5 6)))
-                                    (x y)
-                                    (cons z x))
-                                  '((a b c) (d e f))))
+              (test '(6 a b c) (apply-closure '((((u v w) (1 2 3))
+                                                 ((x y z) (4 5 6)))
+                                                (x y)
+                                                (cons z x))
+                                              '((a b c) (d e f))))
 
-  (test '(6 a b c) (apply1 '(primitive cons) '(6 (a b c))))
-  (test '(6 a b c) (apply-primitive 'cons '(6 (a b c)))))
+              (test '(6 a b c) (apply1 '(primitive cons) '(6 (a b c))))
+              (test '(6 a b c) (apply-primitive 'cons '(6 (a b c)))))
+
+  )

@@ -1,7 +1,9 @@
 ;;; Chapter 16: Ready, Set, Bang!
 
-(use test)
-(use data-structures)
+#lang racket/base
+
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
 ;;; 17th Commandment:
 ;;
@@ -47,7 +49,7 @@
    ((null? l) 0)
    (else (add1 (length (cdr l))))))
 
-(define length (lambda (l) 0))
+(set! length (lambda (l) 0))
 
 (set! length
       (lambda (l)
@@ -55,7 +57,7 @@
          ((null? l) 0)
          (else (add1 (length (cdr l)))))))
 
-(define length
+(set! length
   (let ((h (lambda (l) 0)))
     (set! h
           (lambda (l)
@@ -72,7 +74,7 @@
       (cond ((null? l) 0)
             (else (add1 (length (cdr l))))))))
 
-(define length
+(set! length
   (let ((h (lambda (l) 0)))
     (set! h (L (lambda (arg) (h arg))))
     h))
@@ -87,10 +89,10 @@
 
 (define Y-bang
   (lambda (f)
-    (letrec ((h (f lambda (arg) (h arg))))
+    (letrec ((h (f (lambda (arg) (h arg)))))
       h)))
 
-(define length (Y! L))
+(set! length (Y! L))
 
 (test 3 (length '(1 2 3)))
 

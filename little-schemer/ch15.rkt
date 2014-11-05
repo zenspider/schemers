@@ -1,9 +1,9 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
-(use miscmacros)                        ; call/cc
+(require "../sicp/lib/test.rkt")
+(module+ test (require rackunit))
 
-(define atom?
+(define-me-maybe atom?
   (lambda (x)
     (and (not (pair? x))
          (not (null? x)))))

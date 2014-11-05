@@ -6,7 +6,7 @@
 ;; by an interval that spans zero. Modify Alyssa's code to check for
 ;; this condition and to signal an error if it occurs.
 
-(require 'testes)
+(load "sicp/lib/testes.scm")
 (import testes)
 
 (define make-interval cons)

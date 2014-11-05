@@ -38,17 +38,17 @@
 
 (define (rnd n) (+ 1 (random n)))       ; avoid divide by zero
 
-(random-seed 0)
+(randomize 0)
 (time
  (times-do iters
            (lambda () (old-expmod (rnd max) (rnd max) (rnd max)))))
 
-(random-seed 0)
+(randomize 0)
 (time
  (times-do iters
            (lambda () (new-expmod (rnd max) (rnd max) (rnd max)))))
 
-(random-seed 0)
+(randomize 0)
 (time
  (times-do iters
            (lambda () (expmod (rnd max) (rnd max) (rnd max)))))

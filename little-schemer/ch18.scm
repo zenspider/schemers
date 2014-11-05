@@ -1,7 +1,6 @@
 ;;; Chapter 16: Ready, Set, Bang!
 
 (use test)
-(use data-structures)
 
 (define (bons kar)
   (let ((kdr '()))

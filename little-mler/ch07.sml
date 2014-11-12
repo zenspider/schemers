@@ -58,8 +58,40 @@ fun some_ints n =
 fun chain_item (n, Link(i, f)) =
     if eq_int(n, 1)
     then i
-    else chain_item(n-1, f(i))
+    else chain_item(n-1, f(i));
 
 (* pg 101 *)
 
-chain_item(6, some_ints)
+chain_item(1, some_ints(0));
+chain_item(6, some_ints(0));
+chain_item(37, some_ints(0));
+
+fun is_prime n =
+    let fun has_no_divisors(n, c) =
+            if eq_int(c, 1)
+            then true
+            else
+                if divides_evenly(n, c)
+                then false
+                else has_no_divisors(n, c-1)
+    in
+        has_no_divisors(n, n-1)
+    end;
+
+(is_prime : int -> bool);
+
+fun primes n =
+    if is_prime(n+1)
+    then Link(n+1, primes)
+    else primes(n+1);
+
+chain_item(12, primes(1));
+
+fun fibs n m =
+    Link(n + m, fibs m);
+(fibs : int -> int -> chain);
+
+Link(0, fibs(1));
+
+fibs 1 2;
+

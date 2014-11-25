@@ -26,7 +26,7 @@
           ((null? l) 0)
           (else (add1 (length (cdr l)))))))))
 
-(length '(1 2 3))
+(test 3 (length '(1 2 3)))
 
 (define multirember2
   (lambda (a lat)
@@ -36,7 +36,7 @@
                          (else (cons (car lat) (mr (cdr lat))))))))
       (mr lat))))
 
-(multirember2 2 '(1 2 3 2 4 2 5))
+(test '(1 3 4 5) (multirember2 2 '(1 2 3 2 4 2 5)))
 
 ;;; 12th Commandment
 ;;

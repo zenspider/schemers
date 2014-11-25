@@ -76,14 +76,12 @@
 
 (define null '())
 
-(define-me-maybe atom?
-  (lambda (x)
-    (and (not (pair? x))
-         (not (null? x)))))
+(define-me-maybe (atom? x)
+  (and (not (pair? x))
+       (not (null? x))))
 
-(define list?
-  (lambda (x)
-    (not (atom? x))))
+(define-me-maybe (list? x)
+  (not (atom? x)))
 
 ;; scheme sanity check:
 (test #f (atom? '()))

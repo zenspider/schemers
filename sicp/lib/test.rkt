@@ -1,7 +1,8 @@
 #lang racket/base
 
 (require (for-syntax racket/base))
-(provide assert-equal atom? define-me-maybe
+(provide assert-equal
+         define-me-maybe null atom? list?
          test test-eq test-group)       ; deprecate
 
 (require rackunit)
@@ -31,7 +32,11 @@
 
 (define-syntax test (make-rename-transformer #'assert-equal))
 
-(define atom?
-  (lambda (x)
-    (and (not (pair? x))
-         (not (null? x)))))
+(define-me-maybe null '())
+
+(define-me-maybe (atom? x)
+  (and (not (pair? x))
+       (not (null? x))))
+
+(define-me-maybe (list? x)
+  (not (atom? x)))

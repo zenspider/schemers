@@ -74,14 +74,6 @@
 
 ;; pg 107: 8th: Use help functions to abstract from representations.
 
-(define null '())
-
-(define-me-maybe (atom? x)
-  (and (not (pair? x))
-       (not (null? x))))
-
-(define-me-maybe (list? x)
-  (not (atom? x)))
 
 ;; scheme sanity check:
 (test #f (atom? '()))

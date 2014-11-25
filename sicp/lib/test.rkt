@@ -6,14 +6,13 @@
 
 (require rackunit)
 
-(define-syntax define-me-maybe
-  (lambda (stx)
-    (syntax-case stx ()
-      ((_ (name . args) body ...)
-       #'(define-me-maybe name (lambda args body ...)))
-      ((_ name value)
-       (if (identifier-binding #'name)
-           #'(begin) #'(define name value))))))
+(define-syntax (define-me-maybe stx)
+  (syntax-case stx ()
+    ((_ (name . args) body ...)
+     #'(define-me-maybe name (lambda args body ...)))
+    ((_ name value)
+     (if (identifier-binding #'name)
+         #'(begin) #'(define name value)))))
 
 (define-syntax test-group
   (syntax-rules ()

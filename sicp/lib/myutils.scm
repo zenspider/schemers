@@ -1,64 +1,61 @@
+#lang racket/base
 
-(module myutils *
+(provide accumulate
+         accumulate-n
+         enumerate-interval
+         flatmap
+         fold-left
+         fold-right
+         inc
+         prime?
+         sort-<
+         square)
 
-        (import scheme chicken data-structures)
+(define null '())
 
-        ;; (provide accumulate
-        ;;          accumulate-n
-        ;;          enumerate-interval
-        ;;          flatmap
-        ;;          fold-left
-        ;;          fold-right
-        ;;          inc
-        ;;          prime?
-        ;;          sort-<
-        ;;          square)
+(define (accumulate-n op init seqs)
+  (if (null? (car seqs)) null
+      (cons (accumulate   op init (map car seqs))
+            (accumulate-n op init (map cdr seqs)))))
 
-        (define null '())
+(define (enumerate-interval low high)
+  (if (> low high) null
+      (cons low (enumerate-interval (+ low 1) high))))
 
-        (define (accumulate-n op init seqs)
-          (if (null? (car seqs)) null
-              (cons (accumulate   op init (map car seqs))
-                    (accumulate-n op init (map cdr seqs)))))
+(define (flatmap proc seq)
+  (accumulate append null (map proc seq)))
 
-        (define (enumerate-interval low high)
-          (if (> low high) null
-              (cons low (enumerate-interval (+ low 1) high))))
+(define (inc n) (+ 1 n))
 
-        (define (flatmap proc seq)
-          (accumulate append null (map proc seq)))
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
 
-        (define (inc n) (+ 1 n))
+(define (fold-right op initial sequence)
+  (if (null? sequence) initial
+      (op (car sequence)
+          (accumulate op initial (cdr sequence)))))
 
-        (define (fold-left op initial sequence)
-          (define (iter result rest)
-            (if (null? rest)
-                result
-                (iter (op result (car rest))
-                      (cdr rest))))
-          (iter initial sequence))
+(define accumulate fold-right)
 
-        (define (fold-right op initial sequence)
-          (if (null? sequence) initial
-              (op (car sequence)
-                  (accumulate op initial (cdr sequence)))))
+(define (prime? n)
+  (define (smallest-divisor n)
+    (define (find-divisor n test-divisor)
+      (define (divides? a b)
+        (= (remainder b a) 0))
+      (define (next n)
+        (if (odd? n) (+ 2 n) (+ 1 n)))
+      (cond ((> (square test-divisor) n) n)
+            ((divides? test-divisor n) test-divisor)
+            (else (find-divisor n (next test-divisor)))))
+    (find-divisor n 2))
+  (= n (smallest-divisor n)))
 
-        (define accumulate fold-right)
+(define (sort-< l)
+  (sort l (lambda (x y) (< x y))))
 
-        (define (prime? n)
-          (define (smallest-divisor n)
-            (define (find-divisor n test-divisor)
-              (define (divides? a b)
-                (= (remainder b a) 0))
-              (define (next n)
-                (if (odd? n) (+ 2 n) (+ 1 n)))
-              (cond ((> (square test-divisor) n) n)
-                    ((divides? test-divisor n) test-divisor)
-                    (else (find-divisor n (next test-divisor)))))
-            (find-divisor n 2))
-          (= n (smallest-divisor n)))
-
-        (define (sort-< l)
-          (sort l (lambda (x y) (< x y))))
-
-        (define (square n) (* n n)))
+(define (square n) (* n n))

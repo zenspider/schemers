@@ -1,9 +1,5 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-(use (srfi 1))
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
 
 ;; Exercise 2.41
 

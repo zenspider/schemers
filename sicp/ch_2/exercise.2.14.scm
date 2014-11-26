@@ -1,6 +1,3 @@
-
-(require-extension numbers)
-
 ;;; Exercise 2.14:
 
 ;; After considerable work, Alyssa P. Hacker delivers her finished

@@ -2,10 +2,18 @@
 
 (require (for-syntax racket/base))
 (provide assert-equal
+         assert-many
          define-me-maybe null atom? list?
-         test test-eq test-group)       ; deprecate
+         assert-float
+         refute xassert done test test-eq test-group)       ; deprecate
 
 (require rackunit)
+(require rackunit/log)
+
+(executable-yield-handler (lambda (_) (test-log #:exit? #t)))
+
+(define (done)
+  (void))
 
 (define-syntax (define-me-maybe stx)
   (syntax-case stx ()
@@ -24,6 +32,43 @@
   (syntax-rules ()
     ((_ exp act)
      (check-equal? act exp))))
+
+(define (assert-float-d x y d)
+  (xassert (< (abs (- x y)) d)))
+
+(define (assert-float x y)
+  (assert-float-d x y 0.00001))
+
+(define-syntax refute
+  (syntax-rules ()
+    ((_ exp) (if (not exp) (display ".")
+                 (begin
+                   (display "F: (refute ")
+                   (write (quote exp))
+                   (display ")")
+                   (newline)
+                   (display ";; => ")
+                   (display "(refute ")
+                   (write exp)
+                   (display ")")
+                   (newline))))))
+
+(define-syntax xassert
+  (syntax-rules ()
+    ((_ exp) (if exp (display ".")
+                 (begin
+                   (display "F: (xassert ")
+                   (write (quote exp))
+                   (display ")")
+                   (newline)
+                   (display ";; => ")
+                   (display "(xassert ")
+                   (write exp)
+                   (display ")")
+                   (newline))))))
+
+(define (assert-many tests . futs)
+  (for-each tests futs))
 
 (define-syntax test-eq
   (syntax-rules ()

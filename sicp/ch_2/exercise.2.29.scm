@@ -1,6 +1,4 @@
-
-(require 'testes)
-(import testes)
+(require "../lib/test.rkt")
 
 ;; Exercise 2.29.
 

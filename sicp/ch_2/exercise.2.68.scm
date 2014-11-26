@@ -1,8 +1,5 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
 
 ;;; Exercise 2.68:
 
@@ -22,9 +19,7 @@
 ;; 2-67:: with the sample tree and seeing whether it is the same as
 ;; the original sample message.
 
-(require 'huffman)
-(import huffman)
-;; (require "../lib/huffman.rkt")
+(require "../lib/huffman.scm")
 
 (define (encode-symbol s tree)
   (define (find-path tree path)

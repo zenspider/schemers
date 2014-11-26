@@ -1,10 +1,6 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-(require 'huffman)
-(import huffman)
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
+(require "../lib/huffman.scm")
 
 ;;; Exercise 2.67:
 
@@ -21,8 +17,6 @@
 ;;
 ;; Use the `decode' procedure to decode the message, and give the
 ;; result.
-
-;; (require "../lib/huffman.rkt")
 
 (define sample-tree
   (make-code-tree (make-leaf 'A 4)

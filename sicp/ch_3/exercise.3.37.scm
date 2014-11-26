@@ -1,7 +1,7 @@
 
-(use test)
-(use numbers)
-(require 'constraints)
+(require "lib/testes.scm")
+;; (use numbers)
+(require "lib/constraints.scm")
 (import constraints)
 
 ;;; Exercise 3.37

@@ -1,8 +1,5 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
 ;; (require "../lib/table.rkt")
 
 ;;; Exercise 2.73

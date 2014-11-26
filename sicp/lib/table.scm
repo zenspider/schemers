@@ -1,9 +1,7 @@
+#lang racket/base
 
-(module table *
-
-(import scheme chicken)
-
-;; (provide make-table)
+(require rnrs/mutable-pairs-6)
+(provide make-table)
 
 (define (make-table)
   (let ((local-table (list '*table*)))
@@ -33,4 +31,4 @@
       (cond ((eq? m 'lookup-proc) lookup)
             ((eq? m 'insert-proc!) insert!)
             (else (error "Unknown operation -- TABLE" m))))
-    dispatch)))
+    dispatch))

@@ -7,8 +7,7 @@
 ;;      (last-pair (list 23 72 149 34))
 ;;      (34)
 
-(require 'testes)
-(import testes)
+(require "../lib/test.rkt")
 
 (define (last-pair l)
   (if (or (null? l) (null? (cdr l))) l

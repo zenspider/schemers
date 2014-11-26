@@ -7,8 +7,7 @@
 ;;      (reverse (list 1 4 9 16 25))
 ;;      (25 16 9 4 1)
 
-(require 'testes)
-(import testes)
+(require "../lib/test.rkt")
 
 (define (reverse l)
   (define (iterate l r)

@@ -1,8 +1,6 @@
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
 ;; HACK (require (planet "sicp.ss" ("soegaard" "sicp.plt" 2 1)))
 
 ;; Exercise 2.44

@@ -1,4 +1,6 @@
-(module testes *
+#lang r6rs
+
+(module testes racket/base
 
         (import scheme chicken test)
 

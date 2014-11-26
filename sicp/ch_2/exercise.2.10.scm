@@ -6,8 +6,7 @@
 ;; by an interval that spans zero. Modify Alyssa's code to check for
 ;; this condition and to signal an error if it occurs.
 
-(load "sicp/lib/testes.scm")
-(import testes)
+(require "../lib/test.rkt")
 
 (define make-interval cons)
 (define upper-bound cdr)

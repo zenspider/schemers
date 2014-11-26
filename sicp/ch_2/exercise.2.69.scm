@@ -1,11 +1,6 @@
-
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-(require 'huffman)
-(import huffman)
-;; (require "../lib/huffman.rkt")
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
+(require "../lib/huffman.scm")
 
 ;;; Exercise 2.69:
 

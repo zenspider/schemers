@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "shared.rkt")
+(require "lib/shared.rkt")
 
 ;; scheme sanity check:
 (test #f (atom? '()))

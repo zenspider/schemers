@@ -2,7 +2,7 @@
 
 (provide member?)
 
-(require "shared.rkt")
+(require "lib/shared.rkt")
 
 ;;; Chapter 2
 ;; pg 15 - 20

@@ -2,8 +2,7 @@
 
 #lang racket/base
 
-(require "../sicp/lib/test.rkt")
-(module+ test (require rackunit))
+(require "lib/shared.rkt")
 
 ;;; Miscellany
 
@@ -91,7 +90,8 @@
 
 (define (box-all vals)
   (cond ((null? vals) '())
-        (else (cons (box (car vals)) (box-all (cdr vals))))))
+        (else (cons (box (car vals))
+                    (box-all (cdr vals))))))
 
 (define (setbox box new)
   (box (lambda (it set) (set new))))
@@ -241,28 +241,27 @@
 
 (define (I x) x) ; just for testing
 
-(test 3 (value 3))
-(test 0 (value '(cond (else 0))))
-(test 1 (value '(cond ((null? (cons 0 '())) 0) (else 1))))
+(test (value 3)
+      3)
+(test (value '(cond (else 0)))
+      0)
+(test (value '(cond ((null? (cons 0 '())) 0) (else 1)))
+      1)
 
-(value '(define odd?
-          (lambda (n)
-            (cond ((zero? n) #f)
-                  (else (even? (sub1 n)))))))
+(test (value '(define odd?
+               (lambda (n)
+                 (cond ((zero? n) #f)
+                       (else (even? (sub1 n)))))))
+      (void))
 
-(value '(define even?
-          (lambda (n)
-            (cond ((zero? n) #t)
-                  (else (odd? (sub1 n)))))))
+(test (value '(define even?
+               (lambda (n)
+                 (cond ((zero? n) #t)
+                       (else (odd? (sub1 n)))))))
+      (void))
 
 
-(test #f (value '(odd? 2)))
-(test #t (value '(odd? 1)))
-
-;;; 15th Commandment
-;;
-;; Use (let ...) to name the values of repeated expressions in a
-;; function definition if they may be evaluated twice for
-;; one-and-the-same use of the function. And use (let ...) to name the
-;; values of expressions (without set!) that are re-evaluated every
-;; time a function is used.
+(test (value '(odd? 2))
+      #f)
+(test (value '(odd? 1))
+      #t)

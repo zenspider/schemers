@@ -2,24 +2,24 @@
 
 #lang racket/base
 
-(require "../sicp/lib/test.rkt")
-(module+ test (require rackunit))
+(require "lib/shared.rkt")
 
 ;; pg 127
 
 (define find                            ; from pg 113
   (lambda (n Ns Rs)
     (letrec ((A (lambda (ns rs)
-                  (cond ((null? ns) #f)
-                        ((= (car ns) n) (car rs))
-                        (else (A (cdr ns) (cdr rs)))))))
+                  (cond [(null? ns) #f]
+                        [(= (car ns) n) (car rs)]
+                        [else (A (cdr ns) (cdr rs))]))))
       (A Ns Rs))))
 
 (define deep1
   (lambda (m)
     (if (zero? m)
         'pizza
-        (cons (deep1 (sub1 m)) '()))))
+        (cons (deep1 (sub1 m))
+              '()))))
 
 (define deepM1
   (let ((Rs '())
@@ -27,7 +27,8 @@
     (letrec ((D (lambda (m)
                   (if (zero? m)
                       'pizza
-                      (cons (D (sub1 m)) '())))))
+                      (cons (D (sub1 m))
+                            '())))))
       (lambda (n)
         (let ((exists (find n Ns Rs)))
           (when (atom? exists)
@@ -36,7 +37,8 @@
                 (set! Ns (cons n Ns))
                 result)))))))
 
-(test '(((pizza))) (deepM1 3))
+(test (deepM1 3)
+      '(((pizza))))
 
 (define deepM2                           ; call deepM2 instead of D
   (let ((Rs '())
@@ -44,7 +46,8 @@
     (letrec ((D (lambda (m)
                   (if (zero? m)
                       'pizza
-                      (cons (deepM2 (sub1 m)) '())))))
+                      (cons (deepM2 (sub1 m))
+                            '())))))
       (lambda (n)
         (let ((exists (find n Ns Rs)))
           (when (atom? exists)
@@ -53,7 +56,8 @@
                 (set! Ns (cons n Ns))
                 result)))))))
 
-(test '(((pizza))) (deepM2 3))
+(test (deepM2 3)
+      '(((pizza))))
 
 (define deepM3                           ; merge letrec into let
   (let ((Rs '())
@@ -61,7 +65,8 @@
         (D (lambda (m)
              (if (zero? m)
                  'pizza
-                 (cons (deepM3 (sub1 m)) '())))))
+                 (cons (deepM3 (sub1 m))
+                       '())))))
     (lambda (n)
       (let ((exists (find n Ns Rs)))
         (when (atom? exists)
@@ -70,7 +75,8 @@
               (set! Ns (cons n Ns))
               result))))))
 
-(test '(((pizza))) (deepM3 3))
+(test (deepM3 3)
+      '(((pizza))))
 
 (define deepM4                           ; unfactor D
   (let ((Rs '())
@@ -80,12 +86,14 @@
         (when (atom? exists)
             (let ((result (if (zero? n)
                               'pizza
-                              (cons (deepM4 (sub1 n)) '()))))
+                              (cons (deepM4 (sub1 n))
+                                    '()))))
               (set! Rs (cons result Rs))
               (set! Ns (cons n Ns))
               result))))))
 
-(test '(((pizza))) (deepM4 3))
+(test (deepM4 3)
+      '(((pizza))))
 
 ;; pg 132
 
@@ -100,21 +108,28 @@
             (set! N (add1 N))
             (cons x y))))
 
-(test 0 (counter))
-(test '(a) (consC 'a '()))
-(test 1 (counter))
+(test (counter)
+      0)
+(test (consC 'a '())
+      '(a))
+(test (counter)
+      1)
 
 (define deep2
   (lambda (m)
     (if (zero? m)
         'pizza
-        (consC (deep2 (sub1 m)) '()))))
+        (consC (deep2 (sub1 m))
+               '()))))
 
-(test '(((pizza))) (deep2 3))
-(test 4 (counter))
+(test (deep2 3)
+      '(((pizza))))
+(test (counter)
+      4)
 
 (set-counter 0)
-(test 0 (counter))
+(test (counter)
+      0)
 
 ;; pg 134
 
@@ -128,8 +143,10 @@
                         (S (sub1 n)))))))
       (S 1000))))
 
-;; (supercounter deep2)
-;; (test 500500 (counter))
+(test (supercounter deep2)
+      'pizza)
+(test (counter)
+      500500)
 
 (define deepM5
   (let ((Rs '())
@@ -139,18 +156,24 @@
         (when (atom? exists)
             (let ((result (if (zero? n)
                               'pizza
-                              (consC (deepM5 (sub1 n)) '()))))
+                              (consC (deepM5 (sub1 n))
+                                     '()))))
               (set! Rs (cons result Rs))
               (set! Ns (cons n Ns))
               result))))))
 
 (set-counter 0)
-(test '(((((pizza))))) (deepM5 5))
-(test 5 (counter))
-(test `((,(void))) (deepM5 7))
-(test 7 (counter))
+(test (deepM5 5)
+      '(((((pizza))))))
+(test (counter)
+      5)
+(test (deepM5 7)
+      `((,(void))))
+(test (counter)
+      7)
 (define _ignore_ (deepM5 1000))
-(test 1000 (counter))
+(test (counter)
+      1000)
 
 ;; pg 139
 
@@ -158,16 +181,21 @@
   (lambda (a l)
     (letrec ((R (lambda (l oh)
                   (cond
-                   ((null? l) (oh 'no))
-                   ((atom? (car l)) (if (eq? (car l) a)
-                                        (cdr l)
-                                        (consC (car l) (R (cdr l) oh))))
-                   (else (let ((new-car (let/cc oh (R (car l) oh))))
-                           (when (atom? new-car)
-                               (consC (car l) (R (cdr l) oh)))))))))
+                   [(null? l) (oh 'no)]
+                   [(atom? (car l))
+                    (if (eq? (car l) a)
+                        (cdr l)
+                        (consC (car l)
+                               (R (cdr l) oh)))]
+                   [else
+                    (let ((new-car (let/cc oh (R (car l) oh))))
+                      (when (atom? new-car)
+                        (consC (car l)
+                               (R (cdr l) oh))))]))))
       (let ((new-l (let/cc oh (R l oh))))
         (if (atom? new-l)
             l
             new-l)))))
 
-(test '(a c) (rember1*C 'b '(a b c)))
+(test (rember1*C 'b '(a b c))
+      '(a c))

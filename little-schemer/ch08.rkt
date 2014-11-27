@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require "../sicp/lib/test.rkt")
+(require "lib/shared.rkt")
 
 (require "ch03.rkt")                    ; multirember & firsts
 (require "ch04.rkt")                    ; eqan? ** pick div
@@ -13,10 +13,10 @@
 (define rember-f1
   (lambda (test? s l)
     (cond
-     ((null? l) '())
-     ((test? (car l) s) (cdr l))
-     (else (cons (car l)
-                 (rember-f1 test? s (cdr l)))))))
+     [(null? l) '()]
+     [(test? (car l) s) (cdr l)]
+     [else (cons (car l)
+                 (rember-f1 test? s (cdr l)))])))
 
 (test '(6 2 3)
               (rember-f1 = 5 '(6 2 5 3)))
@@ -32,7 +32,7 @@
     (lambda (x)
       (eq? x a))))
 
-(test #t ((eq?-c 'salad) 'salad))
+[test #t ((eq?-c 'salad) 'salad)]
 (test #f ((eq?-c 'salad) 'pie))
 
 (define eq?-salad (eq?-c 'salad))
@@ -44,10 +44,10 @@
   (lambda (test?)
     (lambda (a l)
       (cond
-       ((null? l) '())
-       ((test? (car l) a) (cdr l))
-       (else (cons (car l)
-                   ((rember-f test?) a (cdr l))))))))
+       [(null? l) '()]
+       [(test? (car l) a) (cdr l)]
+       [else (cons (car l)
+                   ((rember-f test?) a (cdr l)))]))))
 
 (define rember-eq? (rember-f eq?))
 
@@ -63,16 +63,22 @@
 (define insertL-f
   (lambda (test?)
     (lambda (new old lat)
-      (cond ((null? lat) '())
-            ((test? (car lat) old) (cons new (cons old (cdr lat))))
-            (else (cons (car lat) ((insertL-f test?) new old (cdr lat))))))))
+      (cond [(null? lat) '()]
+            [(test? (car lat) old) (cons new
+                                         (cons old
+                                               (cdr lat)))]
+            [else (cons (car lat)
+                        ((insertL-f test?) new old (cdr lat)))]))))
 
 (define insertR-f
   (lambda (test?)
     (lambda (new old lat)
-      (cond ((null? lat) '())
-            ((test? (car lat) old) (cons old (cons new (cdr lat))))
-            (else (cons (car lat) ((insertR-f test?) new old (cdr lat))))))))
+      (cond [(null? lat) '()]
+            [(test? (car lat) old) (cons old
+                                         (cons new
+                                               (cdr lat)))]
+            [else (cons (car lat)
+                        ((insertR-f test?) new old (cdr lat)))]))))
 
 (test '(a b c z d e)       ((insertR-f eq?) 'z 'c '(a b c d e)))
 (test '(a b c d e f g d h) ((insertR-f eq?) 'e 'd '(a b c d f g d h)))
@@ -83,10 +89,10 @@
   (lambda (match!)
     (lambda (test?)
       (lambda (new old lat)
-        (cond ((null? lat) '())
-              ((test? (car lat) old) (match! new old (cdr lat)))
-              (else (cons (car lat)
-                          (((insertX-f match!) test?) new old (cdr lat)))))))))
+        (cond [(null? lat) '()]
+              [(test? (car lat) old) (match! new old (cdr lat))]
+              [else (cons (car lat)
+                          (((insertX-f match!) test?) new old (cdr lat)))])))))
 
 (define seqR (lambda (new old l) (cons old (cons new l))))
 (define seqL (lambda (new old l) (cons new (cons old l))))
@@ -103,18 +109,18 @@
 
 (define atom-to-function
   (lambda (x)
-    (cond ((eq? x '+) +)
-          ((eq? x '*) *)
-          (else **))))
+    (cond [(eq? x '+) +]
+          [(eq? x '*) *]
+          [else **])))
 
 (define value4
   (lambda (exp)
     (cond
-     ((atom? exp) exp)
-     (else
+     [(atom? exp) exp]
+     [else
       ((atom-to-function (operator exp))
        (value4 (1st-sub-exp exp))
-       (value4 (2nd-sub-exp exp)))))))
+       (value4 (2nd-sub-exp exp)))])))
 
 (test #t (eq? 4 (value4 '(+ 1 3))))
 (test #t (eq? 13 (value4 '(+ 1 (* 3 4)))))
@@ -122,9 +128,11 @@
 (define multirember-f
   (lambda (test?)
     (lambda (a lat)
-      (cond ((null? lat) '())
-            ((test? (car lat) a)  ((multirember-f test?) a (cdr lat)))
-            (else (cons (car lat) ((multirember-f test?) a (cdr lat))))))))
+      (cond [(null? lat) '()]
+            [(test? (car lat) a)
+             ((multirember-f test?) a (cdr lat))]
+            [else (cons (car lat)
+                        ((multirember-f test?) a (cdr lat)))]))))
 
 (test '(a c d e) (multirember 'b '(b a b c b d b e b)))
 
@@ -132,15 +140,18 @@
 
 (define multirember&co
   (lambda (a lat col)
-    (cond ((null? lat) (col null null))
-          ((eq? (car lat) a)
+    (cond [(null? lat) (col null null)]
+          [(eq? (car lat) a)
            (multirember&co a (cdr lat)
                            (lambda (newlat seen)
-                             (col newlat (cons (car lat) seen)))))
-          (else
+                             (col newlat (cons (car lat)
+                                               seen))))]
+          [else
            (multirember&co a (cdr lat)
                            (lambda (newlat seen)
-                             (col (cons (car lat) newlat) seen)))))))
+                             (col (cons (car lat)
+                                        newlat)
+                                  seen)))])))
 
 ;; pg 138
 
@@ -154,35 +165,45 @@
 
 (define multiinsertLR
   (lambda (new oldL oldR lat)
-    (cond ((null? lat) '())
-          ((eq? (car lat) oldL)
-           (cons new (cons oldL (multiinsertLR new oldL oldR (cdr lat)))))
-          ((eq? (car lat) oldR)
-           (cons oldR (cons new (multiinsertLR new oldL oldR (cdr lat)))))
-          (else (cons (car lat) (multiinsertLR new oldL oldR (cdr lat)))))))
+    (cond [(null? lat) '()]
+          [(eq? (car lat) oldL)
+           (cons new
+                 (cons oldL
+                       (multiinsertLR new oldL oldR (cdr lat))))]
+          [(eq? (car lat) oldR)
+           (cons oldR
+                 (cons new
+                       (multiinsertLR new oldL oldR (cdr lat))))]
+          [else (cons (car lat)
+                      (multiinsertLR new oldL oldR (cdr lat)))])))
 
 (define multiinsertLR&co
   (lambda (new oldL oldR lat col)
-    (cond ((null? lat) '())
-          ((eq? (car lat) oldL)
+    (cond [(null? lat) '()]
+          [(eq? (car lat) oldL)
            (cons new
                  (cons oldL
                        (multiinsertLR&co new oldL oldR (cdr lat)
                                          (lambda (newlat L R)
-                                           (col (cons new (cons oldL newlat))
-                                                (add1 L) R))))))
-          ((eq? (car lat) oldR)
+                                           (col (cons new
+                                                      (cons oldL
+                                                            newlat))
+                                                (add1 L) R)))))]
+          [(eq? (car lat) oldR)
            (cons oldR
                  (cons new
                        (multiinsertLR&co new oldL oldR (cdr lat)
                                          (lambda (newlat L R)
-                                           (col (cons oldR (cons new newlat))
-                                                L (add1 R)))))))
-          (else (cons (car lat)
+                                           (col (cons oldR
+                                                      (cons new
+                                                            newlat))
+                                                L (add1 R))))))]
+          [else (cons (car lat)
                       (multiinsertLR&co new oldL oldR (cdr lat)
                                         (lambda (newlat L R)
-                                          (col (cons (car lat) newlat)
-                                               L R))))))))
+                                          (col (cons (car lat)
+                                                     newlat)
+                                               L R))))])))
 
 ;; I don't get where this is going at all... I'm gonna try to go
 ;; faster to get to the next section.
@@ -198,12 +219,13 @@
 
 (define evens-only*
   (lambda (l)
-    (cond ((null? l) '())
-          ((atom? (car l))
-           (cond ((even? (car l)) (cons (car l) (evens-only* (cdr l))))
-                 (else (evens-only* (cdr l)))))
-          (else (cons (evens-only* (car l))
-                      (evens-only* (cdr l)))))))
+    (cond [(null? l) '()]
+          [(atom? (car l))
+           (cond [(even? (car l)) (cons (car l)
+                                        (evens-only* (cdr l)))]
+                 [else (evens-only* (cdr l))])]
+          [else (cons (evens-only* (car l))
+                      (evens-only* (cdr l)))])))
 
 (test '((2 8) 10 (() 6) 2) (evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2)))
 
@@ -211,9 +233,9 @@
 
 (define keep-looking
   (lambda (a sorn lat)
-    (cond ((number? sorn)
-           (keep-looking a (pick sorn lat) lat))
-          (else (eq? sorn a)))))
+    (cond [(number? sorn)
+           (keep-looking a (pick sorn lat) lat)]
+          [else (eq? sorn a)])))
 
 (define looking
   (lambda (a lat)
@@ -240,17 +262,17 @@
 
 (define align
   (lambda (pora)
-    (cond ((atom? pora) pora)
-          ((a-pair? (first pora))
-           (align (shift pora)))
-          (else (build (first pora)
-                       (align (second pora)))))))
+    (cond [(atom? pora) pora]
+          [(a-pair? (first pora))
+           (align (shift pora))]
+          [else (build (first pora)
+                       (align (second pora)))])))
 
 (define length*
   (lambda (pora)
-    (cond ((atom? pora) 1)
-          (else (+ (length* (first pora))
-                   (length* (second pora)))))))
+    (cond [(atom? pora) 1]
+          [else (+ (length* (first pora))
+                   (length* (second pora)))])))
 
 (test 2 (length* '(1 2)))
 (test 3 (length* '(1 (2 3))))
@@ -261,20 +283,20 @@
 
 (define weight*
   (lambda (pora)
-    (cond ((atom? pora) 1)
-          (else (+ (* (weight* (first pora)) 2)
-                   (weight* (second pora)))))))
+    (cond [(atom? pora) 1]
+          [else (+ (* (weight* (first pora)) 2)
+                   (weight* (second pora)))])))
 
 (test 7 (weight* '((a b) c)))
 (test 5 (weight* '(a (b c))))
 
 (define shuffle
   (lambda (pora)
-    (cond ((atom? pora) pora)
-          ((a-pair? (first pora))
-           (shuffle (revpair pora)))
-          (else (build (first pora)
-                       (shuffle (second pora)))))))
+    (cond [(atom? pora) pora]
+          [(a-pair? (first pora))
+           (shuffle (revpair pora))]
+          [else (build (first pora)
+                       (shuffle (second pora)))])))
 
 (test '(a (b c)) (shuffle '(a (b c))))
 (test '(a b)     (shuffle '(a b)))
@@ -282,9 +304,9 @@
 
 (define C
   (lambda (n)
-    (cond ((= 1 n) 1)
-          (else (cond ((even? n) (C (div n 2)))
-                      (else (C (add1 (* 3 n)))))))))
+    (cond [(= 1 n) 1]
+          [else (cond [(even? n) (C (div n 2))]
+                      [else (C (add1 (* 3 n)))])])))
 
 (test 1 (C 1))
 (test 1 (C 2))
@@ -295,9 +317,9 @@
 
 (define A
   (lambda (n m)
-    (cond ((zero? n) (add1 m))
-          ((zero? m) (A (sub1 n) 1))
-          (else (A (sub1 n) (A n (sub1 m)))))))
+    (cond [(zero? n) (add1 m)]
+          [(zero? m) (A (sub1 n) 1)]
+          [else (A (sub1 n) (A n (sub1 m)))])))
 
 (test 2 (A 1 0))
 (test 3 (A 1 1))

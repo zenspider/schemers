@@ -2,70 +2,75 @@
 
 #lang racket/base
 
-(require "../sicp/lib/test.rkt")
-(module+ test (require rackunit))
+(require "lib/shared.rkt")
 
 (define (I x) x) ; just for testing
 
 (define (deep m)
-  (cond ((zero? m) 'pizza)
-        (else (cons (deep (sub1 m)) '()))))
+  (cond [(zero? m) 'pizza]
+        [else (cons (deep (sub1 m)) '())]))
 
 (define toppings #f)
 (define (deepB m)
-  (cond ((zero? m)
+  (cond [(zero? m)
          (let/cc jump
            (set! toppings jump)
-           'pizza))
-        (else (cons (deepB (sub1 m)) '()))))
+           'pizza)]
+        [else (cons (deepB (sub1 m)) '())]))
 
-(test '((((((pizza)))))) (deep 6))
+(test (deep 6)
+      '((((((pizza)))))))
 
 (define x (deepB 6))
-(test '((((((pizza)))))) (I x))
+(test (I x)
+      '((((((pizza)))))))
 
 (set! x (toppings 'mozzarella))
-(test '((((((mozzarella)))))) (I x))
+(test (I x)
+      '((((((mozzarella)))))))
 
 (set! x (toppings 'cake))
-(test '((((((cake)))))) (I x))
+(test (I x)
+      '((((((cake)))))))
 
 (set! x (cons (toppings 'cake) '()))
-(test '((((((cake)))))) (I x))
+(test (I x)
+      '((((((cake)))))))
 
 (define (deep&co m k)
-  (cond ((zero? m) (k 'pizza))
-        (else (deep&co (sub1 m) (lambda (x) (k (cons x '())))))))
+  (cond [(zero? m) (k 'pizza)]
+        [else (deep&co (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(test 'pizza (deep&co 0 I))
-(test '((((((pizza)))))) (deep&co 6 I))
+(test (deep&co 0 I)
+      'pizza)
+(test (deep&co 6 I)
+      '((((((pizza)))))))
 
 (define (deep&coB m k)
-  (cond ((zero? m) (let ()
+  (cond [(zero? m) (let ()
                      (set! toppings k)
-                     (k 'pizza)))
-        (else (deep&coB (sub1 m) (lambda (x) (k (cons x '())))))))
+                     (k 'pizza))]
+        [else (deep&coB (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(test '((((pizza)))) (deep&coB 4 I))
+(test (deep&coB 4 I)
+      '((((pizza)))))
 
-(set! x (cons (toppings 'cake) (toppings 'cake)))
-(test '(((((cake)))) (((cake)))) (I x))
+(set! x (cons (toppings 'cake)
+              (toppings 'cake)))
+(test (I x)
+      '(((((cake)))) (((cake)))))
 
-;;; 20th Commandment
-;;
-;; When thinking about a value created with (letcc ...), write down
-;; the function that is equivalent but does not forget. Then, when you
-;; use it, remember to forget.
-
-(set! x (cons (toppings 'cake) (toppings 'cake)))
-(test '(((((cake)))) (((cake)))) (I x))
+(set! x (cons (toppings 'cake)
+              (toppings 'cake)))
+(test (I x)
+      '(((((cake)))) (((cake)))))
 
 (define leave #f)
 (define (walk l)
-  (cond ((null? l) '())
-        ((atom? (car l)) (leave (car l)))
-        (else (walk (car l))
-              (walk (cdr l)))))
+  (cond [(null? l) '()]
+        [(atom? (car l)) (leave (car l))]
+        [else (walk (car l))
+              (walk (cdr l))]))
 
 (define (start-it l)
   (let/cc here
@@ -73,7 +78,8 @@
     (walk l)))
 
 (set! x (start-it '((potato) (chips (chips (with))) fish)))
-(test 'potato (I x))
+(test (I x)
+      'potato)
 
 (define two-in-a-row*?
   (letrec ((T?
@@ -91,15 +97,15 @@
             (lambda (x) x))
            (waddle
             (lambda (l)
-              (cond ((null? l) '())
-                    ((atom? (car l))
+              (cond [(null? l) '()]
+                    [(atom? (car l))
                      (let/cc rest
                        (set! fill rest)
                        (leave (car l)))
-                     (waddle (cdr l)))
-                    (else
+                     (waddle (cdr l))]
+                    [else
                      (waddle (car l))
-                     (waddle (cdr l))))))
+                     (waddle (cdr l))])))
            (leave (lambda (x) x)))
     (lambda (l)
       (let ((fst (let/cc here
@@ -109,4 +115,5 @@
         (if (atom? fst) (T? fst) #f)))))
 
 (set! x (two-in-a-row*? '(((food) ()) (((food))))))
-(test #t (I x))
+(test (I x)
+      #t)

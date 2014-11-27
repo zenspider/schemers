@@ -2,7 +2,7 @@
 
 (provide operator 1st-sub-exp 2nd-sub-exp)
 
-(require "../sicp/lib/test.rkt")
+(require "lib/shared.rkt")
 (require "ch04.rkt")                    ; eqan? ** pick div
 
 ;;; Chapter 6
@@ -11,72 +11,76 @@
 (define numbered1?
   (lambda (aexp)
     (cond
-     ((atom? aexp) (number? aexp))
-     ((eq? (car (cdr aexp)) '+) #t)
-     ((eq? (car (cdr aexp)) '*) #t)
-     ((eq? (car (cdr aexp)) '^) #t))))
+     [(atom? aexp) (number? aexp)]
+     [(eq? (car (cdr aexp)) '+) #t]
+     [(eq? (car (cdr aexp)) '*) #t]
+     [(eq? (car (cdr aexp)) '^) #t])))
 
 ;; pg 100 - 101
 
 (define numbered2
   (lambda (aexp)
     (cond
-     ((atom? aexp) (number? aexp))
-     ((eq? (car (cdr aexp)) '+)
+     [(atom? aexp) (number? aexp)]
+     [(eq? (car (cdr aexp)) '+)
       (and (numbered2 (car aexp))
-           (numbered2 (car (cdr (cdr aexp))))))
-     ((eq? (car (cdr aexp)) '*)
+           (numbered2 (car (cdr (cdr aexp)))))]
+     [(eq? (car (cdr aexp)) '*)
       (and (numbered2 (car aexp))
-           (numbered2 (car (cdr (cdr aexp))))))
-     ((eq? (car (cdr aexp)) '^)
+           (numbered2 (car (cdr (cdr aexp)))))]
+     [(eq? (car (cdr aexp)) '^)
       (and (numbered2 (car aexp))
-           (numbered2 (car (cdr (cdr aexp)))))))))
+           (numbered2 (car (cdr (cdr aexp)))))])))
 
 ;; lame version - doesn't ask about op
 (define numbered?
   (lambda (aexp)
     (cond
-     ((atom? aexp) (number? aexp))
-     (else
+     [(atom? aexp) (number? aexp)]
+     [else
       (and (numbered? (car aexp))
-           (numbered? (car (cdr (cdr aexp)))))))))
+           (numbered? (car (cdr (cdr aexp)))))])))
 
 ;; pg 102 - 103
 (define value1
   (lambda (exp)
     (cond
-     ((atom? exp) exp)
-     ((eq? (car (cdr exp)) '+)
+     [(atom? exp) exp]
+     [(eq? (car (cdr exp)) '+)
       (+ (value1 (car exp))
-         (value1 (car (cdr (cdr exp))))))
-     ((eq? (car (cdr exp)) '*)
+         (value1 (car (cdr (cdr exp)))))]
+     [(eq? (car (cdr exp)) '*)
       (* (value1 (car exp))
-         (value1 (car (cdr (cdr exp))))))
-     ((eq? (car (cdr exp)) '^)
+         (value1 (car (cdr (cdr exp)))))]
+     [(eq? (car (cdr exp)) '^)
       (** (value1 (car exp))
-          (value1 (car (cdr (cdr exp)))))))))
+          (value1 (car (cdr (cdr exp)))))])))
 
-(test #t (eq? 4 (value1 '(1 + 3))))
-(test #t (eq? 13 (value1 '(1 + (3 * 4)))))
+(test (eq? 4 (value1 '(1 + 3)))
+      #t)
+(test (eq? 13 (value1 '(1 + (3 * 4))))
+      #t)
 
 ;; pg 104 - 105
 
 (define value2
   (lambda (exp)
     (cond
-     ((atom? exp) exp)
-     ((eq? (car exp) '+)
+     [(atom? exp) exp]
+     [(eq? (car exp) '+)
       (+ (value2 (car (cdr exp)))
-         (value2 (car (cdr (cdr exp))))))
-     ((eq? (car exp) '*)
+         (value2 (car (cdr (cdr exp)))))]
+     [(eq? (car exp) '*)
       (* (value2 (car (cdr exp)))
-         (value2 (car (cdr (cdr exp))))))
-     ((eq? (car exp) '^)
+         (value2 (car (cdr (cdr exp)))))]
+     [(eq? (car exp) '^)
       (** (value2 (car (cdr exp)))
-          (value2 (car (cdr (cdr exp)))))))))
+          (value2 (car (cdr (cdr exp)))))])))
 
-(test #t (eq? 4 (value2 '(+ 1 3))))
-(test #t (eq? 13 (value2 '(+ 1 (* 3 4)))))
+(test (eq? 4 (value2 '(+ 1 3)))
+      #t)
+(test (eq? 13 (value2 '(+ 1 (* 3 4))))
+      #t)
 
 (define 1st-sub-exp
   (lambda (exp)
@@ -95,19 +99,21 @@
 (define value3
   (lambda (exp)
     (cond
-     ((atom? exp) exp)
-     ((eq? (operator exp) '+)
+     [(atom? exp) exp]
+     [(eq? (operator exp) '+)
       (+ (value3 (1st-sub-exp exp))
-         (value3 (2nd-sub-exp exp))))
-     ((eq? (operator exp) '*)
+         (value3 (2nd-sub-exp exp)))]
+     [(eq? (operator exp) '*)
       (* (value3 (1st-sub-exp exp))
-         (value3 (2nd-sub-exp exp))))
-     ((eq? (operator exp) '^)
+         (value3 (2nd-sub-exp exp)))]
+     [(eq? (operator exp) '^)
       (** (value3 (1st-sub-exp exp))
-          (value3 (2nd-sub-exp exp)))))))
+          (value3 (2nd-sub-exp exp)))])))
 
-(test #t (eq? 4 (value3 '(+ 1 3))))
-(test #t (eq? 13 (value3 '(+ 1 (* 3 4)))))
+(test (eq? 4 (value3 '(+ 1 3)))
+      #t)
+(test (eq? 13 (value3 '(+ 1 (* 3 4))))
+      #t)
 
 ;; pg 107
 
@@ -115,8 +121,10 @@
   (lambda (n)
     (null? n)))
 
-(test #t (sero? '()))
-(test #f (sero? 4))
+(test (sero? '())
+      #t)
+(test (sero? 4)
+      #f)
 
 (define edd1
   (lambda (n)
@@ -129,7 +137,6 @@
 (define pluz
   (lambda (n m)
     (cond
-     ((sero? m) n)
-     (else
-      (edd1 (pluz n (zub1 m)))))))
-
+     [(sero? m) n]
+     [else
+      (edd1 (pluz n (zub1 m)))])))

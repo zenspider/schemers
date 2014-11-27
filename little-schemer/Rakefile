@@ -7,3 +7,9 @@ end
 task :slow do
   sh "time raco test *.rkt"
 end
+
+task :run do
+  n = ENV["N"]
+  f = (n && "ch%02d.rkt" % n.to_i) || ENV["F"] or raise "rake run F=<path>"
+  sh "time raco test #{f}"
+end

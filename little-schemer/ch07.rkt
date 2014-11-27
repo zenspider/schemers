@@ -2,7 +2,7 @@
 
 (provide build first second a-pair? revpair)
 
-(require "../sicp/lib/test.rkt")
+(require "lib/shared.rkt")
 (require "ch02.rkt")                    ; member?
 (require "ch03.rkt")                    ; multirember
 
@@ -12,77 +12,90 @@
 (define set?
   (lambda (lat)
     (cond
-     ((null? lat) #t)
-     ((member? (car lat) (cdr lat)) #f)
-     (else (set? (cdr lat))))))
+     [(null? lat) #t]
+     [(member? (car lat) (cdr lat)) #f]
+     [else (set? (cdr lat))])))
 
-(test #f (set? '(a b a c)))
-(test #t (set? '(a b c d)))
-(test #t (set? '()))
-(test #f (set? '(apple 3 pear 4 9 apple 3 4)))
-(test #t (set? '(apple 3 pear 4 9)))
+(test (set? '(a b a c))
+      #f)
+(test (set? '(a b c d))
+      #t)
+(test (set? '())
+      #t)
+(test (set? '(apple 3 pear 4 9 apple 3 4))
+      #f)
+(test (set? '(apple 3 pear 4 9))
+      #t)
 
 ;; pg 112
 
 (define makeset1
   (lambda (lat)
     (cond
-     ((null? lat) '())
-     ((member? (car lat) (cdr lat)) (makeset1 (cdr lat)))
-     (else (cons (car lat) (makeset1 (cdr lat)))))))
+     [(null? lat) '()]
+     [(member? (car lat) (cdr lat)) (makeset1 (cdr lat))]
+     [else (cons (car lat)
+                 (makeset1 (cdr lat)))])))
 
-(test '(c d a e b) (makeset1 '(a b c b d a e b)))
+(test (makeset1 '(a b c b d a e b))
+      '(c d a e b))
 
 (define makeset
   (lambda (lat)
     (cond
-     ((null? lat) '())
-     (else
-      (cons (car lat) (makeset (multirember (car lat) (cdr lat))))))))
+     [(null? lat) '()]
+     [else
+      (cons (car lat)
+            (makeset (multirember (car lat) (cdr lat))))])))
 
-(test '(a b c d e) (makeset '(a b c b d a e b)))
+(test (makeset '(a b c b d a e b))
+      '(a b c d e))
 
 ;; pg 113
 
-(test '(a 3 p 4 9) (makeset '(a 3 p 4 9 a 3 4)))
+(test (makeset '(a 3 p 4 9 a 3 4))
+      '(a 3 p 4 9))
 
 (define subset1?
   (lambda (set1 set2)
     (cond
-     ((null? set1) #t)
-     ((member? (car set1) set2)
-      (subset1? (cdr set1) set2))
-     (else #f))))
+     [(null? set1) #t]
+     [(member? (car set1) set2)
+      (subset1? (cdr set1) set2)]
+     [else #f])))
 
-(test #t (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
-(test #f (subset1? '(4 p o h) '(4 p c a 5 oz h)))
+(test (subset1? '(5 c w) '(5 h 2 p f c a l d w))
+      #t)
+(test (subset1? '(4 p o h) '(4 p c a 5 oz h))
+      #f)
 
 ;; pg 114
 
 (define subset?
   (lambda (set1 set2)
-    (cond
-     ((null? set1) #t)
-     (else
+    [cond
+     [(null? set1) #t]
+     [else
       (and (member? (car set1) set2)
-           (subset? (cdr set1) set2))))))
+           (subset? (cdr set1) set2))]]))
 
 (define eqset?
   (lambda (set1 set2)
     (and (subset? set1 set2)
          (subset? set2 set1))))
 
-(test #t (eqset? '(6 l c wi w) '(6 c wi l w)))
+(test (eqset? '(6 l c wi w) '(6 c wi l w))
+      #t)
 
 ;; pg 115
 
 (define intersect1?
   (lambda (set1 set2)
     (cond
-     ((or (null? set1) (null? set2)) #f)
-     (else
+     [(or (null? set1) (null? set2)) #f]
+     [else
       (or (member? (car set1) set2)
-          (intersect1? (cdr set1) set2))))))
+          (intersect1? (cdr set1) set2))])))
 
 ;; I don't know how to write this... does scheme even have specal forms like this?
 ;; (define nor
@@ -99,70 +112,81 @@
      (or (member? (car set1) set2)
          (intersect? (cdr set1) set2)))))
 
-(test #t (intersect? '(a b c d) '(d c e)))
-(test #f (intersect? '(a b c) '(d e f)))
-(test #f (intersect? '() '(d c e)))
-(test #f (intersect? '(d c e) '()))
+(test (intersect? '(a b c d) '(d c e))
+      #t)
+(test (intersect? '(a b c) '(d e f))
+      #f)
+(test (intersect? '() '(d c e))
+      #f)
+(test (intersect? '(d c e) '())
+      #f)
 
 ;; pg 116
 
 (define intersect
   (lambda (set1 set2)
-    (cond ((null? set1) '())
-          ((member? (car set1) set2)
-           (cons (car set1) (intersect (cdr set1) set2)))
-          (else (intersect (cdr set1) set2)))))
+    (cond [(null? set1) '()]
+          [(member? (car set1) set2)
+           (cons (car set1)
+                 (intersect (cdr set1) set2))]
+          [else (intersect (cdr set1) set2)])))
 
-(test '(and macaroni)
-              (intersect '(stewed tomatoes and macaroni casserole)
-                         '(macaroni and cheese)))
+(test (intersect '(stewed tomatoes and macaroni casserole)
+                 '(macaroni and cheese))
+      '(and macaroni))
 
 (define union
   (lambda (set1 set2)
-    (cond ((null? set1) set2)
-          ((member? (car set1) set2)
-           (union (cdr set1) set2))
-          (else (cons (car set1) (union (cdr set1) set2))))))
+    (cond [(null? set1) set2]
+          [(member? (car set1) set2)
+           (union (cdr set1) set2)]
+          [else (cons (car set1)
+                      (union (cdr set1) set2))])))
 
-(test '(stewed tomatoes casserole macaroni and cheese)
-              (union '(stewed tomatoes and macaroni casserole)
-                     '(macaroni and cheese)))
+(test (union '(stewed tomatoes and macaroni casserole)
+             '(macaroni and cheese))
+      '(stewed tomatoes casserole macaroni and cheese))
 
 ;; pg 117
 
 (define difference
   (lambda (set1 set2)
     (cond
-     ((null? set1) '())
-     ((member? (car set1) set2)
-      (difference (cdr set1) set2))
-     (else (cons (car set1) (difference (cdr set1) set2))))))
+     [(null? set1) '()]
+     [(member? (car set1) set2)
+      (difference (cdr set1) set2)]
+     [else (cons (car set1)
+                 (difference (cdr set1) set2))])))
 
-(test '(b d) (difference '(a b c d e) '(a c e)))
+(test (difference '(a b c d e) '(a c e))
+      '(b d))
 
 (define intersectall
   (lambda (l-set)
-    (cond ((null? (cdr l-set)) (car l-set))
-          (else (intersect (car l-set)
-                           (intersectall (cdr l-set)))))))
+    (cond [(null? (cdr l-set)) (car l-set)]
+          [else (intersect (car l-set)
+                           (intersectall (cdr l-set)))])))
 
-(test '(a) (intersectall '((a b c) (c a d e) (e f g h a b))))
-(test '(6 and) (intersectall '((6 pears and)
-                                       (3 peaches and 6 peppers)
-                                       (8 pears and 6 plums)
-                                       (and 6 prunes with some apples))))
+(test (intersectall '((a b c) (c a d e) (e f g h a b)))
+      '(a))
+(test (intersectall '((6 pears and)
+                      (3 peaches and 6 peppers)
+                      (8 pears and 6 plums)
+                      (and 6 prunes with some apples)))
+      '(6 and))
 
 ;; pg 118
 
 (define a-pair?
   (lambda (x)
-    (cond ((atom? x) #f)
-          ((null? x) #f)
-          ((null? (cdr x)) #f)
-          ((null? (cdr (cdr x))) #t)
-          (else #f))))
+    (cond [(atom? x) #f]
+          [(null? x) #f]
+          [(null? (cdr x)) #f]
+          [(null? (cdr (cdr x))) #t]
+          [else #f])))
 
-(test #t (a-pair? '(full (house))))
+(test (a-pair? '(full (house)))
+      #t)
 
 ;; pg 119
 
@@ -177,18 +201,19 @@
   (lambda (rel)
     (set? (firsts rel))))
 
-(test #t (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(test (fun? '((8 3) (4 2) (7 6) (6 2) (3 4)))
+      #t)
 
 (define revrel1
   (lambda (rel)
     (cond
-     ((null? rel) '())
-     (else (cons (build (second (car rel))
+     [(null? rel) '()]
+     [else (cons (build (second (car rel))
                         (first  (car rel)))
-                 (revrel1 (cdr rel)))))))
+                 (revrel1 (cdr rel)))])))
 
-(test '((3 8) (2 4) (6 7) (2 6) (4 3))
-              (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(test (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4)))
+      '((3 8) (2 4) (6 7) (2 6) (4 3)))
 
 ;; pg 121
 
@@ -199,24 +224,25 @@
 (define revrel
   (lambda (rel)
     (cond
-     ((null? rel) '())
-     (else (cons (revpair (car rel))
-                 (revrel (cdr rel)))))))
+     [(null? rel) '()]
+     [else (cons (revpair (car rel))
+                 (revrel (cdr rel)))])))
 
-(test '((3 8) (2 4) (6 7) (2 6) (4 3))
-              (revrel '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(test (revrel '((8 3) (4 2) (7 6) (6 2) (3 4)))
+      '((3 8) (2 4) (6 7) (2 6) (4 3)))
 
 ;; pg 122
 
-;; (define seconds
-;;   (lambda (l)
-;;     (cond ((null? l) '())
-;;           (else (cons (cadr l) (seconds (cdr l)))))))
+(define seconds
+  (lambda (l)
+    (cond [(null? l) '()]
+          [else (cons (cadr l)
+                      (seconds (cdr l)))])))
 
 (define fullfun?
   (lambda (fun)
     (and (fun? fun)
          (set? (revrel fun)))))
 
-(test #t (fullfun? '((grape raisin) (plum prune) (stewed grape))))
-
+(test (fullfun? '((grape raisin) (plum prune) (stewed grape)))
+      #t)

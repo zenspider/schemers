@@ -2,8 +2,7 @@
 
 #lang racket/base
 
-(require "../sicp/lib/test.rkt")
-(module+ test (require rackunit))
+(require "lib/shared.rkt")
 
 (define (bons kar)
   (let ((kdr '()))
@@ -49,33 +48,44 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (lots m)
-  (cond ((zero? m) '())
-        (else (kons 'egg (lots (sub1 m))))))
+  (cond [(zero? m) '()]
+        [else (kons 'egg (lots (sub1 m)))]))
 
 (define (lenkth l)
-  (cond ((null? l) 0)
-        (else (add1 (lenkth (kdr l))))))
+  (cond [(null? l) 0]
+        [else (add1 (lenkth (kdr l)))]))
 
 (define (add-at-end l)
-  (cond ((null? (kdr l))
-         (konsC (kar l) (kons 'egg '())))
-        (else (konsC (kar l) (add-at-end (kdr l))))))
+  (cond [(null? (kdr l))
+         (konsC (kar l) (kons 'egg '()))]
+        [else (konsC (kar l) (add-at-end (kdr l)))]))
 
 (define (add-at-end-too l)
   (letrec ((A (lambda (ls)
-                (cond ((null? (kdr ls))
-                       (set-kdr ls (kons 'egg '())))
-                      (else (A (kdr ls)))))))
+                (cond [(null? (kdr ls))
+                       (set-kdr ls (kons 'egg '()))]
+                      [else (A (kdr ls))]))))
     (A l)
     l))
 
-;; (test '(egg egg egg) (lots 3))
-;; (test 3 (lenkth (lots 3)))
-;; 
-;; (set-kounter 0)
-;; (test '(egg egg egg egg) (add-at-end (lots 3)))
-;; (test 3 (kounter))
-;; 
-;; (set-kounter 0)
-;; (test '(egg egg egg egg) (add-at-end-too (lots 3)))
-;; (test 0 (kounter))
+(define (kons->list l)
+  (cond [(null? l) '()]
+        [else (cons (kar l)
+                    (kons->list (kdr l)))]))
+
+(test (kons->list (lots 3))
+      '(egg egg egg))
+(test (lenkth (lots 3))
+      3)
+
+(set-kounter 0)
+(test (kons->list (add-at-end (lots 3)))
+      '(egg egg egg egg))
+(test (kounter)
+      3)
+
+(set-kounter 0)
+(test (kons->list (add-at-end-too (lots 3)))
+      '(egg egg egg egg))
+(test (kounter)
+      0)

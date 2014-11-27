@@ -2,7 +2,7 @@
 
 (provide member?)
 
-(require "../sicp/lib/test.rkt")
+(require "shared.rkt")
 
 ;;; Chapter 2
 ;; pg 15 - 20

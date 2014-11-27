@@ -4,6 +4,6 @@ task :test do
   sh "time raco test --direct *.rkt"
 end
 
-task :testslow do
+task :slow do
   sh "time raco test *.rkt"
 end

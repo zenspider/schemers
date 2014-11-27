@@ -2,7 +2,7 @@
 
 (provide multirember firsts)
 
-(require "../sicp/lib/test.rkt")
+(require "lib/shared.rkt")
 
 ;;; Chapter 3
 ;; pg 33 - 42

@@ -2,34 +2,31 @@
 
 (provide eqan? ** pick div)
 
-(require "../sicp/lib/test.rkt")
+(require "lib/shared.rkt")
 
 ;;; Chapter 4
 ;; pg 59
-
-(define-me-maybe add1 (lambda (n) (+ n 1))) ; defined in intermediate?
-(define-me-maybe sub1 (lambda (n) (- n 1))) ; defined in intermediate?
 
 (test 68 (add1 67))
 (test 68 (sub1 69))
 (test #f (zero? 42))
 (test #t (zero? 0))
 
-;; (define +
-;;   (lambda (m n)
-;;     (cond ((zero? n) m)
-;;           (else (+ (add1 m) (sub1 n))))))
+(define ++
+  (lambda (m n)
+    (cond ((zero? n) m)
+          (else (+ (add1 m) (sub1 n))))))
 
-;; (equal? 7 (+ 3 4))
+(test 7 (++ 3 4))
 
 ;; pg 61
 
-;; (define --
-;;   (lambda (m n)
-;;     (cond ((zero? n) m)
-;;           (else (-- (sub1 m) (sub1 n))))))
+(define --
+  (lambda (m n)
+    (cond ((zero? n) m)
+          (else (-- (sub1 m) (sub1 n))))))
 
-;; (equal? 4 (-- 7 3))
+(test 4 (-- 7 3))
 
 (define tup?
   (lambda (l)

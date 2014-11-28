@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 2.12:
 
 ;; Define a constructor `make-center-percent' that takes a center and

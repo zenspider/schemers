@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")
 
@@ -38,7 +40,5 @@
                (assert-equal '(1 2 3) (f '(3) '(1 2))))
              union-set-ugly
              union-set)
-
-(done)
 
 (done)

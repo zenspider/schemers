@@ -1,5 +1,4 @@
-(require "../lib/test.rkt")
-(require "../lib/myutils.scm")
+#lang racket/base
 
 ;;; Exercise 2.76
 
@@ -14,6 +13,3 @@
 ;; operations must often be added?
 
 ;; no
-
-;; (assert-equal x y)
-(done)

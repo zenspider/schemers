@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; Exercise 2.3:
 

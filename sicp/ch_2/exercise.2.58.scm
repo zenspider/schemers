@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")
 
@@ -35,4 +37,3 @@
 ;; plus rewriting reformat-binary to split addend/augend etc around
 ;; the operators. The only thing left is to reorder deriv so that
 ;; exponentiation and product are before sum.
-

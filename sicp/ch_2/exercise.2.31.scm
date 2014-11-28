@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 
 ;; Exercise 2.31.

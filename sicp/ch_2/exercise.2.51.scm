@@ -1,5 +1,4 @@
-(require "../lib/test.rkt")
-(require "../lib/myutils.scm")
+#lang racket/base
 
 ;; Exercise 2.51
 

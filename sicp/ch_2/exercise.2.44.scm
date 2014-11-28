@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")
 
@@ -15,4 +17,3 @@
         (below painter (beside smaller smaller)))))
 
 ;; (paint (up-split einstein 4))
-

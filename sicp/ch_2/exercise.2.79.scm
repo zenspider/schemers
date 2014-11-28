@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")
 
@@ -42,4 +44,3 @@
 ;;        (and (= (magnitude x) (magnitude y))
 ;;             (= (angle x) (angle y)))))
 ;; and so on
-

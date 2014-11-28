@@ -1,3 +1,5 @@
+#lang racket/base
+
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")
 
@@ -14,8 +16,8 @@
       (union-set (adjoin-set (car s2) s1) (cdr s2))))
 
 (define (element-of-set? x set)
-  (cond ((null? set) false)
-        ((equal? x (car set)) true)
+  (cond ((null? set) #f)
+        ((equal? x (car set)) #t)
         (else (element-of-set? x (cdr set)))))
 
 (define (adjoin-set x set)

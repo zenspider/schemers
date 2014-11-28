@@ -1,3 +1,4 @@
+#lang racket/base
 
 (require "../lib/test.rkt")
 (require "../lib/myutils.scm")

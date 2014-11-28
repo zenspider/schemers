@@ -1,7 +1,7 @@
 #lang racket/base
 
-(require "lib/shared.rkt")
 (require rackunit)
+(require "lib/shared.rkt")
 
 (define two-in-a-row-b?
   (lambda (preceding lat)
@@ -16,16 +16,16 @@
            (two-in-a-row-b? (car lat) (cdr lat))])))
 
 (test-case "two-in-a-row?"
-  (test (two-in-a-row? '(a b c d))
-        #f)
-  (test (two-in-a-row? '(a b a d))
-        #f)
-  (test (two-in-a-row? '(a b b d))
-        #t)
-  (test (two-in-a-row? '(a a c d))
-        #t)
-  (test (two-in-a-row? '(a b c c))
-        #t))
+  (check-equal? (two-in-a-row? '(a b c d))
+                #f)
+  (check-equal? (two-in-a-row? '(a b a d))
+                #f)
+  (check-equal? (two-in-a-row? '(a b b d))
+                #t)
+  (check-equal? (two-in-a-row? '(a a c d))
+                #t)
+  (check-equal? (two-in-a-row? '(a b c c))
+                #t))
 
 (define sum-of-prefixes-b
   (lambda (sum tup)
@@ -38,10 +38,10 @@
     (sum-of-prefixes-b 0 tup)))
 
 (test-case "sum-of-prefixes"
-  (test (sum-of-prefixes '(1 1 1 1 1))
-        '(1 2 3 4 5))
-  (test (sum-of-prefixes '(2 1 9 17 0))
-        '(2 3 12 29 29)))
+  (check-equal? (sum-of-prefixes '(1 1 1 1 1))
+                '(1 2 3 4 5))
+  (check-equal? (sum-of-prefixes '(2 1 9 17 0))
+                '(2 3 12 29 29)))
 
 (define pick
   (lambda (n lat)
@@ -62,7 +62,7 @@
     (scramble-b tup '())))
 
 (test-case "scramble"
-  (test (scramble '(1 1 1 3 4 2 1 1 9 2))
-        '(1 1 1 1 1 4 1 1 1 9))
-  (test (scramble '(1 2 3 4 5 6 7 8 9))
-        '(1 1 1 1 1 1 1 1 1)))
+  (check-equal? (scramble '(1 1 1 3 4 2 1 1 9 2))
+                '(1 1 1 1 1 4 1 1 1 9))
+  (check-equal? (scramble '(1 2 3 4 5 6 7 8 9))
+                '(1 1 1 1 1 1 1 1 1)))

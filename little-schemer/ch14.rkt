@@ -6,10 +6,10 @@
 (define test-leftmost
   (lambda (f desc)
     (test-case desc
-      (test (f '(((a) b) (c d)))
-            'a)
-      (test (f '(((() a) ())))
-            'a))))
+      (check-equal? (f '(((a) b) (c d)))
+                    'a)
+      (check-equal? (f '(((() a) ())))
+                    'a))))
 
 (define leftmost1
   (lambda (l)
@@ -31,8 +31,8 @@
              (cond [(> d a) d]
                    [else a]))])))
 
-(test (depth1* '((a) b (c d)))
-      2)
+(check-equal? (depth1* '((a) b (c d)))
+              2)
 
 (define max
   (lambda (n m)
@@ -97,17 +97,17 @@
           l
           new-l))))
 
-(test (let/cc Say (rm1 'noodles '((food) more (food)) Say))
-      'no)
-(test (rember1* 'noodles '((food) more (food)))
-      '((food) more (food)))
+(check-equal? (let/cc Say (rm1 'noodles '((food) more (food)) Say))
+              'no)
+(check-equal? (rember1* 'noodles '((food) more (food)))
+              '((food) more (food)))
 
 (define rember2*
   (lambda (a l)
     (try oh (rm1 a l oh) l)))
 
-(test (rember2* 'noodles '((food) more (food)))
-      '((food) more (food)))
+(check-equal? (rember2* 'noodles '((food) more (food)))
+              '((food) more (food)))
 
 (define rm2
   (lambda (a l oh)
@@ -123,5 +123,5 @@
                 (cons (car l)
                       (rm2 a (cdr l) oh)))])))
 
-(test (rember2* 'noodles '((food) more (food)))
-      '((food) more (food)))
+(check-equal? (rember2* 'noodles '((food) more (food)))
+              '((food) more (food)))

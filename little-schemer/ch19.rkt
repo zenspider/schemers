@@ -2,6 +2,7 @@
 
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 (define (I x) x) ; just for testing
@@ -14,37 +15,37 @@
 (define (deepB m)
   (cond [(zero? m)
          (let/cc jump
-           (set! toppings jump)
-           'pizza)]
+                 (set! toppings jump)
+                 'pizza)]
         [else (cons (deepB (sub1 m)) '())]))
 
-(test (deep 6)
-      '((((((pizza)))))))
+(check-equal? (deep 6)
+              '((((((pizza)))))))
 
 (define x (deepB 6))
-(test (I x)
-      '((((((pizza)))))))
+(check-equal? (I x)
+              '((((((pizza)))))))
 
 (set! x (toppings 'mozzarella))
-(test (I x)
-      '((((((mozzarella)))))))
+(check-equal? (I x)
+              '((((((mozzarella)))))))
 
 (set! x (toppings 'cake))
-(test (I x)
-      '((((((cake)))))))
+(check-equal? (I x)
+              '((((((cake)))))))
 
 (set! x (cons (toppings 'cake) '()))
-(test (I x)
-      '((((((cake)))))))
+(check-equal? (I x)
+              '((((((cake)))))))
 
 (define (deep&co m k)
   (cond [(zero? m) (k 'pizza)]
         [else (deep&co (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(test (deep&co 0 I)
-      'pizza)
-(test (deep&co 6 I)
-      '((((((pizza)))))))
+(check-equal? (deep&co 0 I)
+              'pizza)
+(check-equal? (deep&co 6 I)
+              '((((((pizza)))))))
 
 (define (deep&coB m k)
   (cond [(zero? m) (let ()
@@ -52,18 +53,18 @@
                      (k 'pizza))]
         [else (deep&coB (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(test (deep&coB 4 I)
-      '((((pizza)))))
+(check-equal? (deep&coB 4 I)
+              '((((pizza)))))
 
 (set! x (cons (toppings 'cake)
               (toppings 'cake)))
-(test (I x)
-      '(((((cake)))) (((cake)))))
+(check-equal? (I x)
+              '(((((cake)))) (((cake)))))
 
 (set! x (cons (toppings 'cake)
               (toppings 'cake)))
-(test (I x)
-      '(((((cake)))) (((cake)))))
+(check-equal? (I x)
+              '(((((cake)))) (((cake)))))
 
 (define leave #f)
 (define (walk l)
@@ -74,12 +75,12 @@
 
 (define (start-it l)
   (let/cc here
-    (set! leave here)
-    (walk l)))
+          (set! leave here)
+          (walk l)))
 
 (set! x (start-it '((potato) (chips (chips (with))) fish)))
-(test (I x)
-      'potato)
+(check-equal? (I x)
+              'potato)
 
 (define two-in-a-row*?
   (letrec ((T?
@@ -91,8 +92,8 @@
            (get-next
             (lambda (x)
               (let/cc here-again
-                (set! leave here-again)
-                (fill 'go))))
+                      (set! leave here-again)
+                      (fill 'go))))
            (fill
             (lambda (x) x))
            (waddle
@@ -100,8 +101,8 @@
               (cond [(null? l) '()]
                     [(atom? (car l))
                      (let/cc rest
-                       (set! fill rest)
-                       (leave (car l)))
+                             (set! fill rest)
+                             (leave (car l)))
                      (waddle (cdr l))]
                     [else
                      (waddle (car l))
@@ -109,11 +110,11 @@
            (leave (lambda (x) x)))
     (lambda (l)
       (let ((fst (let/cc here
-                   (set! leave here)
-                   (waddle l)
-                   (leave '()))))
+                         (set! leave here)
+                         (waddle l)
+                         (leave '()))))
         (if (atom? fst) (T? fst) #f)))))
 
 (set! x (two-in-a-row*? '(((food) ()) (((food))))))
-(test (I x)
-      #t)
+(check-equal? (I x)
+              #t)

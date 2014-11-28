@@ -1,7 +1,7 @@
 #lang racket/base
 
-(require "lib/shared.rkt")
 (require rackunit)
+(require "lib/shared.rkt")
 
 (define member?                         ; from ch12.scm
   (lambda (a lat)
@@ -12,10 +12,10 @@
       (yes? lat))))
 
 (test-case "member?"
-  (test (member? 42 '(a b c))
-        #f)
-  (test (member? 'b '(a b c))
-        #t))
+  (check-equal? (member? 42 '(a b c))
+                #f)
+  (check-equal? (member? 'b '(a b c))
+                #t))
 
 (define intersect1
   (lambda (set1 set2)
@@ -54,8 +54,8 @@
               (cond ((null? lset) '())
                     (else (I lset)))))))
 
-(test (intersectall2 '((a b c) (b c) (b)))
-      '(b))
+(check-equal? (intersectall2 '((a b c) (b c) (b)))
+              '(b))
 
 (define intersect3
   (lambda (set1 set2)
@@ -72,24 +72,24 @@
 (define intersectall3
   (lambda (lset)
     (let/cc hop
-     (letrec
-         ((A (lambda (lset)
-               (cond [(null? (car lset)) (hop '())]
-                     [(null? (cdr lset)) (car lset)]
-                     [else (intersect3 (car lset) (A (cdr lset)))])))
-          (I (lambda (s1 s2)
-               (letrec ((J (lambda (s1)
-                             (cond [(null? s1) '()]
-                                   [(member? (car s1) s2) (J (cdr s1))]
-                                   [else (cons (car s1)
-                                               (J (cdr s1)))]))))
-                 (cond [(null? s2) (hop '())]
-                       [else (J s1)])))))
-       (cond [(null? lset) '()]
-             [else (A lset)])))))
+            (letrec
+                ((A (lambda (lset)
+                      (cond [(null? (car lset)) (hop '())]
+                            [(null? (cdr lset)) (car lset)]
+                            [else (intersect3 (car lset) (A (cdr lset)))])))
+                 (I (lambda (s1 s2)
+                      (letrec ((J (lambda (s1)
+                                    (cond [(null? s1) '()]
+                                          [(member? (car s1) s2) (J (cdr s1))]
+                                          [else (cons (car s1)
+                                                      (J (cdr s1)))]))))
+                        (cond [(null? s2) (hop '())]
+                              [else (J s1)])))))
+              (cond [(null? lset) '()]
+                    [else (A lset)])))))
 
-(test (intersectall3 '((a b c) (b c) (b)))
-      '(b))
+(check-equal? (intersectall3 '((a b c) (b c) (b)))
+              '(b))
 
 (define rember
   (lambda (a lat)
@@ -100,8 +100,8 @@
                                     (R (cdr lat)))]))))
       (R lat))))
 
-(test (rember 'b '(a b c b d))
-      '(a c b d))
+(check-equal? (rember 'b '(a b c b d))
+              '(a c b d))
 
 (define rember-beyond-first
   (lambda (a lat)
@@ -112,8 +112,8 @@
                                     (R (cdr lat)))]))))
       (R lat))))
 
-(test (rember-beyond-first 'd '(a b c d e f g))
-      '(a b c))
+(check-equal? (rember-beyond-first 'd '(a b c d e f g))
+              '(a b c))
 
 (define rember-upto-last1
   (lambda (a orig-lat)
@@ -123,10 +123,10 @@
                         [else (R (cdr lat))]))))
       (R orig-lat))))
 
-(test (rember-upto-last1 'd '(a b c d e f g))
-      '(e f g))
-(test (rember-upto-last1 'z '(a b c d e f g))
-      '(a b c d e f g))
+(check-equal? (rember-upto-last1 'd '(a b c d e f g))
+              '(e f g))
+(check-equal? (rember-upto-last1 'z '(a b c d e f g))
+              '(a b c d e f g))
 
 (define rember-upto-last2
   (lambda (a lat)
@@ -139,7 +139,7 @@
                                      (R (cdr lat)))]))))
        (R lat)))))
 
-(test (rember-upto-last2 'd '(a b c d e f g))
-      '(e f g))
-(test (rember-upto-last2 'z '(a b c d e f g))
-      '(a b c d e f g))
+(check-equal? (rember-upto-last2 'd '(a b c d e f g))
+              '(e f g))
+(check-equal? (rember-upto-last2 'z '(a b c d e f g))
+              '(a b c d e f g))

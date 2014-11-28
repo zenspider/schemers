@@ -2,27 +2,28 @@
 
 (provide eqan? ** pick div)
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 ;;; Chapter 4
 ;; pg 59
 
-(test (add1 67)
-      68)
-(test (sub1 69)
-      68)
-(test (zero? 42)
-      #f)
-(test (zero? 0)
-      #t)
+(check-equal? (add1 67)
+              68)
+(check-equal? (sub1 69)
+              68)
+(check-equal? (zero? 42)
+              #f)
+(check-equal? (zero? 0)
+              #t)
 
 (define ++
   (lambda (m n)
     (cond [(zero? n) m]
           [else (+ (add1 m) (sub1 n))])))
 
-(test (++ 3 4)
-      7)
+(check-equal? (++ 3 4)
+              7)
 
 ;; pg 61
 
@@ -31,8 +32,8 @@
     (cond [(zero? n) m]
           [else (-- (sub1 m) (sub1 n))])))
 
-(test (-- 7 3)
-      4)
+(check-equal? (-- 7 3)
+              4)
 
 (define tup?
   (lambda (l)
@@ -40,24 +41,24 @@
           [(number? (car l)) (tup? (cdr l))]
           [else #f])))
 
-(test (tup? '(1 2 3))
-      #t)
-(test (tup? '(1 b 3))
-      #f)
-(test (tup? '(1 (2 3) 4))
-      #f)
+(check-equal? (tup? '(1 2 3))
+              #t)
+(check-equal? (tup? '(1 b 3))
+              #f)
+(check-equal? (tup? '(1 (2 3) 4))
+              #f)
 
 (define addtup
   (lambda (l)
     (cond [(null? l) 0]
           [else (+ (car l) (addtup (cdr l)))])))
 
-(test (addtup '())
-      0)
-(test (addtup '(1))
-      1)
-(test (addtup '(1 2 3))
-      6)
+(check-equal? (addtup '())
+              0)
+(check-equal? (addtup '(1))
+              1)
+(check-equal? (addtup '(1 2 3))
+              6)
 
 (define **
   (lambda (m n)
@@ -69,18 +70,18 @@
      ;; ((equal? 1 n) m)
      [else (+ n (** n (sub1 m)))])))
 
-(test (** 5 0)
-      0)
-(test (** 0 5)
-      0)
-(test (** 1 5)
-      5)
-(test (** 5 1)
-      5)
-(test (** 2 3)
-      6)
-(test (** 3 2)
-      6)
+(check-equal? (** 5 0)
+              0)
+(check-equal? (** 0 5)
+              0)
+(check-equal? (** 1 5)
+              5)
+(check-equal? (** 5 1)
+              5)
+(check-equal? (** 2 3)
+              6)
+(check-equal? (** 3 2)
+              6)
 
 (define tup+
   (lambda (t1 t2)
@@ -90,12 +91,12 @@
           [else (cons (+ (car t1) (car t2))
                       (tup+ (cdr t1) (cdr t2)))])))
 
-(test (tup+ '(3 6 9 11 4) '(8 5 2 0 7))
-      '(11 11 11 11 11))
-(test (tup+ '(1 2 3) '(1 2 3 4 5))
-      '(2 4 6 4 5))
-(test (tup+ '(1 2 3 4 5) '(1 2 3))
-      '(2 4 6 4 5))
+(check-equal? (tup+ '(3 6 9 11 4) '(8 5 2 0 7))
+              '(11 11 11 11 11))
+(check-equal? (tup+ '(1 2 3) '(1 2 3 4 5))
+              '(2 4 6 4 5))
+(check-equal? (tup+ '(1 2 3 4 5) '(1 2 3))
+              '(2 4 6 4 5))
 
 ;; pg 73
 (define >>
@@ -114,12 +115,12 @@
   (lambda (n m)
     (not (or (<< n m) (>> n m)))))
 
-(test (== 3 3)
-      #t)
-(test (== 1 2)
-      #f)
-(test (== 2 1)
-      #f)
+(check-equal? (== 3 3)
+              #t)
+(check-equal? (== 1 2)
+              #f)
+(check-equal? (== 2 1)
+              #f)
 
 ;; pg 74
 
@@ -129,22 +130,22 @@
           [(== 1 exp) n]
           [else (** n (^^ n (sub1 exp)))])))
 
-(test (^^ 1 1)
-      1)
-(test (^^ 2 3)
-      8)
-(test (^^ 5 3)
-      125)
+(check-equal? (^^ 1 1)
+              1)
+(check-equal? (^^ 2 3)
+              8)
+(check-equal? (^^ 5 3)
+              125)
 
 (define div
   (lambda (n m)
     (cond [(< n m) 0]
           [else (add1 (div (- n m) m))])))
 
-(test (div 15 4)
-      3)
-(test (div 6 2)
-      3)
+(check-equal? (div 15 4)
+              3)
+(check-equal? (div 6 2)
+              3)
 
 ;; pg 76
 
@@ -153,20 +154,20 @@
     (cond [(null? l) 0]
           [else (add1 (llength (cdr l)))])))
 
-(test (llength '())
-      0)
-(test (llength '(a))
-      1)
-(test (llength '(a '(b c) d))
-      3)
+(check-equal? (llength '())
+              0)
+(check-equal? (llength '(a))
+              1)
+(check-equal? (llength '(a '(b c) d))
+              3)
 
 (define pick
   (lambda (n lat)
     (cond [(= 1 n) (car lat)]
           [else (pick (sub1 n) (cdr lat))])))
 
-(test (pick 4 '(a b c d e))
-      'd)
+(check-equal? (pick 4 '(a b c d e))
+              'd)
 
 ;; pg 77
 
@@ -176,8 +177,8 @@
           [else (cons (car lat)
                       (rempick (sub1 n) (cdr lat)))])))
 
-(test (rempick 3 '(a b c d))
-      '(a b d))
+(check-equal? (rempick 3 '(a b c d))
+              '(a b d))
 
 (define no-nums
   (lambda (lat)
@@ -193,10 +194,10 @@
                                      (all-nums (cdr lat)))]
           [else (all-nums (cdr lat))])))
 
-(test (no-nums '(1 a 2 b 3 c 4))
-      '(a b c))
-(test (all-nums '(a 1 b 2 c 3 d))
-      '(1 2 3))
+(check-equal? (no-nums '(1 a 2 b 3 c 4))
+              '(a b c))
+(check-equal? (all-nums '(a 1 b 2 c 3 d))
+              '(1 2 3))
 
 ;; pg 78
 (define eqan?
@@ -211,9 +212,9 @@
           [(eqan? a (car lat)) (add1 (occur a (cdr lat)))]
           [else (occur a (cdr lat))])))
 
-(test (occur 'z '(a b c))
-      0)
-(test (occur 2 '(1 2 3 2 4))
-      2)
+(check-equal? (occur 'z '(a b c))
+              0)
+(check-equal? (occur 2 '(1 2 3 2 4))
+              2)
 
 ;; pg 79 is stupid and I basically already did it

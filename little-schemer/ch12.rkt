@@ -1,5 +1,6 @@
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 (define (Y outer)                       ; taken from ch09.scm
@@ -26,8 +27,8 @@
           [(null? l) 0]
           [else (add1 (length (cdr l)))])))))
 
-(test (length '(1 2 3))
-      3)
+(check-equal? (length '(1 2 3))
+              3)
 
 (define multirember2
   (lambda (a lat)
@@ -38,8 +39,8 @@
                                      (mr (cdr lat)))]))))
       (mr lat))))
 
-(test (multirember2 2 '(1 2 3 2 4 2 5))
-      '(1 3 4 5))
+(check-equal? (multirember2 2 '(1 2 3 2 4 2 5))
+              '(1 3 4 5))
 
 (define multirember-f
   (lambda (test?)
@@ -121,5 +122,5 @@
     (letrec ((S (lambda (sss tup)
                   (cond [(null? tup) '()]
                         [else (cons    (+ sss (car tup))
-                                    (S (+ sss (car tup)) (cdr tup)))]))))
+                                       (S (+ sss (car tup)) (cdr tup)))]))))
       (S 0 tup))))

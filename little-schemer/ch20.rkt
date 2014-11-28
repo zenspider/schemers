@@ -2,13 +2,14 @@
 
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 ;;; Miscellany
 
 (define (puts name . vals)
   (when #f
-   (printf "~s~n" (cons name vals))))
+    (printf "~s~n" (cons name vals))))
 
 (define abort #f)                          ; for call/cc
 
@@ -77,9 +78,9 @@
 (define (value e)
   (puts 'value e)
   (let/cc the-end
-    (set! abort the-end)
-    (cond ((define? e) (*define e))
-          (else (the-meaning e)))))
+          (set! abort the-end)
+          (cond ((define? e) (*define e))
+                (else (the-meaning e)))))
 
 ;;; Boxing:
 
@@ -113,10 +114,10 @@
 
 (define (*letcc e table)
   (let/cc skip
-    (beglis (ccbody-of e)
-            (extend (name-of e)
-                    (box (a-prim skip))
-                    ))))
+          (beglis (ccbody-of e)
+                  (extend (name-of e)
+                          (box (a-prim skip))
+                          ))))
 
 (define *const
   (let ((:cons    (b-prim cons))
@@ -241,27 +242,27 @@
 
 (define (I x) x) ; just for testing
 
-(test (value 3)
-      3)
-(test (value '(cond (else 0)))
-      0)
-(test (value '(cond ((null? (cons 0 '())) 0) (else 1)))
-      1)
+(check-equal? (value 3)
+              3)
+(check-equal? (value '(cond (else 0)))
+              0)
+(check-equal? (value '(cond ((null? (cons 0 '())) 0) (else 1)))
+              1)
 
-(test (value '(define odd?
-               (lambda (n)
-                 (cond ((zero? n) #f)
-                       (else (even? (sub1 n)))))))
-      (void))
+(check-equal? (value '(define odd?
+                       (lambda (n)
+                         (cond ((zero? n) #f)
+                               (else (even? (sub1 n)))))))
+              (void))
 
-(test (value '(define even?
-               (lambda (n)
-                 (cond ((zero? n) #t)
-                       (else (odd? (sub1 n)))))))
-      (void))
+(check-equal? (value '(define even?
+                       (lambda (n)
+                         (cond ((zero? n) #t)
+                               (else (odd? (sub1 n)))))))
+              (void))
 
 
-(test (value '(odd? 2))
-      #f)
-(test (value '(odd? 1))
-      #t)
+(check-equal? (value '(odd? 2))
+              #f)
+(check-equal? (value '(odd? 1))
+              #t)

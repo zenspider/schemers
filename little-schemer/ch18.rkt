@@ -2,6 +2,7 @@
 
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 (define (bons kar)
@@ -73,19 +74,19 @@
         [else (cons (kar l)
                     (kons->list (kdr l)))]))
 
-(test (kons->list (lots 3))
-      '(egg egg egg))
-(test (lenkth (lots 3))
-      3)
+(check-equal? (kons->list (lots 3))
+              '(egg egg egg))
+(check-equal? (lenkth (lots 3))
+              3)
 
 (set-kounter 0)
-(test (kons->list (add-at-end (lots 3)))
-      '(egg egg egg egg))
-(test (kounter)
-      3)
+(check-equal? (kons->list (add-at-end (lots 3)))
+              '(egg egg egg egg))
+(check-equal? (kounter)
+              3)
 
 (set-kounter 0)
-(test (kons->list (add-at-end-too (lots 3)))
-      '(egg egg egg egg))
-(test (kounter)
-      0)
+(check-equal? (kons->list (add-at-end-too (lots 3)))
+              '(egg egg egg egg))
+(check-equal? (kounter)
+              0)

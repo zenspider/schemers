@@ -2,6 +2,7 @@
 
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 (define (find n Ns Rs)
@@ -26,14 +27,14 @@
             (set! Ns (cons n Ns))
             result)))))
 
-(test (deep 3)
-      '(((pizza))))
+(check-equal? (deep 3)
+              '(((pizza))))
 
-(test (deepM 3)
-      '(((pizza))))
-;; (test (identity Rs)
+(check-equal? (deepM 3)
+              '(((pizza))))
+;; (check-equal? (identity Rs)
 ;;       '((((pizza)))))
-;; (test (identity Ns)
+;; (check-equal? (identity Ns)
 ;;       '(3))
 
 ;; pg 119:
@@ -50,12 +51,12 @@
               [else (add1 (length (cdr l)))])))
 
 (set! length
-  (let ((h (lambda (l) 0)))
-    (set! h
-          (lambda (l)
-            (cond [(null? l) 0]
-                  [else (add1 (h (cdr l)))])))
-    h))
+      (let ((h (lambda (l) 0)))
+        (set! h
+              (lambda (l)
+                (cond [(null? l) 0]
+                      [else (add1 (h (cdr l)))])))
+        h))
 
 ;; pg 122
 
@@ -66,12 +67,12 @@
             [else (add1 (length (cdr l)))]))))
 
 (set! length
-  (let ((h (lambda (l) 0)))
-    (set! h (L (lambda (arg) (h arg))))
-    h))
+      (let ((h (lambda (l) 0)))
+        (set! h (L (lambda (arg) (h arg))))
+        h))
 
-(test (length '(1 2 3))
-      3)
+(check-equal? (length '(1 2 3))
+              3)
 
 (define Y!
   (lambda (L)
@@ -86,8 +87,8 @@
 
 (set! length (Y! L))
 
-(test (length '(1 2 3))
-      3)
+(check-equal? (length '(1 2 3))
+              3)
 
 (define D
   (lambda (depth*)
@@ -99,5 +100,5 @@
 
 (define depth* (Y! D))
 
-(test (depth* '(a (b (c))))
-      3)
+(check-equal? (depth* '(a (b (c))))
+              3)

@@ -2,6 +2,7 @@
 
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 
 ;; pg 127
@@ -32,13 +33,13 @@
       (lambda (n)
         (let ((exists (find n Ns Rs)))
           (when (atom? exists)
-              (let ((result (D n)))
-                (set! Rs (cons result Rs))
-                (set! Ns (cons n Ns))
-                result)))))))
+            (let ((result (D n)))
+              (set! Rs (cons result Rs))
+              (set! Ns (cons n Ns))
+              result)))))))
 
-(test (deepM1 3)
-      '(((pizza))))
+(check-equal? (deepM1 3)
+              '(((pizza))))
 
 (define deepM2                           ; call deepM2 instead of D
   (let ((Rs '())
@@ -51,13 +52,13 @@
       (lambda (n)
         (let ((exists (find n Ns Rs)))
           (when (atom? exists)
-              (let ((result (D n)))
-                (set! Rs (cons result Rs))
-                (set! Ns (cons n Ns))
-                result)))))))
+            (let ((result (D n)))
+              (set! Rs (cons result Rs))
+              (set! Ns (cons n Ns))
+              result)))))))
 
-(test (deepM2 3)
-      '(((pizza))))
+(check-equal? (deepM2 3)
+              '(((pizza))))
 
 (define deepM3                           ; merge letrec into let
   (let ((Rs '())
@@ -70,13 +71,13 @@
     (lambda (n)
       (let ((exists (find n Ns Rs)))
         (when (atom? exists)
-            (let ((result (D n)))
-              (set! Rs (cons result Rs))
-              (set! Ns (cons n Ns))
-              result))))))
+          (let ((result (D n)))
+            (set! Rs (cons result Rs))
+            (set! Ns (cons n Ns))
+            result))))))
 
-(test (deepM3 3)
-      '(((pizza))))
+(check-equal? (deepM3 3)
+              '(((pizza))))
 
 (define deepM4                           ; unfactor D
   (let ((Rs '())
@@ -84,16 +85,16 @@
     (lambda (n)
       (let ((exists (find n Ns Rs)))
         (when (atom? exists)
-            (let ((result (if (zero? n)
-                              'pizza
-                              (cons (deepM4 (sub1 n))
-                                    '()))))
-              (set! Rs (cons result Rs))
-              (set! Ns (cons n Ns))
-              result))))))
+          (let ((result (if (zero? n)
+                            'pizza
+                            (cons (deepM4 (sub1 n))
+                                  '()))))
+            (set! Rs (cons result Rs))
+            (set! Ns (cons n Ns))
+            result))))))
 
-(test (deepM4 3)
-      '(((pizza))))
+(check-equal? (deepM4 3)
+              '(((pizza))))
 
 ;; pg 132
 
@@ -105,15 +106,15 @@
     (set! counter (lambda () N))
     (set! set-counter (lambda (n) (set! N n)))
     (lambda (x y)
-            (set! N (add1 N))
-            (cons x y))))
+      (set! N (add1 N))
+      (cons x y))))
 
-(test (counter)
-      0)
-(test (consC 'a '())
-      '(a))
-(test (counter)
-      1)
+(check-equal? (counter)
+              0)
+(check-equal? (consC 'a '())
+              '(a))
+(check-equal? (counter)
+              1)
 
 (define deep2
   (lambda (m)
@@ -122,14 +123,14 @@
         (consC (deep2 (sub1 m))
                '()))))
 
-(test (deep2 3)
-      '(((pizza))))
-(test (counter)
-      4)
+(check-equal? (deep2 3)
+              '(((pizza))))
+(check-equal? (counter)
+              4)
 
 (set-counter 0)
-(test (counter)
-      0)
+(check-equal? (counter)
+              0)
 
 ;; pg 134
 
@@ -143,10 +144,10 @@
                         (S (sub1 n)))))))
       (S 1000))))
 
-(test (supercounter deep2)
-      'pizza)
-(test (counter)
-      500500)
+(check-equal? (supercounter deep2)
+              'pizza)
+(check-equal? (counter)
+              500500)
 
 (define deepM5
   (let ((Rs '())
@@ -154,26 +155,26 @@
     (lambda (n)
       (let ((exists (find n Ns Rs)))
         (when (atom? exists)
-            (let ((result (if (zero? n)
-                              'pizza
-                              (consC (deepM5 (sub1 n))
-                                     '()))))
-              (set! Rs (cons result Rs))
-              (set! Ns (cons n Ns))
-              result))))))
+          (let ((result (if (zero? n)
+                            'pizza
+                            (consC (deepM5 (sub1 n))
+                                   '()))))
+            (set! Rs (cons result Rs))
+            (set! Ns (cons n Ns))
+            result))))))
 
 (set-counter 0)
-(test (deepM5 5)
-      '(((((pizza))))))
-(test (counter)
-      5)
-(test (deepM5 7)
-      `((,(void))))
-(test (counter)
-      7)
+(check-equal? (deepM5 5)
+              '(((((pizza))))))
+(check-equal? (counter)
+              5)
+(check-equal? (deepM5 7)
+              `((,(void))))
+(check-equal? (counter)
+              7)
 (define _ignore_ (deepM5 1000))
-(test (counter)
-      1000)
+(check-equal? (counter)
+              1000)
 
 ;; pg 139
 
@@ -197,5 +198,5 @@
             l
             new-l)))))
 
-(test (rember1*C 'b '(a b c))
-      '(a c))
+(check-equal? (rember1*C 'b '(a b c))
+              '(a c))

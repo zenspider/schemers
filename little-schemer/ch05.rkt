@@ -1,5 +1,6 @@
 #lang racket/base
 
+(require rackunit)
 (require "lib/shared.rkt")
 (require "ch04.rkt")                    ; eqan
 
@@ -25,18 +26,18 @@
           [else (cons (rember* a (car l))
                       (rember* a (cdr l)))]))) ; appreciated on end
 
-(test (myrember* 'a '())
-      '())
-(test (myrember* 'a '(a b a c d a))
-      '(b c d))
-(test (myrember* 'a '((b) a ((c) a) (d (e)) a))
-      '((b) ((c)) (d (e))))
-(test (rember* 'a '())
-      '())
-(test (rember* 'a '(a b a c d a))
-      '(b c d))
-(test (rember* 'a '((b) a ((c) a) (d (e)) a))
-      '((b) ((c)) (d (e))))
+(check-equal? (myrember* 'a '())
+              '())
+(check-equal? (myrember* 'a '(a b a c d a))
+              '(b c d))
+(check-equal? (myrember* 'a '((b) a ((c) a) (d (e)) a))
+              '((b) ((c)) (d (e))))
+(check-equal? (rember* 'a '())
+              '())
+(check-equal? (rember* 'a '(a b a c d a))
+              '(b c d))
+(check-equal? (rember* 'a '((b) a ((c) a) (d (e)) a))
+              '((b) ((c)) (d (e))))
 
 ;; pg 82
 (define insertR*
@@ -63,14 +64,14 @@
           [else (cons (car l)
                       (myinsertR* new old (cdr l)))])))
 
-(test (myinsertR* 'a 'b '())
-      '())
-(test (myinsertR* 'b 'a '(a (a (c))))
-      '(a b (a b (c))))
-(test (insertR* 'a 'b '())
-      '())
-(test (insertR* 'b 'a '(a (a (c))))
-      '(a b (a b (c))))
+(check-equal? (myinsertR* 'a 'b '())
+              '())
+(check-equal? (myinsertR* 'b 'a '(a (a (c))))
+              '(a b (a b (c))))
+(check-equal? (insertR* 'a 'b '())
+              '())
+(check-equal? (insertR* 'b 'a '(a (a (c))))
+              '(a b (a b (c))))
 
 ;; pg 84
 (define occur*
@@ -80,12 +81,12 @@
           [(eq? a (car l)) (add1 (occur* a (cdr l)))]
           [else (occur* a (cdr l))])))
 
-(test (occur* 'a '(b c d))
-      0)
-(test (occur* 'a '(((a))))
-      1)
-(test (occur* 'a '(1 a 2 (3 a 4 (5)) a))
-      3)
+(check-equal? (occur* 'a '(b c d))
+              0)
+(check-equal? (occur* 'a '(((a))))
+              1)
+(check-equal? (occur* 'a '(1 a 2 (3 a 4 (5)) a))
+              3)
 
 ;; pg 85
 (define subst*
@@ -98,11 +99,11 @@
           [else (cons (car l)
                       (subst* new old (cdr l)))])))
 
-(test (subst* 'z 'b '(a b c))
-      '(a z c))
-(test (subst* 'z 'b
-              '((a) (b ((((c d))) e (f)) b) (h) (b) (j k)))
-      '((a) (z ((((c d))) e (f)) z) (h) (z) (j k)))
+(check-equal? (subst* 'z 'b '(a b c))
+              '(a z c))
+(check-equal? (subst* 'z 'b
+                      '((a) (b ((((c d))) e (f)) b) (h) (b) (j k)))
+              '((a) (z ((((c d))) e (f)) z) (h) (z) (j k)))
 
 ;; pg 86
 (define insertL*
@@ -116,8 +117,8 @@
           [else (cons (car l)
                       (insertL* new old (cdr l)))])))
 
-(test (insertL* 'z 'a '(a b (a b (a a) c) c c))
-      '(z a b (z a b (z a z a) c) c c))
+(check-equal? (insertL* 'z 'a '(a b (a b (a a) c) c c))
+              '(z a b (z a b (z a z a) c) c c))
 
 ;; pg 87
 (define member1*
@@ -131,14 +132,14 @@
           [(eq? a (car l)) #t]
           [else (member2* a (cdr l))])))
 
-(test (member1* 'b '((a (b)) c))
-      #t)
-(test (member1* 'z '((a (b)) c))
-      #f)
-(test (member2* 'b '((a (b)) c))
-      #t)
-(test (member2* 'z '((a (b)) c))
-      #f)
+(check-equal? (member1* 'b '((a (b)) c))
+              #t)
+(check-equal? (member1* 'z '((a (b)) c))
+              #f)
+(check-equal? (member2* 'b '((a (b)) c))
+              #t)
+(check-equal? (member2* 'z '((a (b)) c))
+              #f)
 
 ;; pg 88
 (define leftmost
@@ -147,12 +148,12 @@
           [(list? (car l)) (leftmost (car l))]
           [else (car l)])))
 
-(test (leftmost '((a) (b ((c) d) (e))))
-      'a)
-(test (leftmost '(((a) (b (c))) d))
-      'a)
-(test (leftmost '(((() a)) b (c)))
-      '())
+(check-equal? (leftmost '((a) (b ((c) d) (e))))
+              'a)
+(check-equal? (leftmost '(((a) (b (c))) d))
+              'a)
+(check-equal? (leftmost '(((() a)) b (c)))
+              '())
 
 ;; pg 90
 (define myeqlist1?
@@ -170,16 +171,16 @@
 
 ;; HACK (define myeqlist? myeqlist1?)
 
-(test (myeqlist1? '() '())
-      #t)
-(test (myeqlist1? '(a b c) '(a b c))
-      #t)
-(test (myeqlist1? '(a (b) c) '(a (b) c))
-      #t)
-(test (myeqlist1? '(a b c) '(a b))
-      #f)
-(test (myeqlist1? '(a b c) '(a (b) c))
-      #f)
+(check-equal? (myeqlist1? '() '())
+              #t)
+(check-equal? (myeqlist1? '(a b c) '(a b c))
+              #t)
+(check-equal? (myeqlist1? '(a (b) c) '(a (b) c))
+              #t)
+(check-equal? (myeqlist1? '(a b c) '(a b))
+              #f)
+(check-equal? (myeqlist1? '(a b c) '(a (b) c))
+              #f)
 
 ;; pg 91
 (define myeqlist2?
@@ -200,16 +201,16 @@
 
 ;; HACK (define myeqlist? myeqlist2?)
 
-(test (myeqlist2? '() '())
-      #t)
-(test (myeqlist2? '(a b c) '(a b c))
-      #t)
-(test (myeqlist2? '(a (b) c) '(a (b) c))
-      #t)
-(test (myeqlist2? '(a b c) '(a b))
-      #f)
-(test (myeqlist2? '(a b c) '(a (b) c))
-      #f)
+(check-equal? (myeqlist2? '() '())
+              #t)
+(check-equal? (myeqlist2? '(a b c) '(a b c))
+              #t)
+(check-equal? (myeqlist2? '(a (b) c) '(a (b) c))
+              #t)
+(check-equal? (myeqlist2? '(a b c) '(a b))
+              #f)
+(check-equal? (myeqlist2? '(a b c) '(a (b) c))
+              #f)
 
 ;; pg 92 - 93
 
@@ -228,16 +229,16 @@
 
 ;; HACK (define myeqlist? myeqlist3?)
 
-(test (myeqlist3? '() '())
-      #t)
-(test (myeqlist3? '(a b c) '(a b c))
-      #t)
-(test (myeqlist3? '(a (b) c) '(a (b) c))
-      #t)
-(test (myeqlist3? '(a b c) '(a b))
-      #f)
-(test (myeqlist3? '(a b c) '(a (b) c))
-      #f)
+(check-equal? (myeqlist3? '() '())
+              #t)
+(check-equal? (myeqlist3? '(a b c) '(a b c))
+              #t)
+(check-equal? (myeqlist3? '(a (b) c) '(a (b) c))
+              #t)
+(check-equal? (myeqlist3? '(a b c) '(a b))
+              #f)
+(check-equal? (myeqlist3? '(a b c) '(a (b) c))
+              #f)
 
 (define myequal?
   (lambda (a b)
@@ -257,24 +258,24 @@
      [else (myeqlist? a b)]]))
 
 
-(test (myequal? 'a 'a)
-      #t)
-(test (myequal? '() '())
-      #t)
-(test (myequal? 'a 'b)
-      #f)
-(test (myequal? 'b 'a)
-      #f)
-(test (myequal? 'a '())
-      #f)
-(test (myequal? '() 'a)
-      #f)
-(test (myequal? '(a (b) c) '(a (b) c))
-      #t)
-(test (myequal? '(a b c) '(a b))
-      #f)
-(test (myequal? '(a b c) '(a (b) c))
-      #f)
+(check-equal? (myequal? 'a 'a)
+              #t)
+(check-equal? (myequal? '() '())
+              #t)
+(check-equal? (myequal? 'a 'b)
+              #f)
+(check-equal? (myequal? 'b 'a)
+              #f)
+(check-equal? (myequal? 'a '())
+              #f)
+(check-equal? (myequal? '() 'a)
+              #f)
+(check-equal? (myequal? '(a (b) c) '(a (b) c))
+              #t)
+(check-equal? (myequal? '(a b c) '(a b))
+              #f)
+(check-equal? (myequal? '(a b c) '(a (b) c))
+              #f)
 
 (define myeqlist?
   (lambda (a b)

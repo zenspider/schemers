@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; Exercise 1.32:
 
@@ -57,4 +58,3 @@
 
 (= (* 10 9 8 7 6 5 4 3 2 1)
    (accumulate-i * 1 identity 1 10 inc))    ; #t
-

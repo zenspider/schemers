@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; *Exercise 1.8:*
 ;; Newton's method for cube roots is based on the fact that if y is an

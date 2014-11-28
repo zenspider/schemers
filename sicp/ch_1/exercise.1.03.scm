@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; *Exercise 1.3:*
 
@@ -19,4 +20,3 @@
         ((>= c b a) (sum-of-squares c b))))
 
 (sum-of-squares-of-biggers 1 2 3)       ; 13
-

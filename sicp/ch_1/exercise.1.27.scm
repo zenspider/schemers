@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; Exercise 1.27:
 
@@ -39,5 +40,3 @@
 ;; (fermat-test 2465)                      ; #t
 ;; (fermat-test 2821)                      ; #t
 ;; (fermat-test 6601)                      ; #t
-
-

@@ -1,3 +1,4 @@
+#lang racket/base
 
 ;;; Exercise 1.28:
 
@@ -25,4 +26,3 @@
 ;; have it return 0.
 
 ;; I don't think I can muster the effort to care about this... for fuck's sake.
-

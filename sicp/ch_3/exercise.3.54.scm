@@ -1,7 +1,7 @@
+#lang racket/base
 
-(require-library streams)
-(import streams)
-(use test)
+(require (except-in "../lib/streams.scm" ones integers))
+(require "../lib/test.rkt")
 
 ;;; Exercise 3.54
 

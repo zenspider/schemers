@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.48
 
 ;; Explain in detail why the deadlock-avoidance

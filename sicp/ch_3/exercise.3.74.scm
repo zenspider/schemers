@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.74
 
@@ -40,4 +40,3 @@
 ;;        (stream-map sign-change-detector sense-data <EXPRESSION>))
 ;;
 ;; Complete the program by supplying the indicated <EXPRESSION>.
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (require-library eval2)
 (import eval2)
 

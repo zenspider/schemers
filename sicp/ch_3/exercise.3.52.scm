@@ -1,6 +1,7 @@
-(require 'streams)
-(import streams)
-(use test)
+#lang racket/base
+
+(require "../lib/streams.scm")
+(require rackunit)
 
 ;;; Exercise 3.52
 
@@ -31,7 +32,7 @@
 
 (define sum 0)
 
-(test "initial value" 0 sum)
+(check-equal? 0 sum "initial value")
 
 (define (accum x)
   (set! sum (+ x sum))
@@ -48,7 +49,7 @@
 
 (stream-ref y 7)
 
-(test "(stream-ref y 7)" 136 sum)       ; the 7th even number in seq
+(check-equal? 136 sum "(stream-ref y 7)")       ; the 7th even number in seq
 
 (stream-display z)
 
@@ -61,5 +62,4 @@
 ;; 190
 ;; 210
 
-(test "(stream-display z)" 210 sum)     ; the last item in sum
-
+(check-equal? 210 sum "(stream-display z)")     ; the last item in sum

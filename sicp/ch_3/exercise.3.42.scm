@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.42
 
 ;; Ben Bitdiddle suggests that it's a waste of time

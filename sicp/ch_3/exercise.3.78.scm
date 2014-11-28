@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.78
 
@@ -18,4 +18,3 @@
 ;; takes as arguments the constants a, b, and dt and the initial
 ;; values y_0 and dy_0 for y and dy/dt and generates the stream of
 ;; successive values of y.
-

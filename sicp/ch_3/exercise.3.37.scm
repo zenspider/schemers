@@ -1,8 +1,7 @@
+#lang racket/base
 
-(require "lib/testes.scm")
-;; (use numbers)
-(require "lib/constraints.scm")
-(import constraints)
+(require "../lib/test.rkt")
+(require "../lib/constraints.scm")
 
 ;;; Exercise 3.37
 

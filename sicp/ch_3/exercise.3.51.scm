@@ -1,6 +1,6 @@
-(require 'streams)
-(import streams)
-(use extras)
+#lang racket/base
+
+(require "../lib/streams.scm")
 
 ;;; Exercise 3.51
 

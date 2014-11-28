@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.46
 
 ;; Suppose that we implement `test-and-set!'  using

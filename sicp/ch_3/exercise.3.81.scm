@@ -1,6 +1,7 @@
-(use test)
-(require-library streams)
-(import streams)
+#lang racket/base
+
+(require "../lib/test.rkt")
+(require "../lib/streams.scm")
 
 ;;; Exercise 3.81
 
@@ -29,7 +30,7 @@
 (test (rand-update 42)               (stream-ref rand 1))
 (test (rand-update (rand-update 42)) (stream-ref rand 2))
 
-(define rand (stream-rand 42))
+(set! rand (stream-rand 42))
 
 (test 42                             (stream-ref rand 0))
 (test (rand-update 42)               (stream-ref rand 1))

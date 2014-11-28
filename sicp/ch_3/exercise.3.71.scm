@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.71
 
@@ -13,4 +13,3 @@
 ;; search the stream for two consecutive pairs with the same weight.
 ;; Write a procedure to generate the Ramanujan numbers.  The first
 ;; such number is 1,729.  What are the next five?
-

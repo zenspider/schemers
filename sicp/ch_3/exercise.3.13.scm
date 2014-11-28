@@ -1,8 +1,8 @@
+#lang racket/base
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require "../lib/testes.scm")
+(require "../lib/myutils.scm")
+(require rnrs/mutable-pairs-6)
 
 ;;; Exercise 3.13
 
@@ -22,7 +22,8 @@
 ;; Draw a box-and-pointer diagram that shows the structure `z'
 ;; created by
 
-(define z (make-cycle (list 'a 'b 'c)))
+;; HACK
+;; (define z (make-cycle (list 'a 'b 'c)))
 
 ;;     +--------+
 ;;     v        |

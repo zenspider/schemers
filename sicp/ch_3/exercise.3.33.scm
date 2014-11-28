@@ -1,7 +1,7 @@
+#lang racket/base
 
-(use test)
-(require 'constraints)
-(import constraints)
+(require rackunit)
+(require "../lib/constraints.scm")
 
 ;;; Exercise 3.33
 
@@ -19,21 +19,21 @@
     (constant 2 two)
     'ok))
 
-(test-group "3.33"
-            (define M (make-connector))
-            (define N (make-connector))
-            (define A (make-connector))
+(test-case "3.33"
+           (define M (make-connector))
+           (define N (make-connector))
+           (define A (make-connector))
 
-            (define (test-average m n a)
-              (forget-value! M 'user)
-              (forget-value! N 'user)
-              (forget-value! A 'user)
-              (set-value! M m 'user)
-              (set-value! N n 'user)
+           (define (test-average m n a)
+             (forget-value! M 'user)
+             (forget-value! N 'user)
+             (forget-value! A 'user)
+             (set-value! M m 'user)
+             (set-value! N n 'user)
 
-              (test a (get-value A)))
+             (check-equal? a (get-value A)))
 
-            (averager M N A)
-            (test-average 0 0 0)
-            (test-average 2 0 1.0)
-            (test-average 2 4 3.0))
+           (averager M N A)
+           (test-average 0 0 0)
+           (test-average 2 0 1.0)
+           (test-average 2 4 3.0))

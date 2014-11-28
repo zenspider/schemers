@@ -1,3 +1,7 @@
+#lang racket/base
+
+(require (except-in "../lib/streams.scm" stream-map))
+
 ;;; Exercise 3.50
 
 ;; Complete the following definition, which
@@ -20,4 +24,3 @@
        (apply proc (map stream-car argstreams))
        (apply stream-map
               (cons proc (map stream-cdr argstreams))))))
-

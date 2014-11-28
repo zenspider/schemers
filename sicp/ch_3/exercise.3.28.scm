@@ -1,7 +1,7 @@
+#lang racket/base
 
-(use test)
-;; (require 'circuits)
-;; (import circuits)
+(require rnrs/mutable-pairs-6)
+(require "../lib/test.rkt")
 
 ;;; Exercise 3.28
 

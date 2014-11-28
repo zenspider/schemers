@@ -1,5 +1,6 @@
+#lang racket/base
 
-(require-extension test)
+(require "../lib/test.rkt")
 
 ;;; Exercise 3.20
 

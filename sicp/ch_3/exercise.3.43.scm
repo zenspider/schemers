@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.43
 
 ;; Suppose that the balances in three accounts start out as $10, $20,

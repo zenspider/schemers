@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (use amb amb-extras)
 
 ;;; Exercise 4.44

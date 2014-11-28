@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.80
 
@@ -89,4 +89,3 @@
 ;; streams that models the behavior of a series RLC circuit with R = 1
 ;; ohm, C = 0.2 farad, L = 1 henry, dt = 0.1 second, and initial values
 ;; i_(L_0) = 0 amps and v_(C_0) = 10 volts.
-

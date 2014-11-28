@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (load "../lib/ch5-regsim.scm")
 
 ;;; Exercise 5.2

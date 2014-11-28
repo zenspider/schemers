@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (use extras)
 (require-library machine)
 (import machine)

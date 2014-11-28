@@ -1,7 +1,7 @@
+#lang racket/base
 
-(use test)
-(require 'constraints)
-(import constraints)
+(require "../lib/test.rkt")
+(require "../lib/constraints.scm")
 
 ;;; Exercise 3.35
 
@@ -21,7 +21,6 @@
 ;;        (define (me request) <BODY2>)
 ;;        <REST OF DEFINITION>
 ;;        me)
-
 
 (define (squarer a aa)
   (define (process-new-value)
@@ -51,7 +50,7 @@
 
             ;; Honestly... I'm not seeing it.
 
-            (test-error (set-value! B -1 'user))
+            (test/error (set-value! B -1 'user))
 
             (set-value! A 2 'user)
             (test  4 (get-value B))

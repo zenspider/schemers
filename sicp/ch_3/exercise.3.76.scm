@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.76
 
@@ -12,4 +12,3 @@
 ;; element is the average of two successive input stream elements.
 ;; Then use `smooth' as a component to implement the zero-crossing
 ;; detector in a more modular style.
-

@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.45
 
 ;; Louis Reasoner thinks our bank-account system is

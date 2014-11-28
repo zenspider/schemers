@@ -1,5 +1,7 @@
+#lang racket/base
 
-(use test)
+(require "../lib/test.rkt")
+(require rnrs/mutable-pairs-6)
 
 ;;; Exercise 3.27
 

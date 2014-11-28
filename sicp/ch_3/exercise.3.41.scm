@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.41
 
 ;; Ben Bitdiddle worries that it would be better to

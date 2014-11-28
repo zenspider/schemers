@@ -1,6 +1,7 @@
-#!/usr/local/bin/csi -s
+#lang racket/base
 
-(use test)
+(require "../lib/test.rkt")
+(require rnrs/mutable-pairs-6)
 
 ;;; Exercise 3.24
 

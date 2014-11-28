@@ -1,8 +1,8 @@
+#lang racket/base
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require "../lib/testes.scm")
+(require "../lib/myutils.scm")
+(require rnrs/mutable-pairs-6)
 
 ;;; Exercise 3.14
 

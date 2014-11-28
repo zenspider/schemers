@@ -1,46 +1,55 @@
-(module queue *
-        ;; (export make-queue)
+#lang r5rs
 
-        (import scheme chicken)
+(#%provide make-queue
+           front-ptr
+           rear-ptr
+           set-front-ptr!
+           set-rear-ptr!
+           empty-queue?
+           front-queue
+           insert-queue!
+           delete-queue!)
 
-        (define (make-queue) (cons '() '()))
+(define error display)
 
-        (define (front-ptr queue)
-          (car queue))
+(define (make-queue) (cons '() '()))
 
-        (define (rear-ptr queue)
-          (cdr queue))
+(define (front-ptr queue)
+  (car queue))
 
-        (define (set-front-ptr! queue item)
-          (set-car! queue item))
+(define (rear-ptr queue)
+  (cdr queue))
 
-        (define (set-rear-ptr! queue item)
-          (set-cdr! queue item))
+(define (set-front-ptr! queue item)
+  (set-car! queue item))
 
-        (define (empty-queue? queue)
-          (null? (front-ptr queue)))
+(define (set-rear-ptr! queue item)
+  (set-cdr! queue item))
 
-        (define (front-queue queue)
-          (if (empty-queue? queue)
-              (error "FRONT called with an empty queue" queue)
-              (car (front-ptr queue))))
+(define (empty-queue? queue)
+  (null? (front-ptr queue)))
 
-        (define (insert-queue! queue item)
-          (let ((new-pair (cons item '())))
-            (cond ((empty-queue? queue)
-                   (set-front-ptr! queue new-pair)
-                   (set-rear-ptr! queue new-pair)
-                   queue)
-                  (else
-                   (set-cdr! (rear-ptr queue) new-pair)
-                   (set-rear-ptr! queue new-pair)
-                   queue))))
+(define (front-queue queue)
+  (if (empty-queue? queue)
+      (error "FRONT called with an empty queue" queue)
+      (car (front-ptr queue))))
 
-        (define (delete-queue! queue)
-          (cond ((empty-queue? queue)
-                 (error "DELETE! called with an empty queue" queue))
-                (else
-                 (set-front-ptr! queue (cdr (front-ptr queue)))
-                 queue)))
+(define (insert-queue! queue item)
+  (let ((new-pair (cons item '())))
+    (cond ((empty-queue? queue)
+           (set-front-ptr! queue new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue)
+          (else
+           (set-cdr! (rear-ptr queue) new-pair)
+           (set-rear-ptr! queue new-pair)
+           queue))))
 
-        'ok)
+(define (delete-queue! queue)
+  (cond ((empty-queue? queue)
+         (error "DELETE! called with an empty queue" queue))
+        (else
+         (set-front-ptr! queue (cdr (front-ptr queue)))
+         queue)))
+
+'ok

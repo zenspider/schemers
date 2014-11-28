@@ -1,5 +1,7 @@
+#lang racket/base
 
-(require-extension test)
+(require "../lib/test.rkt")
+(require rnrs/mutable-pairs-6)
 
 ;;; Exercise 3.23
 
@@ -13,7 +15,7 @@
 ;; and give implementations of the operations.(2)  All operations
 ;; should be accomplished in [theta](1) steps.
 
-(define null '())
+;; (define null '())
 
 ;; head         tail
 ;; |            |
@@ -115,8 +117,8 @@
             (test 'b (car (tail-deque q)))
 
             ;; (a b c)
-            (display-deque q)
-            (newline)
+            ;; (display-deque q)
+            ;; (newline)
             (tail-insert-deque! q 'c)
             (test 'a (car (head-deque q)))
             (test 'c (car (tail-deque q)))

@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (use srfi-1)
 
 ;;; Exercise 5.39

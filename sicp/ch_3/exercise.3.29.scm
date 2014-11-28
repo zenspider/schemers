@@ -1,3 +1,6 @@
+#lang racket/base
+
+(require (only-in "../lib/circuits.scm" make-wire inverter and-gate))
 
 ;;; Exercise 3.29
 

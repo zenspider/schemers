@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (use numbers)
 (require-library lazy-eval)
 (import lazy-eval)

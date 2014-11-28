@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.44
 
 ;; Consider the problem of transferring an amount from one account to
@@ -22,6 +24,8 @@
 ;; Trans is absolutely correct in this situation because the
 ;; implementation of withdraw does absolutely nothing to prevent the
 ;; deposit from going through in the case of an overdraw:
+
+(define balance 1000000)
 
 (define (withdraw amount)
   (if (>= balance amount)

@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.47
 
 ;; A semaphore (of size n) is a generalization of a
@@ -8,6 +10,8 @@
 ;; implementations of semaphores
 ;;
 ;;   a. in terms of mutexes
+
+(define-struct mutex ())                ; HACK
 
 (define (make-semaphore1 max)
   (let ((lock (make-mutex))
@@ -24,9 +28,9 @@
              (incr)
              (lock 'release))
             ((eq? m 'release)
-             (decr))))))
+             (decr))))
+    lock))
 
 ;;   b. in terms of atomic `test-and-set!' operations.
 
 ;; I could do it... but why bother? The mutex one works fine (hopefully).
-

@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.31
 
 ;; The internal procedure `accept-action-procedure!'

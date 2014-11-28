@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.69
 
@@ -7,4 +7,3 @@
 ;; (S_i,T_j,U_k) such that i <= j <= k.  Use `triples' to generate
 ;; the stream of all Pythagorean triples of positive integers, i.e.,
 ;; the triples (i,j,k) such that i <= j and i^2 + j^2 = k^2.
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test)
+(require rackunit)
 (require-library machine)
 (import machine)
 (require-library ec-eval)

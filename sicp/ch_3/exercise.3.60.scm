@@ -1,7 +1,7 @@
-(use test)
-(use numbers)
-(require-library streams)
-(import streams)
+#lang racket/base
+
+(require "../lib/streams.scm")
+(require "../lib/test.rkt")
 
 ;;; Exercise 3.60
 
@@ -39,12 +39,16 @@
 (define sin2-series      (mul-series   sine-series   sine-series))
 (define cos2+sin2-series (stream-add   sin2-series   cos2-series))
 
+;; TODO: dunno how to test this yet
 ;; (stream-head cosine-series 10)
 ;; (stream-head sine-series 10)
 ;; (stream-head cos2-series 10)
 ;; (stream-head sin2-series 10)
 
-#;(test-group "3.60"
+(require compatibility/mlist)
+
+(test-group "3.60"
             (test 1      (stream-ref  cos2+sin2-series 0))
             (test 0      (stream-ref  cos2+sin2-series 1))
-            (test '(1 0) (stream-head cos2+sin2-series 2)))
+            (test (stream-head cos2+sin2-series 2)
+                  (mlist 1 0)))

@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.75
 
@@ -23,4 +23,3 @@
 ;; that Louis has installed and fix it without changing the structure
 ;; of the program.  (Hint: You will need to increase the number of
 ;; arguments to `make-zero-crossings'.)
-

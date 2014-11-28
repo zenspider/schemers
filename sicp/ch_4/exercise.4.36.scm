@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test amb amb-extras)
+(require rackunit amb amb-extras)
 (use numbers)
 
 ;; wtf:

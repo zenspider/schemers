@@ -1,8 +1,9 @@
+#lang racket/base
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
+(require "../lib/testes.scm")
+(require "../lib/myutils.scm")
+
+(require (only-in racket/math pi))
 
 ;;; Exercise 3.5
 
@@ -41,8 +42,6 @@
 ;; `random' procedure used in section *Note 1-2-6::, which returns a
 ;; nonnegative number less than its input.(3)
 
-(include "mathh-constants")
-
 (define (random-in-range low high)
   (let ((range (- high low)))
     (+ low (random range))))
@@ -76,5 +75,5 @@
     (define (in-circle x y)
       (<= (+ (square (- x midx)) (square (- y midy))) rr))
 
-    (assert-float-d PI (* 1.0 (estimate-integral in-circle 0 0 w h i)) 0.1)))
+    (assert-float-d pi (* 1.0 (estimate-integral in-circle 0 0 w h i)) 0.1)))
 (done)

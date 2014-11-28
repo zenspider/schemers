@@ -1,7 +1,7 @@
+#lang racket/base
 
-(use test)
-(require 'constraints)
-(import constraints)
+(require rackunit)
+(require "../lib/constraints.scm")
 
 ;;; Exercise 3.34
 
@@ -16,25 +16,28 @@
 
 ;; There is a serious flaw in this idea.  Explain.
 
-(test-group "3.34"
-            (define A (make-connector))
-            (define B (make-connector))
-            (define C (make-connector))
+(test-case "3.34"
+           (define A (make-connector))
+           (define B (make-connector))
+           (define C (make-connector))
 
-            (squarer A B)
-            (squarer B C)
+           (squarer A B)
+           (squarer B C)
 
-            ;; Honestly... I'm not seeing it.
+           ;; Honestly... I'm not seeing it.
 
-            (set-value! A 2 'user)
-            (test  4 (get-value B))
-            (test 16 (get-value C))
+           (set-value! A 2 'user)
+           (check-equal?  (get-value B)
+                          4)
+           (check-equal? (get-value C)
+                         16)
 
-            (forget-value! A 'user)
-            (forget-value! B 'user)
-            (forget-value! C 'user)
+           (forget-value! A 'user)
+           (forget-value! B 'user)
+           (forget-value! C 'user)
 
-            (set-value! C 16 'user)
-            (test 4 (get-value B))
-            (test 2 (get-value A)))
-
+           (set-value! C 16 'user)
+           (check-equal? (get-value B)
+                         4)
+           (check-equal? (get-value A)
+                         2))

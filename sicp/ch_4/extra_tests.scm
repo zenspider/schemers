@@ -1,4 +1,4 @@
-(use test)
+(require rackunit)
 (require-library eval)
 (import eval)
 

@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.82
 
@@ -7,4 +7,3 @@
 ;; `estimate-integral' will not have an argument telling how many
 ;; trials to perform.  Instead, it will produce a stream of estimates
 ;; based on successively more trials.
-

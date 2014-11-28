@@ -1,4 +1,4 @@
-(use test)
+#lang racket/base
 
 ;;; Exercise 3.70
 
@@ -26,4 +26,3 @@
 ;;   b. the stream of all pairs of positive integers (i,j) with i <=
 ;;      j, where neither i nor j is divisible by 2, 3, or 5, and the
 ;;      pairs are ordered according to the sum 2 i + 3 j + 5 i j.
-

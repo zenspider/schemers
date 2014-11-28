@@ -1,4 +1,6 @@
-(use test)
+#lang racket/base
+
+(require rackunit)
 
 ;;; Exercise 3.57
 

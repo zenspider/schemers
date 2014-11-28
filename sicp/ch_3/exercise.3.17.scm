@@ -1,9 +1,7 @@
+#lang racket/base
 
-(require 'testes)
-(import testes)
-(require 'myutils)
-(import myutils)
-(require-extension test)
+(require "../lib/test.rkt")
+(require "../lib/myutils.scm")
 
 ;;; Exercise 3.17
 
@@ -39,4 +37,3 @@
             (test 3 (count-pairs x))
             (test 3 (count-pairs y))
             (test 3 (count-pairs z)))
-

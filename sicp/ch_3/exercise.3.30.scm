@@ -1,8 +1,9 @@
+#lang racket/base
 
-(require 'queue)
-(require 'circuits)
-(import queue circuits)
-(use test)
+(require "../lib/queue.scm")
+(require "../lib/circuits.scm")
+(require "../lib/test.rkt")
+(require (only-in srfi/1 fold))
 
 ;;; Exercise 3.30
 

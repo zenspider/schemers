@@ -1,7 +1,7 @@
+#lang racket/base
 
-(use test)
-(require 'constraints)
-(import constraints)
+(require rackunit)
+(require "../lib/constraints.scm")
 
 ;;; Exercise 3.36
 

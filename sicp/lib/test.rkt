@@ -3,9 +3,10 @@
 (require (for-syntax racket/base))
 (provide assert-equal
          assert-many
+         optional                       ; move
          define-me-maybe null atom? list?
-         assert-float
-         refute xassert done test test-eq test-group)       ; deprecate
+         assert-float assert-float-d test/error       ; deprecate
+         refute xassert done test test-eq test-group) ; deprecate
 
 (require rackunit)
 (require rackunit/log)
@@ -15,6 +16,11 @@
 (define (done)
   (void))
 
+(define-syntax optional                 ; TODO: move me
+  (syntax-rules ()
+    ((_ var val)
+     (or (and (not (null? var)) (car var)) val))))
+
 (define-syntax (define-me-maybe stx)
   (syntax-case stx ()
     ((_ (name . args) body ...)
@@ -22,6 +28,11 @@
     ((_ name value)
      (if (identifier-binding #'name)
          #'(begin) #'(define name value)))))
+
+(define-syntax test/error
+  (syntax-rules ()
+    ((_ body ...)
+     (check-exn exn:fail? (lambda () body ...)))))
 
 (define-syntax test-group
   (syntax-rules ()

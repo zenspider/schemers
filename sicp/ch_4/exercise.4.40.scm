@@ -1,6 +1,6 @@
 #!/usr/bin/env csi -s
 
-(use test srfi-1)
+(require rackunit srfi-1)
 (use amb amb-extras)
 
 ;;; Exercise 4.40

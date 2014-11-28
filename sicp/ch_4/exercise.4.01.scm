@@ -1,4 +1,4 @@
-(use test)
+(require rackunit)
 
 ;;; Exercise 4.1:
 

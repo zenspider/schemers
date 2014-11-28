@@ -1,3 +1,5 @@
+#lang racket/base
+
 ;;; Exercise 3.32
 
 ;; The procedures to be run during each time segment

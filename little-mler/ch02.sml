@@ -25,7 +25,7 @@ fun only_onions(Skewer)
 only_onions(Skewer);
 only_onions(Onion(Skewer));
 only_onions(Onion(Onion(Onion(Skewer))));
-only_onions(Onion(Lamb(Onion(Skewer))));
+only_onions(Onion(Lamb(Onion(Skewer)))) = false;
 
 fun is_vegetarian(Skewer)
     = true
@@ -41,7 +41,7 @@ fun is_vegetarian(Skewer)
 is_vegetarian(Skewer);
 is_vegetarian(Onion(Skewer));
 is_vegetarian(Onion(Onion(Onion(Skewer))));
-is_vegetarian(Onion(Lamb(Onion(Skewer))));
+is_vegetarian(Onion(Lamb(Onion(Skewer)))) = false;
 
 datatype 'a shish = Bottom of 'a
                   | Onion  of 'a shish
@@ -72,7 +72,7 @@ fun is_veggie(Bottom(x))
 
 is_veggie(Onion(Tomato(Bottom(Dagger))));
 is_veggie(Onion(Tomato(Bottom(Gold_plate))));
-is_veggie(Onion(Lamb(Bottom(Gold_plate))));
+is_veggie(Onion(Lamb(Bottom(Gold_plate)))) = false;
 is_veggie(Onion(Tomato(Bottom(52))));
 
 fun what_bottom(Bottom(x))

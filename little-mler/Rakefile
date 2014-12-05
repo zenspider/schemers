@@ -1,0 +1,22 @@
+task :default => :test
+
+def run path
+  output = `time sml #{path} < /dev/null`
+
+  if output =~ /= false/ then
+    puts "FAIL"
+    puts
+    puts output
+    exit 1
+  end
+end
+
+task :test do
+  run "*.sml"
+end
+
+task :slow do
+  Dir["*.sml"].each do |path|
+    run path
+  end
+end

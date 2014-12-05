@@ -17,6 +17,8 @@ end
 
 task :slow do
   Dir["*.sml"].each do |path|
+    puts path
     run path
+    puts
   end
 end

@@ -132,14 +132,14 @@
           [(eq? a (car l)) #t]
           [else (member2* a (cdr l))])))
 
-(check-equal? (member1* 'b '((a (b)) c))
-              #t)
-(check-equal? (member1* 'z '((a (b)) c))
-              #f)
-(check-equal? (member2* 'b '((a (b)) c))
-              #t)
-(check-equal? (member2* 'z '((a (b)) c))
-              #f)
+(define (test/member* member*)
+  (check-equal? (member* 'b '((a (b)) c))
+                #t)
+  (check-equal? (member* 'z '((a (b)) c))
+                #f))
+
+(test/member* member1*)
+(test/member* member2*)
 
 ;; pg 88
 (define leftmost
@@ -169,18 +169,19 @@
            (myeqlist1? (cdr a) (cdr b)))]
      [else #f])))
 
-;; HACK (define myeqlist? myeqlist1?)
+(define (test/eqlist myeqlist?)
+  (check-equal? (myeqlist? '() '())
+                #t)
+  (check-equal? (myeqlist? '(a b c) '(a b c))
+                #t)
+  (check-equal? (myeqlist? '(a (b) c) '(a (b) c))
+                #t)
+  (check-equal? (myeqlist? '(a b c) '(a b))
+                #f)
+  (check-equal? (myeqlist? '(a b c) '(a (b) c))
+                #f))
 
-(check-equal? (myeqlist1? '() '())
-              #t)
-(check-equal? (myeqlist1? '(a b c) '(a b c))
-              #t)
-(check-equal? (myeqlist1? '(a (b) c) '(a (b) c))
-              #t)
-(check-equal? (myeqlist1? '(a b c) '(a b))
-              #f)
-(check-equal? (myeqlist1? '(a b c) '(a (b) c))
-              #f)
+(test/eqlist myeqlist1?)
 
 ;; pg 91
 (define myeqlist2?
@@ -199,18 +200,7 @@
       (and (myeqlist2? (car a) (car b))
            (myeqlist2? (cdr a) (cdr b)))])))
 
-;; HACK (define myeqlist? myeqlist2?)
-
-(check-equal? (myeqlist2? '() '())
-              #t)
-(check-equal? (myeqlist2? '(a b c) '(a b c))
-              #t)
-(check-equal? (myeqlist2? '(a (b) c) '(a (b) c))
-              #t)
-(check-equal? (myeqlist2? '(a b c) '(a b))
-              #f)
-(check-equal? (myeqlist2? '(a b c) '(a (b) c))
-              #f)
+(test/eqlist myeqlist2?)
 
 ;; pg 92 - 93
 
@@ -227,18 +217,7 @@
       (and (myeqlist3? (car a) (car b))
            (myeqlist3? (cdr a) (cdr b)))])))
 
-;; HACK (define myeqlist? myeqlist3?)
-
-(check-equal? (myeqlist3? '() '())
-              #t)
-(check-equal? (myeqlist3? '(a b c) '(a b c))
-              #t)
-(check-equal? (myeqlist3? '(a (b) c) '(a (b) c))
-              #t)
-(check-equal? (myeqlist3? '(a b c) '(a b))
-              #f)
-(check-equal? (myeqlist3? '(a b c) '(a (b) c))
-              #f)
+(test/eqlist myeqlist3?)
 
 (define myequal?
   (lambda (a b)

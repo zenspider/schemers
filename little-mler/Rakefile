@@ -3,7 +3,7 @@ task :default => :test
 def run path, verbose = false
   output = `time sml #{path} < /dev/null`
 
-  if output =~ /= false/ then
+  if output =~ /= false|hidden-value/ then
     puts "FAIL"
     puts
     puts output

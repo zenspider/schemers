@@ -1,6 +1,6 @@
 task :default => :test
 
-def run path
+def run path, verbose = false
   output = `time sml #{path} < /dev/null`
 
   if output =~ /= false/ then
@@ -8,6 +8,8 @@ def run path
     puts
     puts output
     exit 1
+  elsif verbose
+    puts output
   end
 end
 
@@ -21,4 +23,12 @@ task :slow do
     run path
     puts
   end
+end
+
+task :run do
+  run ENV["F"], :verbose
+end
+
+task :clean do
+  rm_f Dir["*~"]
 end

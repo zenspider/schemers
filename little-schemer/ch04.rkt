@@ -15,10 +15,8 @@
                 68)
   (check-equal? (sub1 69)
                 68)
-  (check-equal? (zero? 42)
-                #f)
-  (check-equal? (zero? 0)
-                #t))
+  (check-false (zero? 42))
+  (check-true (zero? 0)))
 
 (define ++
   (lambda (m n)
@@ -47,12 +45,9 @@
           [else #f])))
 
 (module+ test
-  (check-equal? (tup? '(1 2 3))
-                #t)
-  (check-equal? (tup? '(1 b 3))
-                #f)
-  (check-equal? (tup? '(1 (2 3) 4))
-                #f))
+  (check-true (tup? '(1 2 3)))
+  (check-false (tup? '(1 b 3)))
+  (check-false (tup? '(1 (2 3) 4))))
 
 (define addtup
   (lambda (l)
@@ -125,12 +120,9 @@
     (not (or (<< n m) (>> n m)))))
 
 (module+ test
-  (check-equal? (== 3 3)
-                #t)
-  (check-equal? (== 1 2)
-                #f)
-  (check-equal? (== 2 1)
-                #f))
+  (check-true (== 3 3))
+  (check-false (== 1 2))
+  (check-false (== 2 1)))
 
 ;; pg 74
 

@@ -57,10 +57,8 @@
       (** (value1 (car exp))
           (value1 (car (cdr (cdr exp)))))])))
 
-(check-equal? (eq? 4 (value1 '(1 + 3)))
-              #t)
-(check-equal? (eq? 13 (value1 '(1 + (3 * 4))))
-              #t)
+(check-true (eq? 4 (value1 '(1 + 3))))
+(check-true (eq? 13 (value1 '(1 + (3 * 4)))))
 
 ;; pg 104 - 105
 
@@ -78,10 +76,8 @@
       (** (value2 (car (cdr exp)))
           (value2 (car (cdr (cdr exp)))))])))
 
-(check-equal? (eq? 4 (value2 '(+ 1 3)))
-              #t)
-(check-equal? (eq? 13 (value2 '(+ 1 (* 3 4))))
-              #t)
+(check-true (eq? 4 (value2 '(+ 1 3))))
+(check-true (eq? 13 (value2 '(+ 1 (* 3 4)))))
 
 (define 1st-sub-exp
   (lambda (exp)
@@ -111,10 +107,8 @@
       (** (value3 (1st-sub-exp exp))
           (value3 (2nd-sub-exp exp)))])))
 
-(check-equal? (eq? 4 (value3 '(+ 1 3)))
-              #t)
-(check-equal? (eq? 13 (value3 '(+ 1 (* 3 4))))
-              #t)
+(check-true (eq? 4 (value3 '(+ 1 3))))
+(check-true (eq? 13 (value3 '(+ 1 (* 3 4)))))
 
 ;; pg 107
 
@@ -122,10 +116,8 @@
   (lambda (n)
     (null? n)))
 
-(check-equal? (sero? '())
-              #t)
-(check-equal? (sero? 4)
-              #f)
+(check-true (sero? '()))
+(check-false (sero? 4))
 
 (define edd1
   (lambda (n)

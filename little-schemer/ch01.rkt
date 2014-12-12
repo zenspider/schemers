@@ -5,17 +5,17 @@
 (require (only-in racket/function thunk))
 
 ;; scheme sanity check:
-(check-equal? #f (atom? '()))
+(check-false (atom? '()))
 
 ;;; Chapter 1
 ;; pg 1 - 4
-(check-equal? #t (atom? 'atom))
-(check-equal? #t (atom? 1492))
-(check-equal? #t (list? '(atom)))
-(check-equal? #t (list? '(atom turkey or)))
+(check-true (atom? 'atom))
+(check-true (atom? 1492))
+(check-true (list? '(atom)))
+(check-true (list? '(atom turkey or)))
 
 ;; pg 5 - 7
-(check-equal? #t (eq? (car '(a b c)) 'a))
+(check-true (eq? (car '(a b c)) 'a))
 (check-equal? (car '((a b c) x y z)) '(a b c))
 (check-equal? (car (cdr '((b) (x y) ((c))))) '(x y))
 (check-equal? (cdr (cdr '((b) (x y) ((c))))) '(((c))))
@@ -47,20 +47,20 @@
 
 (check-equal? '(a b) (cons 'a (car '((b) c d))))
 (check-equal? '(a c d) (cons 'a (cdr '((b) c d))))
-(check-equal? #t (null? '()))
-(check-equal? #f (null? '(a b c)))
-(check-equal? #f (null? 'spaghetti))
+(check-true (null? '()))
+(check-false (null? '(a b c)))
+(check-false (null? 'spaghetti))
 
 ;; pg 10
-(check-equal? #f (atom? '(harry had an apple)))
-(check-equal? #f (atom? '()))
-(check-equal? #t (atom? 42))
-(check-equal? #f (atom? (car (cdr '(swing (low sweet) cherry oat)))))
+(check-false (atom? '(harry had an apple)))
+(check-false (atom? '()))
+(check-true (atom? 42))
+(check-false (atom? (car (cdr '(swing (low sweet) cherry oat)))))
 
 ;; pg 11 - 12
-(check-equal? #t (eq? 'Harry (quote Harry)))
-(check-equal? #f (eq? 'margerine 'butter))
-(check-equal? #f (eq? '() '(a)))
-(check-equal? #t (eq? 'mary (car '(mary had a little lamb))))
-(check-equal? #f (eq? (cdr '(soured milk)) 'milk))
-(check-equal? #t (eq? (car (cdr '(soured milk))) 'milk))
+(check-true (eq? 'Harry (quote Harry)))
+(check-false (eq? 'margerine 'butter))
+(check-false (eq? '() '(a)))
+(check-true (eq? 'mary (car '(mary had a little lamb))))
+(check-false (eq? (cdr '(soured milk)) 'milk))
+(check-true (eq? (car (cdr '(soured milk))) 'milk))

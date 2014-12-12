@@ -116,5 +116,4 @@
         (if (atom? fst) (T? fst) #f)))))
 
 (set! x (two-in-a-row*? '(((food) ()) (((food))))))
-(check-equal? (I x)
-              #t)
+(check-true (I x))

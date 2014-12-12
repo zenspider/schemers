@@ -262,7 +262,5 @@
               (void))
 
 
-(check-equal? (value '(odd? 2))
-              #f)
-(check-equal? (value '(odd? 1))
-              #t)
+(check-false (value '(odd? 2)))
+(check-true (value '(odd? 1)))

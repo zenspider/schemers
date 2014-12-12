@@ -253,8 +253,7 @@
                                [else (quote nothing)]))
                        #t))
               'something)
-(check-equal? (value #f)
-              #f)
+(check-false (value #f))
 (check-equal? (value 'car)
               '(primitive car))
 

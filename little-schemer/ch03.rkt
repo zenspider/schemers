@@ -44,8 +44,7 @@
 
 (check-equal? (firsts '((a b) (c d) (e f)))
               '(a c e))
-(check-equal? (null? (firsts '()))
-              #t)
+(check-true (null? (firsts '())))
 (check-equal? (firsts '((a b) (c) (d e f)))
               '(a c d))
 

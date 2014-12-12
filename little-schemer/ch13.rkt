@@ -12,10 +12,8 @@
       (yes? lat))))
 
 (test-case "member?"
-  (check-equal? (member? 42 '(a b c))
-                #f)
-  (check-equal? (member? 'b '(a b c))
-                #t))
+  (check-false (member? 42 '(a b c)))
+  (check-true (member? 'b '(a b c))))
 
 (define intersect1
   (lambda (set1 set2)

@@ -33,17 +33,13 @@
     (lambda (x)
       (eq? x a))))
 
-(check-equal? ((eq?-c 'salad) 'salad)
-              #t)
-(check-equal? ((eq?-c 'salad) 'pie)
-              #f)
+(check-true ((eq?-c 'salad) 'salad))
+(check-false ((eq?-c 'salad) 'pie))
 
 (define eq?-salad (eq?-c 'salad))
 
-(check-equal? (eq?-salad 'salad)
-              #t)
-(check-equal? (eq?-salad 'pie)
-              #f)
+(check-true (eq?-salad 'salad))
+(check-false (eq?-salad 'pie))
 
 (define rember-f
   (lambda (test?)
@@ -137,8 +133,8 @@
        (value4 (1st-sub-exp exp))
        (value4 (2nd-sub-exp exp)))])))
 
-(check-equal? #t (eq? 4 (value4 '(+ 1 3))))
-(check-equal? #t (eq? 13 (value4 '(+ 1 (* 3 4)))))
+(check-true (eq? 4 (value4 '(+ 1 3))))
+(check-true (eq? 13 (value4 '(+ 1 (* 3 4)))))
 
 (define multirember-f
   (lambda (test?)
@@ -172,12 +168,9 @@
 
 (define a-friend (lambda (x y) (null? y)))
 
-(check-equal? (multirember&co 'tuna '()                                a-friend)
-              #t)
-(check-equal? (multirember&co 'tuna '(tuna)                            a-friend)
-              #f)
-(check-equal? (multirember&co 'tuna '(strawberries tuna and swordfish) a-friend)
-              #f)
+(check-true (multirember&co 'tuna '()                                a-friend))
+(check-false (multirember&co 'tuna '(tuna)                            a-friend))
+(check-false (multirember&co 'tuna '(strawberries tuna and swordfish) a-friend))
 
 ;; pg 141
 
@@ -232,10 +225,8 @@
   (lambda (n)
     (= (remainder n 2) 0)))
 
-(check-equal? (even? 3)
-              #f)
-(check-equal? (even? 4)
-              #t)
+(check-false (even? 3))
+(check-true (even? 4))
 
 (define evens-only*
   (lambda (l)
@@ -262,10 +253,8 @@
   (lambda (a lat)
     (keep-looking a (pick 1 lat) lat)))
 
-(check-equal? (looking 'caviar '(6 2 4 caviar 5 7 3))
-              #t)
-(check-equal? (looking 'caviar '(6 2 grits caviar 5 7 3))
-              #f)
+(check-true (looking 'caviar '(6 2 4 caviar 5 7 3)))
+(check-false (looking 'caviar '(6 2 grits caviar 5 7 3)))
 
 ;; pg 151
 

@@ -16,16 +16,11 @@
            (two-in-a-row-b? (car lat) (cdr lat))])))
 
 (test-case "two-in-a-row?"
-  (check-equal? (two-in-a-row? '(a b c d))
-                #f)
-  (check-equal? (two-in-a-row? '(a b a d))
-                #f)
-  (check-equal? (two-in-a-row? '(a b b d))
-                #t)
-  (check-equal? (two-in-a-row? '(a a c d))
-                #t)
-  (check-equal? (two-in-a-row? '(a b c c))
-                #t))
+  (check-false (two-in-a-row? '(a b c d)))
+  (check-false (two-in-a-row? '(a b a d)))
+  (check-true (two-in-a-row? '(a b b d)))
+  (check-true (two-in-a-row? '(a a c d)))
+  (check-true (two-in-a-row? '(a b c c))))
 
 (define sum-of-prefixes-b
   (lambda (sum tup)

@@ -2,10 +2,12 @@
 
 (provide build first second a-pair? revpair)
 
-(require rackunit)
 (require "lib/shared.rkt")
 (require "ch02.rkt")                    ; member?
 (require "ch03.rkt")                    ; multirember
+
+(module+ test
+  (require rackunit))
 
 ;;; Chapter 7
 ;; pg 111
@@ -17,11 +19,12 @@
      [(member? (car lat) (cdr lat)) #f]
      [else (set? (cdr lat))])))
 
-(check-false (set? '(a b a c)))
-(check-true (set? '(a b c d)))
-(check-true (set? '()))
-(check-false (set? '(apple 3 pear 4 9 apple 3 4)))
-(check-true (set? '(apple 3 pear 4 9)))
+(module+ test
+  (check-false (set? '(a b a c)))
+  (check-true  (set? '(a b c d)))
+  (check-true  (set? '()))
+  (check-false (set? '(apple 3 pear 4 9 apple 3 4)))
+  (check-true  (set? '(apple 3 pear 4 9))))
 
 ;; pg 112
 
@@ -33,8 +36,9 @@
      [else (cons (car lat)
                  (makeset1 (cdr lat)))])))
 
-(check-equal? (makeset1 '(a b c b d a e b))
-              '(c d a e b))
+(module+ test
+  (check-equal? (makeset1 '(a b c b d a e b))
+                '(c d a e b)))
 
 (define makeset
   (lambda (lat)
@@ -44,13 +48,15 @@
       (cons (car lat)
             (makeset (multirember (car lat) (cdr lat))))])))
 
-(check-equal? (makeset '(a b c b d a e b))
-              '(a b c d e))
+(module+ test
+  (check-equal? (makeset '(a b c b d a e b))
+                '(a b c d e)))
 
 ;; pg 113
 
-(check-equal? (makeset '(a 3 p 4 9 a 3 4))
-              '(a 3 p 4 9))
+(module+ test
+  (check-equal? (makeset '(a 3 p 4 9 a 3 4))
+                '(a 3 p 4 9)))
 
 (define subset1?
   (lambda (set1 set2)
@@ -60,8 +66,9 @@
       (subset1? (cdr set1) set2)]
      [else #f])))
 
-(check-true (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
-(check-false (subset1? '(4 p o h) '(4 p c a 5 oz h)))
+(module+ test
+  (check-true  (subset1? '(5 c w) '(5 h 2 p f c a l d w)))
+  (check-false (subset1? '(4 p o h) '(4 p c a 5 oz h))))
 
 ;; pg 114
 
@@ -78,7 +85,8 @@
     (and (subset? set1 set2)
          (subset? set2 set1))))
 
-(check-true (eqset? '(6 l c wi w) '(6 c wi l w)))
+(module+ test
+  (check-true (eqset? '(6 l c wi w) '(6 c wi l w))))
 
 ;; pg 115
 
@@ -105,10 +113,11 @@
      (or (member? (car set1) set2)
          (intersect? (cdr set1) set2)))))
 
-(check-true (intersect? '(a b c d) '(d c e)))
-(check-false (intersect? '(a b c) '(d e f)))
-(check-false (intersect? '() '(d c e)))
-(check-false (intersect? '(d c e) '()))
+(module+ test
+  (check-true  (intersect? '(a b c d) '(d c e)))
+  (check-false (intersect? '(a b c) '(d e f)))
+  (check-false (intersect? '() '(d c e)))
+  (check-false (intersect? '(d c e) '())))
 
 ;; pg 116
 
@@ -120,9 +129,10 @@
                  (intersect (cdr set1) set2))]
           [else (intersect (cdr set1) set2)])))
 
-(check-equal? (intersect '(stewed tomatoes and macaroni casserole)
-                         '(macaroni and cheese))
-              '(and macaroni))
+(module+ test
+  (check-equal? (intersect '(stewed tomatoes and macaroni casserole)
+                           '(macaroni and cheese))
+                '(and macaroni)))
 
 (define union
   (lambda (set1 set2)
@@ -132,9 +142,10 @@
           [else (cons (car set1)
                       (union (cdr set1) set2))])))
 
-(check-equal? (union '(stewed tomatoes and macaroni casserole)
-                     '(macaroni and cheese))
-              '(stewed tomatoes casserole macaroni and cheese))
+(module+ test
+  (check-equal? (union '(stewed tomatoes and macaroni casserole)
+                       '(macaroni and cheese))
+                '(stewed tomatoes casserole macaroni and cheese)))
 
 ;; pg 117
 
@@ -147,8 +158,9 @@
      [else (cons (car set1)
                  (difference (cdr set1) set2))])))
 
-(check-equal? (difference '(a b c d e) '(a c e))
-              '(b d))
+(module+ test
+  (check-equal? (difference '(a b c d e) '(a c e))
+                '(b d)))
 
 (define intersectall
   (lambda (l-set)
@@ -156,13 +168,14 @@
           [else (intersect (car l-set)
                            (intersectall (cdr l-set)))])))
 
-(check-equal? (intersectall '((a b c) (c a d e) (e f g h a b)))
-              '(a))
-(check-equal? (intersectall '((6 pears and)
-                              (3 peaches and 6 peppers)
-                              (8 pears and 6 plums)
-                              (and 6 prunes with some apples)))
-              '(6 and))
+(module+ test
+  (check-equal? (intersectall '((a b c) (c a d e) (e f g h a b)))
+                '(a))
+  (check-equal? (intersectall '((6 pears and)
+                                (3 peaches and 6 peppers)
+                                (8 pears and 6 plums)
+                                (and 6 prunes with some apples)))
+                '(6 and)))
 
 ;; pg 118
 
@@ -174,7 +187,8 @@
           [(null? (cdr (cdr x))) #t]
           [else #f])))
 
-(check-true (a-pair? '(full (house))))
+(module+ test
+  (check-true (a-pair? '(full (house)))))
 
 ;; pg 119
 
@@ -189,7 +203,8 @@
   (lambda (rel)
     (set? (firsts rel))))
 
-(check-true (fun? '((8 3) (4 2) (7 6) (6 2) (3 4))))
+(module+ test
+  (check-true (fun? '((8 3) (4 2) (7 6) (6 2) (3 4)))))
 
 (define revrel1
   (lambda (rel)
@@ -199,8 +214,9 @@
                         (first  (car rel)))
                  (revrel1 (cdr rel)))])))
 
-(check-equal? (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4)))
-              '((3 8) (2 4) (6 7) (2 6) (4 3)))
+(module+ test
+  (check-equal? (revrel1 '((8 3) (4 2) (7 6) (6 2) (3 4)))
+                '((3 8) (2 4) (6 7) (2 6) (4 3))))
 
 ;; pg 121
 
@@ -215,8 +231,9 @@
      [else (cons (revpair (car rel))
                  (revrel (cdr rel)))])))
 
-(check-equal? (revrel '((8 3) (4 2) (7 6) (6 2) (3 4)))
-              '((3 8) (2 4) (6 7) (2 6) (4 3)))
+(module+ test
+  (check-equal? (revrel '((8 3) (4 2) (7 6) (6 2) (3 4)))
+                '((3 8) (2 4) (6 7) (2 6) (4 3))))
 
 ;; pg 122
 
@@ -231,4 +248,5 @@
     (and (fun? fun)
          (set? (revrel fun)))))
 
-(check-true (fullfun? '((grape raisin) (plum prune) (stewed grape))))
+(module+ test
+  (check-true (fullfun? '((grape raisin) (plum prune) (stewed grape)))))

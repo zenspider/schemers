@@ -1,12 +1,14 @@
 #lang racket/base
 
-(require rackunit)
 (require "lib/shared.rkt")
 
 (require "ch03.rkt")                    ; multirember & firsts
 (require "ch04.rkt")                    ; eqan? ** pick div
 (require "ch06.rkt")                    ; operator 1st-sub-exp 2nd-sub-exp
 (require "ch07.rkt")                    ; build first second a-pair? revpair
+
+(module+ test
+  (require rackunit))
 
 ;;; Chapter 8
 ;; pg 125-126
@@ -19,12 +21,13 @@
      [else (cons (car l)
                  (rember-f1 test? s (cdr l)))])))
 
-(check-equal? (rember-f1 = 5 '(6 2 5 3))
-              '(6 2 3))
-(check-equal? (rember-f1 eq? 'jelly '(jelly beans are good))
-              '(beans are good))
-(check-equal? (rember-f1 equal? '(pop corn) '(lemonade (pop corn) and (cake)))
-              '(lemonade and (cake)))
+(module+ test
+  (check-equal? (rember-f1 = 5 '(6 2 5 3))
+                '(6 2 3))
+  (check-equal? (rember-f1 eq? 'jelly '(jelly beans are good))
+                '(beans are good))
+  (check-equal? (rember-f1 equal? '(pop corn) '(lemonade (pop corn) and (cake)))
+                '(lemonade and (cake))))
 
 ;; pg 127-129
 
@@ -33,13 +36,15 @@
     (lambda (x)
       (eq? x a))))
 
-(check-true ((eq?-c 'salad) 'salad))
-(check-false ((eq?-c 'salad) 'pie))
+(module+ test
+  (check-true  ((eq?-c 'salad) 'salad))
+  (check-false ((eq?-c 'salad) 'pie)))
 
 (define eq?-salad (eq?-c 'salad))
 
-(check-true (eq?-salad 'salad))
-(check-false (eq?-salad 'pie))
+(module+ test
+  (check-true  (eq?-salad 'salad))
+  (check-false (eq?-salad 'pie)))
 
 (define rember-f
   (lambda (test?)
@@ -52,16 +57,18 @@
 
 (define rember-eq? (rember-f eq?))
 
-(check-equal? (rember-eq? 'tuna '(tuna salad is good))
-              '(salad is good))
-(check-equal? ((rember-f eq?) 'tuna
-               '(shrimp salad and tuna salad))
-              '(shrimp salad and salad))
+(module+ test
+  (check-equal? (rember-eq? 'tuna '(tuna salad is good))
+                '(salad is good))
+  (check-equal? ((rember-f eq?) 'tuna
+                 '(shrimp salad and tuna salad))
+                '(shrimp salad and salad)))
 
 ;; pg 130-133
 
-(check-equal? '(equal? eqan? eqlist? eqpair?)
-              ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? eqpair?)))
+(module+ test
+  (check-equal? '(equal? eqan? eqlist? eqpair?)
+                ((rember-f eq?) 'eq? '(equal? eq? eqan? eqlist? eqpair?))))
 
 (define insertL-f
   (lambda (test?)
@@ -83,14 +90,15 @@
             [else (cons (car lat)
                         ((insertR-f test?) new old (cdr lat)))]))))
 
-(check-equal? ((insertR-f eq?) 'z 'c '(a b c d e))
-              '(a b c z d e))
-(check-equal? ((insertR-f eq?) 'e 'd '(a b c d f g d h))
-              '(a b c d e f g d h))
-(check-equal? ((insertL-f eq?) 'z 'c '(a b c d e))
-              '(a b z c d e))
-(check-equal? ((insertL-f eq?) 'e 'd '(a b c d f g d h))
-              '(a b c e d f g d h))
+(module+ test
+  (check-equal? ((insertR-f eq?) 'z 'c '(a b c d e))
+                '(a b c z d e))
+  (check-equal? ((insertR-f eq?) 'e 'd '(a b c d f g d h))
+                '(a b c d e f g d h))
+  (check-equal? ((insertL-f eq?) 'z 'c '(a b c d e))
+                '(a b z c d e))
+  (check-equal? ((insertL-f eq?) 'e 'd '(a b c d f g d h))
+                '(a b c e d f g d h)))
 
 (define insertX-f
   (lambda (match!)
@@ -107,14 +115,15 @@
 (define insertR-fm (insertX-f seqR))
 (define insertL-fm (insertX-f seqL))
 
-(check-equal? ((insertR-fm eq?) 'z 'c '(a b c d e))
-              '(a b c z d e))
-(check-equal? ((insertR-fm eq?) 'e 'd '(a b c d f g d h))
-              '(a b c d e f g d h))
-(check-equal? ((insertL-fm eq?) 'z 'c '(a b c d e))
-              '(a b z c d e))
-(check-equal? ((insertL-fm eq?) 'e 'd '(a b c d f g d h))
-              '(a b c e d f g d h))
+(module+ test
+  (check-equal? ((insertR-fm eq?) 'z 'c '(a b c d e))
+                '(a b c z d e))
+  (check-equal? ((insertR-fm eq?) 'e 'd '(a b c d f g d h))
+                '(a b c d e f g d h))
+  (check-equal? ((insertL-fm eq?) 'z 'c '(a b c d e))
+                '(a b z c d e))
+  (check-equal? ((insertL-fm eq?) 'e 'd '(a b c d f g d h))
+                '(a b c e d f g d h)))
 
 ;; pg 134-135
 
@@ -133,8 +142,9 @@
        (value4 (1st-sub-exp exp))
        (value4 (2nd-sub-exp exp)))])))
 
-(check-true (eq? 4 (value4 '(+ 1 3))))
-(check-true (eq? 13 (value4 '(+ 1 (* 3 4)))))
+(module+ test
+  (check-true (eq? 4 (value4 '(+ 1 3))))
+  (check-true (eq? 13 (value4 '(+ 1 (* 3 4))))))
 
 (define multirember-f
   (lambda (test?)
@@ -145,7 +155,8 @@
             [else (cons (car lat)
                         ((multirember-f test?) a (cdr lat)))]))))
 
-(check-equal? '(a c d e) (multirember 'b '(b a b c b d b e b)))
+(module+ test
+  (check-equal? '(a c d e) (multirember 'b '(b a b c b d b e b))))
 
 ;; pg 137
 
@@ -168,9 +179,10 @@
 
 (define a-friend (lambda (x y) (null? y)))
 
-(check-true (multirember&co 'tuna '()                                a-friend))
-(check-false (multirember&co 'tuna '(tuna)                            a-friend))
-(check-false (multirember&co 'tuna '(strawberries tuna and swordfish) a-friend))
+(module+ test
+  (check-true  (multirember&co 'tuna '()                                a-friend))
+  (check-false (multirember&co 'tuna '(tuna)                            a-friend))
+  (check-false (multirember&co 'tuna '(strawberries tuna and swordfish) a-friend)))
 
 ;; pg 141
 
@@ -225,8 +237,9 @@
   (lambda (n)
     (= (remainder n 2) 0)))
 
-(check-false (even? 3))
-(check-true (even? 4))
+(module+ test
+  (check-false (even? 3))
+  (check-true  (even? 4)))
 
 (define evens-only*
   (lambda (l)
@@ -238,8 +251,9 @@
           [else (cons (evens-only* (car l))
                       (evens-only* (cdr l)))])))
 
-(check-equal? (evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
-              '((2 8) 10 (() 6) 2))
+(module+ test
+  (check-equal? (evens-only* '((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+                '((2 8) 10 (() 6) 2)))
 
 ;; fuck it... moving on to the next section.
 
@@ -253,8 +267,9 @@
   (lambda (a lat)
     (keep-looking a (pick 1 lat) lat)))
 
-(check-true (looking 'caviar '(6 2 4 caviar 5 7 3)))
-(check-false (looking 'caviar '(6 2 grits caviar 5 7 3)))
+(module+ test
+  (check-true  (looking 'caviar '(6 2 4 caviar 5 7 3)))
+  (check-false (looking 'caviar '(6 2 grits caviar 5 7 3))))
 
 ;; pg 151
 
@@ -269,10 +284,11 @@
            (build (second (first pair))
                   (second pair)))))
 
-(check-equal? (shift '((a b) c))
-              '(a (b c)))
-(check-equal? (shift '((a b) (c d)))
-              '(a (b (c d))))
+(module+ test
+  (check-equal? (shift '((a b) c))
+                '(a (b c)))
+  (check-equal? (shift '((a b) (c d)))
+                '(a (b (c d)))))
 
 (define align
   (lambda (pora)
@@ -288,14 +304,15 @@
           [else (+ (length* (first pora))
                    (length* (second pora)))])))
 
-(check-equal? (length* '(1 2))
-              2)
-(check-equal? (length* '(1 (2 3)))
-              3)
-(check-equal? (length* '((1 2) (3 4)))
-              4)
-(check-equal? (length* '((1 2 3) (4 5 6)))
-              4) ; seems useless
+(module+ test
+  (check-equal? (length* '(1 2))
+                2)
+  (check-equal? (length* '(1 (2 3)))
+                3)
+  (check-equal? (length* '((1 2) (3 4)))
+                4)
+  (check-equal? (length* '((1 2 3) (4 5 6)))
+                4)) ; seems useless
 
 ;; pg 154
 
@@ -305,10 +322,11 @@
           [else (+ (* (weight* (first pora)) 2)
                    (weight* (second pora)))])))
 
-(check-equal? (weight* '((a b) c))
-              7)
-(check-equal? (weight* '(a (b c)))
-              5)
+(module+ test
+  (check-equal? (weight* '((a b) c))
+                7)
+  (check-equal? (weight* '(a (b c)))
+                5))
 
 (define shuffle
   (lambda (pora)
@@ -318,9 +336,10 @@
           [else (build (first pora)
                        (shuffle (second pora)))])))
 
-(check-equal? (shuffle '(a (b c))) '(a (b c)))
-(check-equal? (shuffle '(a b)) '(a b))
-(check-equal? (revpair '(a b)) '(b a))
+(module+ test
+  (check-equal? (shuffle '(a (b c))) '(a (b c)))
+  (check-equal? (shuffle '(a b)) '(a b))
+  (check-equal? (revpair '(a b)) '(b a)))
 
 (define C
   (lambda (n)
@@ -328,10 +347,11 @@
           [else (cond [(even? n) (C (div n 2))]
                       [else (C (add1 (* 3 n)))])])))
 
-(check-equal? (C 1) 1)
-(check-equal? (C 2) 1)
-(check-equal? (C 3) 1)
-(check-equal? (C 4) 1)
+(module+ test
+  (check-equal? (C 1) 1)
+  (check-equal? (C 2) 1)
+  (check-equal? (C 3) 1)
+  (check-equal? (C 4) 1))
 
 ;; pg 156
 
@@ -341,6 +361,7 @@
           [(zero? m) (A (sub1 n) 1)]
           [else (A (sub1 n) (A n (sub1 m)))])))
 
-(check-equal? (A 1 0) 2)
-(check-equal? (A 1 1) 3)
-(check-equal? (A 2 2) 7)
+(module+ test
+  (check-equal? (A 1 0) 2)
+  (check-equal? (A 1 1) 3)
+  (check-equal? (A 2 2) 7))

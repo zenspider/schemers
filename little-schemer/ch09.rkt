@@ -1,34 +1,38 @@
 #lang racket/base
 
-(require rackunit)
 (require "lib/shared.rkt")
+
+(module+ test
+  (require rackunit))
 
 (define length
   (lambda (l)
     (cond [(null? l) 0]
           [else (add1 (length (cdr l)))])))
 
-(check-equal? (length '())
-              0)
-(check-equal? (length '(a))
-              1)
-(check-equal? (length '(a b))
-              2)
+(module+ test
+  (check-equal? (length '())
+                0)
+  (check-equal? (length '(a))
+                1)
+  (check-equal? (length '(a b))
+                2))
 
 (define eternity
   (lambda (x) (eternity x)))
 
-(define test-length
-  (lambda (name f0 f1 f2)
-    (test-case name
-      (check-equal? (f0 '())    0)
+(module+ test
+  (define test-length
+    (lambda (name f0 f1 f2)
+      (test-case name
+        (check-equal? (f0 '())    0)
 
-      (check-equal? (f1 '())    0)
-      (check-equal? (f1 '(a))   1)
+        (check-equal? (f1 '())    0)
+        (check-equal? (f1 '(a))   1)
 
-      (check-equal? (f2 '())    0)
-      (check-equal? (f2 '(a))   1)
-      (check-equal? (f2 '(a b)) 2))))
+        (check-equal? (f2 '())    0)
+        (check-equal? (f2 '(a))   1)
+        (check-equal? (f2 '(a b)) 2)))))
 
 (define length0
   (lambda (l)
@@ -60,7 +64,8 @@
                   (add1 (eternity (cdr l)))])) (cdr l)))]))
         (cdr l)))])))
 
-(test-length "length" length0 length1 length2)
+(module+ test
+  (test-length "length" length0 length1 length2))
 
 (define meta-length0
   ((lambda (length)
@@ -99,7 +104,8 @@
                [else (add1 (length (cdr l)))])))
      eternity))))
 
-(test-length "meta-length" meta-length0 meta-length1 meta-length2)
+(module+ test
+  (test-length "meta-length" meta-length0 meta-length1 meta-length2))
 
 ;; pull out the eternity repetition:
 
@@ -127,7 +133,8 @@
        (cond [(null? l) 0]
              [else (add1 (length (cdr l)))])))))
 
-(test-length "meta2-length" meta2-length0 meta2-length1 meta2-length2)
+(module+ test
+  (test-length "meta2-length" meta2-length0 meta2-length1 meta2-length2))
 
 ;; pass mk-length to itself instead of passing eternity:
 
@@ -155,86 +162,87 @@
        (cond [(null? l) 0]
              [else (add1 ((mk-length mk-length) (cdr l)))])))))
 
-(test-length "meta3-length" meta3-length0 meta3-length1 meta3-length2)
+(module+ test
+  (test-length "meta3-length" meta3-length0 meta3-length1 meta3-length2)
 
-(check-equal? (((lambda (mk-length) (mk-length mk-length))
-                (lambda (mk-length)
-                  (lambda (l)
-                    (if (null? l) 0
-                        (add1 ((mk-length eternity) (cdr l)))))))
-               '(apples))
-              1)
+  (check-equal? (((lambda (mk-length) (mk-length mk-length))
+                  (lambda (mk-length)
+                    (lambda (l)
+                      (if (null? l) 0
+                          (add1 ((mk-length eternity) (cdr l)))))))
+                 '(apples))
+                1)
 
-(check-equal? (((lambda (mk-length)
-                  (lambda (l)
-                    (if (null? l) 0
-                        (add1 ((mk-length eternity) (cdr l))))))
-                (lambda (mk-length)
-                  (lambda (l)
-                    (if (null? l) 0
-                        (add1 ((mk-length eternity) (cdr l)))))))
-               '(apples))
-              1)
+  (check-equal? (((lambda (mk-length)
+                    (lambda (l)
+                      (if (null? l) 0
+                          (add1 ((mk-length eternity) (cdr l))))))
+                  (lambda (mk-length)
+                    (lambda (l)
+                      (if (null? l) 0
+                          (add1 ((mk-length eternity) (cdr l)))))))
+                 '(apples))
+                1)
 
-(check-equal? ((lambda (l)
-                 (if (null? l) 0
-                     (add1 (((lambda (mk-length)
-                               (lambda (l)
-                                 (if (null? l) 0
-                                     (add1 ((mk-length eternity) (cdr l))))))
-                             eternity)
-                            (cdr l)))))
-               '(apples))
-              1)
+  (check-equal? ((lambda (l)
+                   (if (null? l) 0
+                       (add1 (((lambda (mk-length)
+                                 (lambda (l)
+                                   (if (null? l) 0
+                                       (add1 ((mk-length eternity) (cdr l))))))
+                               eternity)
+                              (cdr l)))))
+                 '(apples))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (if (null? l) 0
-                    (add1 (((lambda (mk-length)
-                              (lambda (l)
-                                (if (null? l) 0
-                                    (add1 ((mk-length eternity) (cdr l))))))
-                            eternity)
-                           (cdr l)))))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (if (null? l) 0
+                      (add1 (((lambda (mk-length)
+                                (lambda (l)
+                                  (if (null? l) 0
+                                      (add1 ((mk-length eternity) (cdr l))))))
+                              eternity)
+                             (cdr l)))))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (add1 (((lambda (mk-length)
-                          (lambda (l)
-                            (if (null? l) 0
-                                (add1 ((mk-length eternity) (cdr l))))))
-                        eternity)
-                       (cdr l))))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (add1 (((lambda (mk-length)
+                            (lambda (l)
+                              (if (null? l) 0
+                                  (add1 ((mk-length eternity) (cdr l))))))
+                          eternity)
+                         (cdr l))))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (add1 (((lambda (mk-length)
-                          (lambda (l)
-                            (if (null? l) 0
-                                (add1 ((mk-length eternity) (cdr l))))))
-                        eternity)
-                       (cdr l))))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (add1 (((lambda (mk-length)
+                            (lambda (l)
+                              (if (null? l) 0
+                                  (add1 ((mk-length eternity) (cdr l))))))
+                          eternity)
+                         (cdr l))))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (add1 ((lambda (l)
-                         (if (null? l) 0
-                             (add1 ((eternity eternity) (cdr l)))))
-                       (cdr l))))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (add1 ((lambda (l)
+                           (if (null? l) 0
+                               (add1 ((eternity eternity) (cdr l)))))
+                         (cdr l))))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (add1 (let ((l2 (cdr l)))
-                        (if (null? l2) 0
-                            (add1 ((eternity eternity) (cdr l2)))))))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (add1 (let ((l2 (cdr l)))
+                          (if (null? l2) 0
+                              (add1 ((eternity eternity) (cdr l2)))))))
+                1)
 
-(check-equal? (let ((l '(apples)))
-                (add1 (let ((l2 (cdr l)))
-                        0)))
-              1)
+  (check-equal? (let ((l '(apples)))
+                  (add1 (let ((l2 (cdr l)))
+                          0)))
+                1)
 
-(check-equal? (add1 0)
-              1)
+  (check-equal? (add1 0)
+                1))
 
 (define meta4-length
   ((lambda (mk-length)
@@ -244,7 +252,8 @@
        (cond [(null? l) 0]
              [else (add1 ((mk-length mk-length) (cdr l)))])))))
 
-(test-length "meta4-length" meta4-length meta4-length meta4-length)
+(module+ test
+  (test-length "meta4-length" meta4-length meta4-length meta4-length))
 
 ;; extract (mk-length mk-length) to recreate original length function:
 ;;
@@ -271,7 +280,8 @@
                 [else (add1 (length (cdr l)))])))
       (lambda (x) ((mk-length mk-length) x))))))
 
-(test-length "meta5-length" meta5-length meta5-length meta5-length)
+(module+ test
+  (test-length "meta5-length" meta5-length meta5-length meta5-length))
 
 ;; factor length out to the outside since it no longer depends on mk-length
 (define meta6-length
@@ -286,7 +296,8 @@
        (cond [(null? l) 0]
              [else (add1 (length (cdr l)))])))))
 
-(test-length "meta6-length" meta6-length meta6-length meta6-length)
+(module+ test
+  (test-length "meta6-length" meta6-length meta6-length meta6-length))
 
 ;; raw Y combinator... a tad opaque... try to clean up
 (define (Y1 outer)
@@ -321,33 +332,35 @@
        (cond [(null? l) 0]
              [else (add1 (length (cdr l)))])))))
 
-(test-length "meta7-length" meta7-length meta7-length meta7-length)
-(check-equal? (meta7-length '(a b c d e f g h i j))
-              10)
+(module+ test
+  (test-length "meta7-length" meta7-length meta7-length meta7-length)
+  (check-equal? (meta7-length '(a b c d e f g h i j))
+                10))
 
 ;;    (define (f x)           ...)
 ;;    (define  f  (lambda (x) ...))
 ;; (Y4 (lambda (f) (lambda (x) ...)))
 
-(test-case "y combinator"
-  (define fact
-    (lambda (n)
-      (if (= n 1) 1
-          (* n (fact (- n 1))))))
+(module+ test
+  (test-case "y combinator"
+    (define fact
+      (lambda (n)
+        (if (= n 1) 1
+            (* n (fact (- n 1))))))
 
-  (check-equal? (fact 10)
-                3628800)
+    (check-equal? (fact 10)
+                  3628800)
 
-  (check-equal? ((lambda (n)
-                   ((lambda (fact)
-                      (fact fact n))
-                    (lambda (ft k)
-                      (if (= k 1) 1
-                          (* k (ft ft (- k 1))))))) 10)
-                3628800)
+    (check-equal? ((lambda (n)
+                     ((lambda (fact)
+                        (fact fact n))
+                      (lambda (ft k)
+                        (if (= k 1) 1
+                            (* k (ft ft (- k 1))))))) 10)
+                  3628800)
 
-  (check-equal? ((Y4 (lambda (fact)
-                       (lambda (n)
-                         (if (= n 1) 1
-                             (* n (fact (- n 1))))))) 10)
-                3628800))
+    (check-equal? ((Y4 (lambda (fact)
+                         (lambda (n)
+                           (if (= n 1) 1
+                               (* n (fact (- n 1))))))) 10)
+                  3628800)))

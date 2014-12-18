@@ -11,11 +11,14 @@
 (define-lex-abbrev key-chars1 (char-set "/<>%&?,+=@-\\*~"))
 (define-lex-abbrev key-chars2 (char-set "/<>%&?,+=@-\\*~!|"))
 
+(define-syntax-rule (skip) (return-without-pos (smalltalk/lex input-port)))
+(define-syntax-rule (same) (token lexeme lexeme))
+
 (define smalltalk/lex
   (lexer-src-pos
-   [(eof) (void)]
-   [(:or #\tab #\space #\newline #\page)       (smalltalk/lex input-port)]
-   [(:: #\" (complement (:: any #\" any)) #\") (smalltalk/lex input-port)]
+   [(eof)                                      (return-without-pos eof)]
+   [(:or #\tab #\space #\newline #\page)       (skip)]
+   [(:: #\" (complement (:: any #\" any)) #\") (skip)]
 
    ;; digit       = [0-9]
    ;; digits      = (digit)+
@@ -52,7 +55,6 @@
    ;; message_pat = unary_sel | binary_sel var_name | (keyword var_name)+
    ;; method      = message_pat (temporaries)? (statements)?
 
-
    [(:: key-chars1 (:? key-chars2))                   (token 'BIN  lexeme)]
    [(:: alphabetic (:+ (:or alphabetic numeric)) ":") (token 'KEY  lexeme)]
    [(:: alphabetic (:* (:or alphabetic numeric)))     (token 'ID   lexeme)]
@@ -63,24 +65,42 @@
    ;; semi-hack to get around ragg being a bitch
    [(:: "<primitive:" ws (:+ numeric) ws ">")             (token 'PRIM lexeme)]
 
-   ["!"  (token lexeme lexeme)]
-   ["#"  (token lexeme lexeme)]
-   ["("  (token lexeme lexeme)]
-   [")"  (token lexeme lexeme)]
-   ["."  (token lexeme lexeme)]
-   [":"  (token lexeme lexeme)]
-   [":=" (token lexeme lexeme)]
-   [";"  (token lexeme lexeme)]
-   ["["  (token lexeme lexeme)]
-   ["]"  (token lexeme lexeme)]
-   ["^"  (token lexeme lexeme)]
-   ["_"  (token lexeme lexeme)]
-   ["|"  (token lexeme lexeme)]
+   ["!"  (same)]
+   ["#"  (same)]
+   ["("  (same)]
+   [")"  (same)]
+   ["."  (same)]
+   [":"  (same)]
+   [":=" (same)]
+   [";"  (same)]
+   ["["  (same)]
+   ["]"  (same)]
+   ["^"  (same)]
+   ["_"  (same)]
+   ["|"  (same)]
    ))
 
 (module+ test
-  (require rackunit)
-  (check-equal? (smalltalk/lex (open-input-string "2 + 3"))
-                (position-token (token-struct 'NUM "2" #f #f #f #f #f)
-                                (position 1 #f #f)
-                                (position 2 #f #f))))
+  (require rackunit
+           racket/sequence
+           check-sexp-equal)
+
+  (define (drain-lexer input)
+    (define ip (open-input-string input))
+    (sequence->list (in-producer smalltalk/lex eof ip)))
+
+  (define (check-lex input . expecteds)
+    (define actuals (drain-lexer input))
+    (if (= (length actuals) (length expecteds))
+        (for ([actual actuals] [expected expecteds])
+          (check-sexp-equal? actual expected))
+        (check-sexp-equal? actuals expecteds)))
+
+  (define (tk t v m n)
+    (position-token (token-struct t v #f #f #f #f #f)
+                    (position m #f #f) (position n #f #f)))
+
+  (check-lex "2 + 3"
+             (tk 'NUM "2" 1 2)
+             (tk 'BIN "+" 3 4)
+             (tk 'NUM "3" 5 6)))

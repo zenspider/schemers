@@ -36,8 +36,20 @@
 ;; message_exp = unary_exp | binary_exp | keyword_exp
 ;; cascade_exp = message_exp (";" unary_sel | binary_sel unary_obj | (keyword binary_obj)+ )+
 ;; expr        = (var_name "_")? (primary | message_exp | cascade_exp)
-;; statements  = ( | "^" expr | (expr "." statements) ) # FIX
-
+;; statements  = ( | "^" expr | (expr "." (statements)?) ) # FIX
+;;
+;;           S = ( ℇ | r E | E | E d S )
+;; what it is NOT:
+;;           S = ( ℇ | r E | E | E ( d S )* )
+;; more like:
+;;           S = ( E d )* ( ℇ | r E | E )
+;;           S = ( E d )* ( r E | E )?
+;;           S = ( E d )* ( r? E )?
+;;
+;; so:
+;;
+;; statements  = ( expr "." )* ( ("^")? expr )?
+;;
 ;; block = "[" ((":" var_name)+ "|")? (statements)? "]"
 ;; temporaries = "|" (var_name)* "|"
 ;; message_pat = unary_sel | binary_sel var_name | (keyword var_name)+

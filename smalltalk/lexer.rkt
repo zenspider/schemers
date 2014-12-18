@@ -50,22 +50,24 @@
 
 (define-syntax-rule (skip) (return-without-pos (smalltalk/lex input-port)))
 (define-syntax-rule (same) (token lexeme lexeme))
+(define-syntax-rule (end)  (return-without-pos eof))
+(define-syntax-rule (tok k)  (token k lexeme))
 
 (define smalltalk/lex
   (lexer-src-pos
-   [(eof)                                      (return-without-pos eof)]
+   [(eof)                                      (end)]
    [(:or #\tab #\space #\newline #\page)       (skip)]
    [(:: #\" (complement (:: any #\" any)) #\") (skip)]
 
-   [(:: key-chars1 (:? key-chars2))                   (token 'BIN  lexeme)]
-   [(:: alphabetic (:+ (:or alphabetic numeric)) ":") (token 'KEY  lexeme)]
-   [(:: alphabetic (:* (:or alphabetic numeric)))     (token 'ID   lexeme)]
-   [(:: "$" (:~ whitespace))                          (token 'CHAR lexeme)]
-   [(:: "'" (complement (:: any "'" any)) "'")        (token 'STR  lexeme)]
-   [(:+ numeric)                                      (token 'NUM  lexeme)]
+   [(:: key-chars1 (:? key-chars2))                   (tok 'BIN)]
+   [(:: alphabetic (:+ (:or alphabetic numeric)) ":") (tok 'KEY)]
+   [(:: alphabetic (:* (:or alphabetic numeric)))     (tok 'ID)]
+   [(:: "$" (:~ whitespace))                          (tok 'CHAR)]
+   [(:: "'" (complement (:: any "'" any)) "'")        (tok 'STR)]
+   [(:+ numeric)                                      (tok 'NUM)]
 
    ;; semi-hack to get around ragg being a bitch
-   [(:: "<primitive:" ws (:+ numeric) ws ">")             (token 'PRIM lexeme)]
+   [(:: "<primitive:" ws (:+ numeric) ws ">")         (tok 'PRIM)]
 
    ["!"  (same)]
    ["#"  (same)]

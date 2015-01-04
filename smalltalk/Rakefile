@@ -1,0 +1,9 @@
+task :default => :test
+
+task :test do
+  sh "raco test --direct lexer.rkt"
+end
+
+task :test2 do
+  sh "raco test --direct main.rkt"
+end

@@ -1,0 +1,29 @@
+task :default => [:clean, :test]
+
+task :clean do
+  rm_f Dir["**/*~"]
+end
+
+task :test do
+  sh "raco test --direct ch_2/*.scm"
+end
+
+(1..5).each do |n|
+  task "ch#{n}" do
+    sh "raco test ch_#{n}/*.scm"
+  end
+end
+
+(1..5).each do |n|
+  task "fast#{n}" do
+    sh "raco test --direct ch_#{n}/*.scm"
+  end
+end
+
+# task :test do
+#   Dir["ch_2/*"].sort.each do |f|
+#     next unless f =~ /(scm|rkt)$/
+#     n = f[/exercise\.\d+\.(\d+)\.scm/, 1]; next if n && n.to_i < 1
+#     sh "racket -S lib -f #{f}"
+#   end
+# end

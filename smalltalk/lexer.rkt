@@ -6,14 +6,12 @@
 (require parser-tools/lex)                   ; lexer-src-pos
 (require (prefix-in : parser-tools/lex-sre)) ; regexps
 
-;; From the Blue Book. Consider this a TODO:
-;;
-;; digit       = [0-9]
-;; digits      = (digit)+
-;; number      = (digits "r")? ("-")? digits ("." digits)? ("e" ("-")? digits)?
-;; letter      = [A-Za-z]
-;; special     = [+/\*~<>=@%|&?!]
-;; char        = digit | lettter | special | [\[\]{}()_^,;$!#:]
+(define-lex-abbrev digits  (:+ numeric))
+(define-lex-abbrev number  (:: (:? digits "r") (:? "-") digits (:? "." digits) (:? "e" (:? "-") digits)))
+(define-lex-abbrev letter  (:or (char-range "a" "z") (char-range "A" "Z")))
+(define-lex-abbrev special (char-set "+/\\*~<>=@%|&?!"))
+(define-lex-abbrev char    (:or digit letter special (char-set "[]{}()_^,;$!#:")))
+
 ;; ident       = letter (letter|digit)*
 ;; symbol      = ident | binary_sel | (keyword)+
 ;; sym_const   = "#" symbol
@@ -36,18 +34,6 @@
 ;; message_exp = unary_exp | binary_exp | keyword_exp
 ;; cascade_exp = message_exp (";" unary_sel | binary_sel unary_obj | (keyword binary_obj)+ )+
 ;; expr        = (var_name "_")? (primary | message_exp | cascade_exp)
-;; statements  = ( | "^" expr | (expr "." (statements)?) ) # FIX
-;;
-;;           S = ( ℇ | r E | E | E d S )
-;; what it is NOT:
-;;           S = ( ℇ | r E | E | E ( d S )* )
-;; more like:
-;;           S = ( E d )* ( ℇ | r E | E )
-;;           S = ( E d )* ( r E | E )?
-;;           S = ( E d )* ( r? E )?
-;;
-;; so:
-;;
 ;; statements  = ( expr "." )* ( ("^")? expr )?
 ;;
 ;; block = "[" ((":" var_name)+ "|")? (statements)? "]"
@@ -76,7 +62,7 @@
    [(:: alphabetic (:* (:or alphabetic numeric)))     (tok 'ID)]
    [(:: "$" (:~ whitespace))                          (tok 'CHAR)]
    [(:: "'" (complement (:: any "'" any)) "'")        (tok 'STR)]
-   [(:+ numeric)                                      (tok 'NUM)]
+   [number                                            (tok 'NUM)]
 
    ;; semi-hack to get around ragg being a bitch
    [(:: "<primitive:" ws (:+ numeric) ws ">")         (tok 'PRIM)]

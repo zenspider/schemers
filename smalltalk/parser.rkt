@@ -25,14 +25,7 @@ messagePattern: unarySelector | binarySelector var | (keyword var)+
 
 temporaries: "|" (var)* "|"
 
-;; bad translation :(
-;; statements: (expression (expression ".")*)? ("^" expression (".")?)?
-
-statements: [nonEmptyStatements]
-
-nonEmptyStatements:
-        "^" expression ["."]
-      | expression ["." statements]
+statements: (expression ".")* (("^")? expression)?
 
 expression:
         [var assign] var assign expression

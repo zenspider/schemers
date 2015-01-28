@@ -1,6 +1,15 @@
-#lang racket
+#lang racket/base
 
 (require (only-in r5rs set-cdr!)) ; HACK
+
+;; TODO:
+;; (module minimum racket/base
+;;   (provide #%module-begin #%app #%datum #%top require
+;;            prefix-in only-in provide))
+
+(define false #f)
+(define true #t)
+(define empty '())
 
 (define evaluate.tracing false)
 
@@ -101,7 +110,8 @@
     ((_ name value arity)
      (definitial name
        (lambda (values)
-         (if (= arity (length values))
+         (if (or (= arity -1)
+                 (= arity (length values)))
              (apply value values)       ; the real apply of scheme
              (wrong "Incorrect arity" (list name values))))))))
 
@@ -117,6 +127,7 @@
 (definitial trace-off (lambda (args) (set! evaluate.tracing false)))
 
 (defprimitive cons     cons     2)
+(defprimitive list     list    -1)
 (defprimitive car      car      1)
 (defprimitive set-cdr! set-cdr! 2)
 (defprimitive +        +        2)
@@ -136,11 +147,29 @@
 (module+ test
   (require rackunit)
 
-  (check-equal? (list 2 3)
-                (let ((a 1))
-                  ((let ((a 2)) (lambda (b) (list a b)))
-                   3))))
+  (check-equal? (sort (map car env.global)
+                      (lambda (x y)
+                        (string<? (symbol->string x) (symbol->string y))))
+                '(+ < bar car cons eq? f fact fib foo list nil
+                  set-cdr! t trace-off trace-on))
 
-#;(check-equal? (list 2 3)
-(evaluate '(((lambda (a) (lambda (b) (list a b))) 1) 2)
-          env.init))
+  ;; (check-equal? (list 2 3)
+  ;;               (let ((a 1))
+  ;;                 ((let ((a 2)) (lambda (b) (list a b)))
+  ;;                  3)))
+  ;;
+  ;; (check-equal? (evaluate '(let ((a 1))
+  ;;                           ((let ((a 2)) (lambda (b) (list a b)))
+  ;;                            3)) env.global)
+  ;;               (list 2 3))
+  )
+
+(module+ test
+  (check-true (procedure? (evaluate 'cons env.global)))
+
+  (check-equal? (((lambda (a) (lambda (b) (list a b))) 1) 2)
+                (list 1 2))
+
+  (check-equal? (evaluate '(((lambda (a) (lambda (b) (list a b))) 1) 2)
+                          env.global)
+                (list 1 2)))

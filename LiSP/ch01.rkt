@@ -14,6 +14,8 @@
 (define evaluate.tracing false)
 
 (define (evaluate e env)
+  (define (literal? e)
+    (or (number? e) (string? e) (char? e) (boolean? e) (vector? e)))
   (if (pair? e)
       (case (car e)
         [(quote)  (cadr e)]
@@ -31,8 +33,7 @@
                       (newline))
                     (invoke fn arguments))])
       (cond [(symbol? e) (lookup e env)]
-            [(or (number? e) (string? e) (char? e) (boolean? e) (vector? e))
-             e]
+            [(literal? e) e]
             [else (wrong "Cannot evaluate" e)])))
 
 (define wrong error)                    ; hack?

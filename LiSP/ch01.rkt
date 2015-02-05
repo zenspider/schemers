@@ -120,10 +120,10 @@
 (definitial f #f)
 (definitial nil empty)
 
-(definitial foo)
-(definitial bar)
-(definitial fib)
-(definitial fact)
+;; (definitial foo)
+;; (definitial bar)
+;; (definitial fib)
+;; (definitial fact)
 (definitial trace-on  (lambda (args) (set! evaluate.tracing true)))
 (definitial trace-off (lambda (args) (set! evaluate.tracing false)))
 
@@ -151,8 +151,7 @@
   (check-equal? (sort (map car env.global)
                       (lambda (x y)
                         (string<? (symbol->string x) (symbol->string y))))
-                '(+ < bar car cons eq? f fact fib foo list nil
-                  set-cdr! t trace-off trace-on))
+                '(+ < car cons eq? f list nil set-cdr! t trace-off trace-on))
 
   ;; (check-equal? (list 2 3)
   ;;               (let ((a 1))

@@ -163,10 +163,10 @@
   ;;                           ((let ((a 2)) (lambda (b) (list a b)))
   ;;                            3)) env.global)
   ;;               (list 2 3))
-  )
 
-(module+ test
   (check-true (procedure? (evaluate 'cons env.global)))
+
+  (check-equal? (evaluate '(+ 1 1) env.global) 2)
 
   (check-equal? (((lambda (a) (lambda (b) (list a b))) 1) 2)
                 (list 1 2))

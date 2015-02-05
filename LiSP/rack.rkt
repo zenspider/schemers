@@ -83,10 +83,10 @@
                                       (store state 'available)
                                       (store r nv)))
                        ((available) (store r nv))
-                       ((on-stack   (begin
+                       ((on-stack)  (begin
                                       (pop s)
                                       (store state 'available)
-                                      (store r nv)))))))
+                                      (store r nv))))))
         ((save)    (case (read state)
                      ((in-use)    (push s (read r)))
                      ((available) (store state 'in-use))

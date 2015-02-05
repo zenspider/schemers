@@ -1,0 +1,27 @@
+task :default => :test
+
+task :test do
+  sh "time raco test --direct *.rkt"
+end
+
+task :slow do
+  sh "time raco test *.rkt"
+end
+
+task :run do
+  n = ENV["N"]
+  f = (n && "ch%02d.rkt" % n.to_i) || ENV["F"] or raise "rake run F=<path>"
+  sh "time raco test #{f}"
+end
+
+task :clean do
+  rm_f Dir["*~"]
+end
+
+task :sync do
+  whereami = File.basename Dir.pwd
+
+  if whereami == "zenspider" then
+    sh "rsync -avP --existing ../../zenspider/schemers/little-schemer/ ."
+  end
+end

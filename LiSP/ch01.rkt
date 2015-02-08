@@ -58,7 +58,7 @@
       (helper exps)
       empty))
 
-(define env.init empty)                ; 1.5 TODO: remove?
+(define env.init empty)                 ; 1.5 TODO: remove?
 
 (define (lookup id env)                 ; 1.5
   (if (pair? env)
@@ -191,6 +191,14 @@
                   (let ([l '(a b c)])
                     (mymap (lambda (x) (list-ref l x)) '(2 1 0))))
                 '(c b a))
+
+  ;; quote
+  (check-eval '(quote blah)
+              'blah)
+
+  ;; if
+  (check-eval '(if t 1 2) 1)
+  (check-eval '(if f 1 2) 2)
 
   ;; lambda + call
   (check-eval '((lambda (a b) (+ a b)) 40 2) 42)

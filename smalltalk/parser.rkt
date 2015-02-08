@@ -1,83 +1,53 @@
 #lang ragg
 
-parse: (classDefinition "!")+ ["!"]
+parse: expression | statements
 
-classDefinition: classHeader (method "!")*
-                 | (staticStatement)+
+;; method: message-pat (temporaries)? (statements)?
+;; message-pat: unary-sel | binary-sel var-name | (keyword var-name)+
+;; temporaries: "\|" (var-name)* "\|"
+;; block: "[" ((":" var-name)+ "\|")? (statements)? "]"
 
-staticStatement:                        ; this sucks. rewrite
-        className ( keyword
-                    "#" className
-                    keyword string
-                    keyword string
-                    keyword string
-                    keyword (identifier | string)
-                  | keyword string )
-                  ["."]
+statements: ( expression "." )* ( ("^")? expression )?
 
-classHeader: "!" className [identifier] keyword string "!"
+expression: (variable-name "_")* (primary | message-expression | cascade-expression)
 
-method: messagePattern [temporaries] [primitive] statements
+cascade-expression: message-expression (cascade-extension)+
+cascade-extension: ";" (unary-selector | binary-selector unary-object | (keyword binary-object)+ )
 
-primitive: PRIM
+message-expression: unary-expression | binary-expression | keyword-expression
 
-messagePattern: unarySelector | binarySelector var | (keyword var)+
+keyword-expression: binary-object (keyword binary-object)+
 
-temporaries: "|" (var)* "|"
+binary-expression: binary-object binary-selector unary-object
 
-statements: (expression ".")* (("^")? expression)?
+unary-expression: unary-object unary-selector
 
-expression:
-        [var assign] var assign expression
-      | simpleExpression
+binary-object: unary-object | binary-expression
 
-simpleExpression: primary [messageExpression (";" messageElt)*]
+unary-object: primary | unary-expression
 
-messageElt:
-        unarySelector
-      | binarySelector unaryObjectDescription
-      | (keyword binaryObjectDescription)+
+primary: variable-name | literal ;; TODO: | block ;; TODO: | "(" expression ")"
 
-messageExpression:
-        unaryExpression
-      | binaryExpression
-      | keywordExpression
+keyword: identifier ":"
 
-unaryExpression: (unarySelector)+ [binaryExpression | keywordExpression]
+binary-selector: BINARY_SEL
 
-binaryExpression: (binarySelector unaryObjectDescription)+ [keywordExpression]
+unary-selector: identifier
 
-keywordExpression: (keyword binaryObjectDescription)+
+variable-name: identifier
 
-unaryObjectDescription: primary (unarySelector)*
+literal: number | symbol-const | character | string | array-const
 
-binaryObjectDescription:
-        primary (unarySelector)* (binarySelector unaryObjectDescription)*
+array-const: "#" array
 
-primary: literal | var | block | "(" expression ")"
+array: "(" (number | symbol | string | character | array)* ")"
 
-literal: number | character | string | "#" (symbol|array)
+symbol-const: "#" symbol
 
-block: "[" [(":" var)+ "|"] statements "]"
+symbol:     identifier | binary-selector | (keyword)+
 
-array: "(" (arrayElt)* ")"
-
-arrayElt: number | character | string | symbol | array
-
-symbol: identifier | binarySelector | keyword
-
-unarySelector: identifier
-
-binarySelector: binary-op | "|"
-
-type: "(" className ")"
-
-className:  identifier
-var:        identifier
-assign:     (":=" | "_")
+number:     NUM
 binary-op:  BIN
-keyword:    KEY
-identifier: ID
+identifier: IDENT
 character:  CHAR
 string:     STR
-number:     NUM

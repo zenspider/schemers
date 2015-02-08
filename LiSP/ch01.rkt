@@ -120,7 +120,7 @@
 (definitial f #f)
 (definitial nil empty)
 
-;; (definitial foo)
+(definitial foo)
 ;; (definitial bar)
 ;; (definitial fib)
 ;; (definitial fact)
@@ -172,9 +172,47 @@
 
   (check-equal? (evaluate '(+ 1 1) env.global) 2)
 
+  ;; 1.6 pg 18
   (check-equal? (((lambda (a) (lambda (b) (list a b))) 1) 2)
                 (list 1 2))
 
   (check-equal? (evaluate '(((lambda (a) (lambda (b) (list a b))) 1) 2)
                           env.global)
-                (list 1 2)))
+                (list 1 2))
+
+  ;; 1.6 pg 22
+  (check-equal? (let ()
+                  (define (mymap fn l)
+                    (if (pair? l)
+                        (cons (fn (car l)) (mymap fn (cdr l)))
+                        '()))
+                  (let ([l '(a b c)])
+                    (mymap (lambda (x) (list-ref l x)) '(2 1 0))))
+                '(c b a))
+
+  (check-equal? (evaluate '((lambda (a b) (+ a b)) 40 2)
+                          env.global)
+                42)
+
+  (check-equal? (evaluate '(begin (set! foo 42)) env.global)
+                42)
+
+  (check-equal? (evaluate '(begin (set! foo 42) foo) env.global)
+                42)
+
+  (check-equal? (evaluate '(begin
+                             (set! foo (lambda (a b) (+ a b)))
+                             (foo 40 2))
+                          env.global)
+                42)
+
+  ;; (check-equal? (evaluate '(begin
+  ;;                            (set! mymap (lambda (fn l)
+  ;;                                          (if (pair? l)
+  ;;                                              (cons (fn (car l)) (mymap fn (cdr l)))
+  ;;                                              '())))
+  ;;                            (let ([l '(a b c)])
+  ;;                              (mymap (lambda (x) (list-ref l x)) '(2 1 0))))
+  ;;                         env.global)
+  ;;               '(c b a))
+  )

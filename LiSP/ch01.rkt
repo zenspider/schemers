@@ -84,11 +84,11 @@
          (if (pair? values)
              (cons (cons (car variables) (car values))
                    (extend env (cdr variables) (cdr values)))
-             (wrong "Too few values")))
+             (wrong "Too few values:" values)))
         ((null? variables)
          (if (null? values)
              env
-             (wrong "Too many values")))
+             (wrong "Too many values:" values)))
         ((symbol? variables)            ; wtf
          (cons (cons variables values) env))))
 

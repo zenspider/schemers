@@ -25,7 +25,7 @@
         [(begin)  (eprogn (cdr e) env)]
         [(set!)   (update! (cadr e) env (evaluate (caddr e) env))]
         [(lambda) (make-function (cadr e) (cddr e) env)]
-        [else     (let ([fn        (evaluate (car e) env)]
+        [else     (let ([fn        (evaluate (car e) env)] ; 1.6
                         [arguments (evlis (cdr e) env)])
                     (when evaluate.tracing
                       (display `(calling ,(car e) with . ,arguments)
@@ -58,7 +58,7 @@
       (helper exps)
       empty))
 
-(define env.init empty)                 ; 1.5 TODO: remove?
+(define env.init empty)                ; 1.5 TODO: remove?
 
 (define (lookup id env)                 ; 1.5
   (if (pair? env)
@@ -80,17 +80,17 @@
     (eprogn body (extend env variables values))))
 
 (define (extend env variables values)   ; 1.5 -- I don't like this impl
-  (cond ((pair? variables)
+  (cond [(pair? variables)
          (if (pair? values)
              (cons (cons (car variables) (car values))
                    (extend env (cdr variables) (cdr values)))
-             (wrong "Too few values:" values)))
-        ((null? variables)
+             (wrong "Too few values:" values))]
+        [(null? variables)
          (if (null? values)
              env
-             (wrong "Too many values:" values)))
-        ((symbol? variables)            ; wtf
-         (cons (cons variables values) env))))
+             (wrong "Too many values:" values))]
+        [(symbol? variables)            ; wtf
+         (cons (cons variables values) env)]))
 
 (define (invoke fn args)
   (if (procedure? fn)
@@ -101,20 +101,20 @@
 
 (define-syntax definitial
   (syntax-rules ()
-    ((_ name)
-     (begin (set! env.global (cons (cons 'name 'void) env.global))))
-    ((_ name value)
-     (begin (set! env.global (cons (cons 'name value) env.global))))))
+    [(_ name)
+     (begin (set! env.global (cons (cons 'name 'void) env.global)))]
+    [(_ name value)
+     (begin (set! env.global (cons (cons 'name value) env.global)))]))
 
 (define-syntax defprimitive
   (syntax-rules ()
-    ((_ name value arity)
+    [(_ name value arity)
      (definitial name
        (lambda (values)
          (if (or (= arity -1)
                  (= arity (length values)))
              (apply value values)       ; the real apply of scheme
-             (wrong "Incorrect arity" (list name values))))))))
+             (wrong "Incorrect arity" (list name values)))))]))
 
 (definitial t #t)
 (definitial f #f)

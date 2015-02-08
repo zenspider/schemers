@@ -23,7 +23,7 @@
                       (evaluate (caddr  e) env)
                       (evaluate (cadddr e) env))]
         [(begin)  (eprogn (cdr e) env)]
-        [(set!)   (update! (cadr e) env (evaluate (cddr e) env))]
+        [(set!)   (update! (cadr e) env (evaluate (caddr e) env))]
         [(lambda) (make-function (cadr e) (cddr e) env)]
         [else     (let ([fn        (evaluate (car e) env)]
                         [arguments (evlis (cdr e) env)])

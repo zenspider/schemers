@@ -147,11 +147,14 @@
 
 (module+ test
   (require rackunit)
+  (require compatibility/mlist)
 
-  (check-equal? (sort (map car env.global)
-                      (lambda (x y)
-                        (string<? (symbol->string x) (symbol->string y))))
-                '(+ < car cons eq? f list nil set-cdr! t trace-off trace-on))
+  (check-equal? (map string->symbol
+                     (list->mlist
+                      (sort (mlist->list
+                             (map (compose1 symbol->string car) env.global))
+                            string<?)))
+                '(+ < car cons eq? f foo list nil set-cdr! t trace-off trace-on))
 
   ;; (check-equal? (list 2 3)
   ;;               (let ((a 1))

@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require (only-in r5rs set-cdr!)) ; HACK
+(require r5rs)
 
 ;; TODO:
 ;; (module minimum racket/base

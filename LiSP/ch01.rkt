@@ -149,11 +149,13 @@
   (require rackunit)
   (require compatibility/mlist)
 
-  (check-equal? (map string->symbol
-                     (list->mlist
-                      (sort (mlist->list
-                             (map (compose1 symbol->string car) env.global))
-                            string<?)))
+  (define (msort l p)
+    (list->mlist (sort (mlist->list l) p)))
+
+  (define (normalize-list l)
+    (map string->symbol (msort (map symbol->string l) string<?)))
+
+  (check-equal? (normalize-list (map car env.global))
                 '(+ < car cons eq? f foo list nil set-cdr! t trace-off trace-on))
 
   ;; (check-equal? (list 2 3)

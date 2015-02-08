@@ -71,7 +71,7 @@
   (if (pair? env)
       (if (eq? (caar env) id)
           (begin (set-cdr! (car env) value)
-                 (value))
+                 value)
           (update! id (cdr env) value))
       (wrong "No such binding" id)))
 

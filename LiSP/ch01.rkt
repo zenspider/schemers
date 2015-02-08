@@ -149,6 +149,9 @@
   (require rackunit)
   (require compatibility/mlist)
 
+  (define (check-eval src exp)
+    (check-equal? (evaluate src env.global) exp))
+
   (define (msort l p)
     (list->mlist (sort (mlist->list l) p)))
 
@@ -170,15 +173,14 @@
 
   (check-true (procedure? (evaluate 'cons env.global)))
 
-  (check-equal? (evaluate '(+ 1 1) env.global) 2)
+  (check-eval '(+ 1 1) 2)
 
   ;; 1.6 pg 18
   (check-equal? (((lambda (a) (lambda (b) (list a b))) 1) 2)
                 (list 1 2))
 
-  (check-equal? (evaluate '(((lambda (a) (lambda (b) (list a b))) 1) 2)
-                          env.global)
-                (list 1 2))
+  (check-eval '(((lambda (a) (lambda (b) (list a b))) 1) 2)
+              (list 1 2))
 
   ;; 1.6 pg 22
   (check-equal? (let ()
@@ -190,21 +192,16 @@
                     (mymap (lambda (x) (list-ref l x)) '(2 1 0))))
                 '(c b a))
 
-  (check-equal? (evaluate '((lambda (a b) (+ a b)) 40 2)
-                          env.global)
-                42)
+  ;; lambda + call
+  (check-eval '((lambda (a b) (+ a b)) 40 2) 42)
 
-  (check-equal? (evaluate '(begin (set! foo 42)) env.global)
-                42)
+  (check-eval '(begin (set! foo 42)) 42)
+  (check-eval '(begin (set! foo 42) foo) 42)
 
-  (check-equal? (evaluate '(begin (set! foo 42) foo) env.global)
-                42)
-
-  (check-equal? (evaluate '(begin
-                             (set! foo (lambda (a b) (+ a b)))
-                             (foo 40 2))
-                          env.global)
-                42)
+  (check-eval '(begin
+                 (set! foo (lambda (a b) (+ a b)))
+                 (foo 40 2))
+              42)
 
   ;; (check-equal? (evaluate '(begin
   ;;                            (set! mymap (lambda (fn l)

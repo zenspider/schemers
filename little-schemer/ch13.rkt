@@ -3,6 +3,9 @@
 (require rackunit)
 (require "lib/shared.rkt")
 
+(module+ test
+  (require rackunit))
+
 (define member?                         ; from ch12.scm
   (lambda (a lat)
     (letrec ((yes? (lambda (l)
@@ -11,9 +14,10 @@
                            [else (yes? (cdr l))]))))
       (yes? lat))))
 
-(test-case "member?"
-  (check-false (member? 42 '(a b c)))
-  (check-true (member? 'b '(a b c))))
+(module+ test
+  (test-case "member?"
+    (check-false (member? 42 '(a b c)))
+    (check-true (member? 'b '(a b c)))))
 
 (define intersect1
   (lambda (set1 set2)
@@ -52,8 +56,9 @@
               (cond ((null? lset) '())
                     (else (I lset)))))))
 
-(check-equal? (intersectall2 '((a b c) (b c) (b)))
-              '(b))
+(module+ test
+  (check-equal? (intersectall2 '((a b c) (b c) (b)))
+                '(b)))
 
 (define intersect3
   (lambda (set1 set2)
@@ -86,8 +91,9 @@
               (cond [(null? lset) '()]
                     [else (A lset)])))))
 
-(check-equal? (intersectall3 '((a b c) (b c) (b)))
-              '(b))
+(module+ test
+  (check-equal? (intersectall3 '((a b c) (b c) (b)))
+                '(b)))
 
 (define rember
   (lambda (a lat)
@@ -98,8 +104,9 @@
                                     (R (cdr lat)))]))))
       (R lat))))
 
-(check-equal? (rember 'b '(a b c b d))
-              '(a c b d))
+(module+ test
+  (check-equal? (rember 'b '(a b c b d))
+                '(a c b d)))
 
 (define rember-beyond-first
   (lambda (a lat)
@@ -110,8 +117,9 @@
                                     (R (cdr lat)))]))))
       (R lat))))
 
-(check-equal? (rember-beyond-first 'd '(a b c d e f g))
-              '(a b c))
+(module+ test
+  (check-equal? (rember-beyond-first 'd '(a b c d e f g))
+                '(a b c)))
 
 (define rember-upto-last1
   (lambda (a orig-lat)
@@ -121,10 +129,11 @@
                         [else (R (cdr lat))]))))
       (R orig-lat))))
 
-(check-equal? (rember-upto-last1 'd '(a b c d e f g))
-              '(e f g))
-(check-equal? (rember-upto-last1 'z '(a b c d e f g))
-              '(a b c d e f g))
+(module+ test
+  (check-equal? (rember-upto-last1 'd '(a b c d e f g))
+                '(e f g))
+  (check-equal? (rember-upto-last1 'z '(a b c d e f g))
+                '(a b c d e f g)))
 
 (define rember-upto-last2
   (lambda (a lat)
@@ -137,7 +146,8 @@
                                      (R (cdr lat)))]))))
        (R lat)))))
 
-(check-equal? (rember-upto-last2 'd '(a b c d e f g))
-              '(e f g))
-(check-equal? (rember-upto-last2 'z '(a b c d e f g))
-              '(a b c d e f g))
+(module+ test
+  (check-equal? (rember-upto-last2 'd '(a b c d e f g))
+                '(e f g))
+  (check-equal? (rember-upto-last2 'z '(a b c d e f g))
+                '(a b c d e f g)))

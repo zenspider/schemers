@@ -1,15 +1,18 @@
 #lang racket/base
 
 (require "lib/shared.rkt")
-(require rackunit)
 
-(define test-leftmost
-  (lambda (f desc)
-    (test-case desc
-      (check-equal? (f '(((a) b) (c d)))
-                    'a)
-      (check-equal? (f '(((() a) ())))
-                    'a))))
+(module+ test
+  (require rackunit))
+
+(module+ test
+  (define test-leftmost
+    (lambda (f desc)
+      (test-case desc
+        (check-equal? (f '(((a) b) (c d)))
+                      'a)
+        (check-equal? (f '(((() a) ())))
+                      'a)))))
 
 (define leftmost1
   (lambda (l)
@@ -19,7 +22,8 @@
                   (cond [(atom? a) a]
                         [else (leftmost1 (cdr l))]))])))
 
-(test-leftmost leftmost1 "leftmost1")
+(module+ test
+  (test-leftmost leftmost1 "leftmost1"))
 
 (define depth1*
   (lambda (l)
@@ -31,8 +35,9 @@
              (cond [(> d a) d]
                    [else a]))])))
 
-(check-equal? (depth1* '((a) b (c d)))
-              2)
+(module+ test
+  (check-equal? (depth1* '((a) b (c d)))
+                2))
 
 (define max
   (lambda (n m)
@@ -46,6 +51,10 @@
            (max (add1 (depth2* (car l)))
                 (depth2* (cdr l)))])))
 
+(module+ test
+  (check-equal? (depth2* '((a) b (c d)))
+                2))
+
 (define leftmost2
   (lambda (l)
     (let/cc skip
@@ -57,7 +66,8 @@
                                          (lm (cdr l)))]))))
               (lm l)))))
 
-(test-leftmost leftmost2 "leftmost-callcc")
+(module+ test
+  (test-leftmost leftmost2 "leftmost-callcc"))
 
 (define-syntax try
   (syntax-rules ()
@@ -97,17 +107,21 @@
           l
           new-l))))
 
-(check-equal? (let/cc Say (rm1 'noodles '((food) more (food)) Say))
-              'no)
-(check-equal? (rember1* 'noodles '((food) more (food)))
-              '((food) more (food)))
+(module+ test
+  (check-equal? (let/cc Say (rm1 'noodles '((food) more (food)) Say))
+                'no)
+  (check-equal? (rember1* 'noodles '((food) more (food)))
+                '((food) more (food))))
 
 (define rember2*
   (lambda (a l)
     (try oh (rm1 a l oh) l)))
 
-(check-equal? (rember2* 'noodles '((food) more (food)))
-              '((food) more (food)))
+(module+ test
+  (check-equal? (let/cc Say (rm2 'noodles '((food) more (food)) Say))
+                'no)
+  (check-equal? (rember2* 'noodles '((food) more (food)))
+                '((food) more (food))))
 
 (define rm2
   (lambda (a l oh)
@@ -123,5 +137,6 @@
                 (cons (car l)
                       (rm2 a (cdr l) oh)))])))
 
-(check-equal? (rember2* 'noodles '((food) more (food)))
-              '((food) more (food)))
+(module+ test
+  (check-equal? (rember2* 'noodles '((food) more (food)))
+                '((food) more (food))))

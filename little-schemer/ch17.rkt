@@ -2,7 +2,9 @@
 
 #lang racket/base
 
-(require rackunit)
+(module+ test
+  (require rackunit))
+
 (require "lib/shared.rkt")
 
 ;; pg 127
@@ -38,8 +40,9 @@
               (set! Ns (cons n Ns))
               result)))))))
 
-(check-equal? (deepM1 3)
-              '(((pizza))))
+(module+ test
+  (check-equal? (deepM1 3)
+                '(((pizza)))))
 
 (define deepM2                           ; call deepM2 instead of D
   (let ((Rs '())
@@ -57,8 +60,9 @@
               (set! Ns (cons n Ns))
               result)))))))
 
-(check-equal? (deepM2 3)
-              '(((pizza))))
+(module+ test
+  (check-equal? (deepM2 3)
+                '(((pizza)))))
 
 (define deepM3                           ; merge letrec into let
   (let ((Rs '())
@@ -76,8 +80,9 @@
             (set! Ns (cons n Ns))
             result))))))
 
-(check-equal? (deepM3 3)
-              '(((pizza))))
+(module+ test
+  (check-equal? (deepM3 3)
+                '(((pizza)))))
 
 (define deepM4                           ; unfactor D
   (let ((Rs '())
@@ -93,8 +98,9 @@
             (set! Ns (cons n Ns))
             result))))))
 
-(check-equal? (deepM4 3)
-              '(((pizza))))
+(module+ test
+  (check-equal? (deepM4 3)
+                '(((pizza)))))
 
 ;; pg 132
 
@@ -109,12 +115,13 @@
       (set! N (add1 N))
       (cons x y))))
 
-(check-equal? (counter)
-              0)
-(check-equal? (consC 'a '())
-              '(a))
-(check-equal? (counter)
-              1)
+(module+ test
+  (check-equal? (counter)
+                0)
+  (check-equal? (consC 'a '())
+                '(a))
+  (check-equal? (counter)
+                1))
 
 (define deep2
   (lambda (m)
@@ -123,14 +130,15 @@
         (consC (deep2 (sub1 m))
                '()))))
 
-(check-equal? (deep2 3)
-              '(((pizza))))
-(check-equal? (counter)
-              4)
+(module+ test
+  (check-equal? (deep2 3)
+                '(((pizza))))
+  (check-equal? (counter)
+                4)
 
-(set-counter 0)
-(check-equal? (counter)
-              0)
+  (set-counter 0)
+  (check-equal? (counter)
+                0))
 
 ;; pg 134
 
@@ -144,10 +152,11 @@
                         (S (sub1 n)))))))
       (S 1000))))
 
-(check-equal? (supercounter deep2)
-              'pizza)
-(check-equal? (counter)
-              500500)
+(module+ test
+  (check-equal? (supercounter deep2)
+                'pizza)
+  (check-equal? (counter)
+                500500))
 
 (define deepM5
   (let ((Rs '())
@@ -163,18 +172,19 @@
             (set! Ns (cons n Ns))
             result))))))
 
-(set-counter 0)
-(check-equal? (deepM5 5)
-              '(((((pizza))))))
-(check-equal? (counter)
-              5)
-(check-equal? (deepM5 7)
-              `((,(void))))
-(check-equal? (counter)
-              7)
-(define _ignore_ (deepM5 1000))
-(check-equal? (counter)
-              1000)
+(module+ test
+  (set-counter 0)
+  (check-equal? (deepM5 5)
+                '(((((pizza))))))
+  (check-equal? (counter)
+                5)
+  (check-equal? (deepM5 7)
+                `((,(void))))
+  (check-equal? (counter)
+                7)
+  (define _ignore_ (deepM5 1000))
+  (check-equal? (counter)
+                1000))
 
 ;; pg 139
 
@@ -198,5 +208,6 @@
             l
             new-l)))))
 
-(check-equal? (rember1*C 'b '(a b c))
-              '(a c))
+(module+ test
+  (check-equal? (rember1*C 'b '(a b c))
+                '(a c)))

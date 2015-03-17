@@ -2,7 +2,9 @@
 
 #lang racket/base
 
-(require rackunit)
+(module+ test
+  (require rackunit))
+
 (require "lib/shared.rkt")
 
 ;;; Miscellany
@@ -242,25 +244,26 @@
 
 (define (I x) x) ; just for testing
 
-(check-equal? (value 3)
-              3)
-(check-equal? (value '(cond (else 0)))
-              0)
-(check-equal? (value '(cond ((null? (cons 0 '())) 0) (else 1)))
-              1)
+(module+ test
+  (check-equal? (value 3)
+                3)
+  (check-equal? (value '(cond (else 0)))
+                0)
+  (check-equal? (value '(cond ((null? (cons 0 '())) 0) (else 1)))
+                1)
 
-(check-equal? (value '(define odd?
-                       (lambda (n)
-                         (cond ((zero? n) #f)
-                               (else (even? (sub1 n)))))))
-              (void))
+  (check-equal? (value '(define odd?
+                          (lambda (n)
+                            (cond ((zero? n) #f)
+                                  (else (even? (sub1 n)))))))
+                (void))
 
-(check-equal? (value '(define even?
-                       (lambda (n)
-                         (cond ((zero? n) #t)
-                               (else (odd? (sub1 n)))))))
-              (void))
+  (check-equal? (value '(define even?
+                          (lambda (n)
+                            (cond ((zero? n) #t)
+                                  (else (odd? (sub1 n)))))))
+                (void))
 
 
-(check-false (value '(odd? 2)))
-(check-true (value '(odd? 1)))
+  (check-false (value '(odd? 2)))
+  (check-true (value '(odd? 1))))

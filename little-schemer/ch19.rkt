@@ -2,7 +2,8 @@
 
 #lang racket/base
 
-(require rackunit)
+(module+ test
+  (require rackunit))
 (require "lib/shared.rkt")
 
 (define (I x) x) ; just for testing
@@ -19,33 +20,43 @@
                  'pizza)]
         [else (cons (deepB (sub1 m)) '())]))
 
-(check-equal? (deep 6)
-              '((((((pizza)))))))
+(module+ test
+  (check-equal? (deep 6)
+                '((((((pizza))))))))
 
-(define x (deepB 6))
-(check-equal? (I x)
-              '((((((pizza)))))))
+(module+ test
+  (define x (deepB 6))
 
-(set! x (toppings 'mozzarella))
-(check-equal? (I x)
-              '((((((mozzarella)))))))
+  (check-equal? (I x)
+                '((((((pizza))))))))
 
-(set! x (toppings 'cake))
-(check-equal? (I x)
-              '((((((cake)))))))
+(module+ test
+  (set! x (toppings 'mozzarella))
 
-(set! x (cons (toppings 'cake) '()))
-(check-equal? (I x)
-              '((((((cake)))))))
+  (check-equal? (I x)
+                '((((((mozzarella))))))))
+
+(module+ test
+  (set! x (toppings 'cake))
+
+  (check-equal? (I x)
+                '((((((cake))))))))
+
+(module+ test
+  (set! x (cons (toppings 'cake) '()))
+
+  (check-equal? (I x)
+                '((((((cake))))))))
 
 (define (deep&co m k)
   (cond [(zero? m) (k 'pizza)]
         [else (deep&co (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(check-equal? (deep&co 0 I)
-              'pizza)
-(check-equal? (deep&co 6 I)
-              '((((((pizza)))))))
+(module+ test
+  (check-equal? (deep&co 0 I)
+                'pizza)
+  (check-equal? (deep&co 6 I)
+                '((((((pizza))))))))
 
 (define (deep&coB m k)
   (cond [(zero? m) (let ()
@@ -53,18 +64,23 @@
                      (k 'pizza))]
         [else (deep&coB (sub1 m) (lambda (x) (k (cons x '()))))]))
 
-(check-equal? (deep&coB 4 I)
-              '((((pizza)))))
+(module+ test
+  (check-equal? (deep&coB 4 I)
+                '((((pizza))))))
 
-(set! x (cons (toppings 'cake)
-              (toppings 'cake)))
-(check-equal? (I x)
-              '(((((cake)))) (((cake)))))
+(module+ test
+  (set! x (cons (toppings 'cake)
+                (toppings 'cake)))
 
-(set! x (cons (toppings 'cake)
-              (toppings 'cake)))
-(check-equal? (I x)
-              '(((((cake)))) (((cake)))))
+  (check-equal? (I x)
+                '(((((cake)))) (((cake))))))
+
+(module+ test
+  (set! x (cons (toppings 'cake)
+                (toppings 'cake)))
+
+  (check-equal? (I x)
+                '(((((cake)))) (((cake))))))
 
 (define leave #f)
 (define (walk l)
@@ -78,9 +94,11 @@
           (set! leave here)
           (walk l)))
 
-(set! x (start-it '((potato) (chips (chips (with))) fish)))
-(check-equal? (I x)
-              'potato)
+(module+ test
+  (set! x (start-it '((potato) (chips (chips (with))) fish)))
+
+  (check-equal? (I x)
+                'potato))
 
 (define two-in-a-row*?
   (letrec ((T?
@@ -115,5 +133,7 @@
                          (leave '()))))
         (if (atom? fst) (T? fst) #f)))))
 
-(set! x (two-in-a-row*? '(((food) ()) (((food))))))
-(check-true (I x))
+(module+ test
+  (set! x (two-in-a-row*? '(((food) ()) (((food))))))
+
+  (check-true (I x)))

@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require r5rs)
+(require r5rs)                          ; overlap w/ r5rs for set-cdr & friends.
 
 ;; TODO:
 ;; (module minimum racket/base
@@ -149,7 +149,7 @@
   (require rackunit)
   (require compatibility/mlist)
 
-  (define (check-eval src exp)
+  (define-check (check-eval src exp)
     (check-equal? (evaluate src env.global) exp))
 
   (define (msort l p)

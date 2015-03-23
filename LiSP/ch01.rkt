@@ -11,7 +11,7 @@
 (define true #t)
 (define empty '())
 
-(define evaluate.tracing false)
+(define evaluate.tracing false)         ; exercise 1.1
 
 (define (evaluate e env)
   (define (literal? e)
@@ -27,7 +27,7 @@
         [(lambda) (make-function (cadr e) (cddr e) env)]
         [else     (let ([fn        (evaluate (car e) env)] ; 1.6
                         [arguments (evlis (cdr e) env)])
-                    (when evaluate.tracing
+                    (when evaluate.tracing ; exercise 1.1
                       (display `(calling ,(car e) with . ,arguments)
                                (current-error-port))
                       (newline))
@@ -97,7 +97,7 @@
       (fn args)
       (wrong "Not a function" fn)))
 
-(define env.global env.init)
+(define env.global env.init)            ; 1.7
 
 (define-syntax definitial
   (syntax-rules ()
@@ -135,7 +135,7 @@
 (defprimitive eq?      eq?      2)
 (defprimitive <        <        2)
 
-(define (chapter1-scheme)
+(define (chapter1-scheme)               ; 1.8
   (let toplevel ()
     (display "> ")
     (display (evaluate (read) env.global))
@@ -174,6 +174,14 @@
   (check-true (procedure? (evaluate 'cons env.global)))
 
   (check-eval '(+ 1 1) 2)
+
+  (check-eval "hello" "hello")
+  (check-eval #\A (integer->char 65))
+  (check-eval #t #t)
+  (check-eval #(1 2 3) (list->vector '(1 2 3)))
+
+  (check-eval '(begin 1 2 3) 3)
+  (check-eval '(begin) empty-begin)
 
   ;; 1.6 pg 18
   (check-equal? (((lambda (a) (lambda (b) (list a b))) 1) 2)

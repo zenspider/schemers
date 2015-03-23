@@ -128,7 +128,8 @@
 (definitial trace-off (lambda (args) (set! evaluate.tracing false)))
 
 (defprimitive cons     cons     2)
-(defprimitive list     list    -1)
+(defprimitive list     list    -1)      ; exercise 1.6
+;; (defprimitive apply    apply    2)      ; exercise 1.8
 (defprimitive car      car      1)
 (defprimitive set-cdr! set-cdr! 2)
 (defprimitive +        +        2)
@@ -218,6 +219,9 @@
                  (set! foo (lambda (a b) (+ a b)))
                  (foo 40 2))
               42)
+
+  (check-eval '(list 1 2 3) '(1 2 3))
+  ;; (check-eval '(apply + '(2 3)) 6)      ; exercise 1.8
 
   ;; (check-equal? (evaluate '(begin
   ;;                            (set! mymap (lambda (fn l)

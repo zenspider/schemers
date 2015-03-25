@@ -4,6 +4,7 @@
 
 (module+ test
   (require rackunit))
+
 (require "lib/shared.rkt")
 
 (define (bons kar)
@@ -34,6 +35,8 @@
   (set! k n))
 (set-kounter 0)
 (define (kounter) k)
+
+(set-kounter (kounter))                 ; hack to force coverage before konsC
 
 (define konsC
   (let ((N 0))

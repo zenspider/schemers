@@ -2,14 +2,11 @@
 
 #lang racket/base
 
-(module+ test
-  (require rackunit))
-
 (require "lib/shared.rkt")
 
 ;;; Miscellany
 
-(define (puts name . vals)
+(define (debug name . vals)
   (when #f
     (printf "~s~n" (cons name vals))))
 
@@ -35,7 +32,7 @@
         [else #f]))
 
 (define (evcon lines table)
-  (puts 'evcon lines)
+  (debug 'evcon lines)
   (cond [(else? (question-of (car lines)))
          (meaning (answer-of (car lines))  table)]
         [(meaning (question-of (car lines)) table)
@@ -43,26 +40,26 @@
         [else (evcon (cdr lines) table)]))
 
 (define (evlis args table)
-  (puts 'evlis args)
+  (debug 'evlis args)
   (cond [(null? args) '()]
         [else ((lambda (val) (cons val (evlis (cdr args) table)))
                (meaning (car args) table))]))
 
 (define (extend name1 value table)
-  (puts 'extend name1)
+  (debug 'extend name1)
   (lambda (name2)
     (cond [(eq? name2 name1) value]
           [else (table name2)])))
 
 (define (lookup table name)
-  (puts 'lookup name)
+  (debug 'lookup name)
   (table name))
 
 (define (lookup-in-global-table name)
   (lookup global-table name))
 
 (define (meaning e table)
-  (puts 'meaning e)
+  (debug 'meaning e)
   ((expression-to-action e) e table))
 
 (define (multi-extend names values table)
@@ -70,24 +67,24 @@
         [else (extend (car names) (car values)
                       (multi-extend (cdr names) (cdr values) table))]))
 
-(define (the-empty-table)
-  (lambda (name)
-    (abort (cons 'no-answer (cons name '())))))
+;; (define (the-empty-table)
+;;   (lambda (name)
+;;     (abort (cons 'no-answer (cons name '())))))
 
 (define (the-meaning e)
   (meaning e lookup-in-global-table))
 
 (define (value e)
-  (puts 'value e)
+  (debug 'value e)
   (let/cc the-end
-          (set! abort the-end)
-          (cond [(define? e) (*define e)]
-                [else (the-meaning e)])))
+    (set! abort the-end)
+    (cond [(define? e) (*define e)]
+          [else (the-meaning e)])))
 
 ;;; Boxing:
 
 (define (box it)
-  (puts 'box it)
+  (debug 'box it)
   (lambda (sel)
     (sel it (lambda (new) (set! it new)))))
 
@@ -100,26 +97,26 @@
   (box (lambda (it set) (set new))))
 
 (define (unbox box)
-  (puts 'unbox box)
+  (debug 'unbox box)
   (box (lambda (it set) it)))
 
 ;;; Actions:
 
 (define (*application e table)
-  (puts 'application e)
+  (debug 'application e)
   ((meaning (function-of e) table)
    (evlis (arguments-of e) table)))
 
 (define (*cond e table)
-  (puts 'cond e)
+  (debug 'cond e)
   (evcon (cond-lines-of e) table))
 
 (define (*letcc e table)
   (let/cc skip
-          (beglis (ccbody-of e)
-                  (extend (name-of e)
-                          (box (a-prim skip))
-                          ))))
+    (beglis (ccbody-of e)
+            (extend (name-of e)
+                    (box (a-prim skip))
+                    ))))
 
 (define *const
   (let ([:cons    (b-prim cons)]
@@ -133,7 +130,7 @@
         [:sub1    (a-prim sub1)]
         [:number? (a-prim number?)])
     (lambda (e table)
-      (puts 'const e)
+      (debug 'const e)
       (if (number? e)  e
           (case e
             [(#t)      #t]
@@ -147,21 +144,20 @@
             [(zero?)   :zero?]
             [(add1)    :add1]
             [(sub1)    :sub1]
-            [(number?) :number?]
-            [else      'fucked])))))
+            [(number?) :number?])))))
 
 (define (*define e)
-  (puts '*define e)
+  (debug '*define e)
   (set! global-table (extend (name-of e)
                              (box (the-meaning (right-side-of e)))
                              global-table)))
 
 (define (*identifier e table)
-  (puts '*identifier e)
+  (debug '*identifier e)
   (unbox (lookup table e)))
 
 (define (*lambda e table)
-  (puts '*lambda e)
+  (debug '*lambda e)
   (lambda (args)
     (beglis (body-of e)
             (multi-extend (formals-of e)
@@ -169,18 +165,18 @@
                           table))))
 
 (define (*quote e table)
-  (puts '*quote e)
+  (debug '*quote e)
   (text-of e))
 
 (define (*set e table)
-  (puts '*set e)
+  (debug '*set e)
   (setbox (lookup table (name-of e))
           (meaning (right-side-of e) table)))
 
 ;;; Action Dispatch
 
 (define (atom-to-action e)
-  (puts 'atom-to-action e)
+  (debug 'atom-to-action e)
   (if (number? e)  *const
       (case e
         [(#t)      *const]
@@ -198,12 +194,12 @@
         [else      *identifier])))
 
 (define (expression-to-action e)
-  (puts 'expression-to-action e)
+  (debug 'expression-to-action e)
   (cond [(atom? e) (atom-to-action e)]
         [else (list-to-action e)]))
 
 (define (list-to-action e)
-  (puts 'list-to-action e)
+  (debug 'list-to-action e)
   (cond [(atom? (car e))
          (case (car e)
            [(quote)  *quote]
@@ -235,16 +231,11 @@
   (cond [(atom? x) (eq? x 'else)]
         [else #f]))
 
-;;; Internal Functions:
-
-(define (:car args-in-a-list)
-  (car (car args-in-a-list)))
-
 ;;; Tests:
 
-(define (I x) x) ; just for testing
-
 (module+ test
+  (require rackunit)
+
   (check-equal? (value 3)
                 3)
   (check-equal? (value '(cond [else 0]))
@@ -252,18 +243,131 @@
   (check-equal? (value '(cond [(null? (cons 0 '())) 0] [else 1]))
                 1)
 
-  (check-equal? (value '(define odd?
+  (check-equal? global-table #f)
+
+  (check-equal? (value '(define oddx?
                           (lambda (n)
                             (cond [(zero? n) #f]
-                                  [else (even? (sub1 n))]))))
+                                  [else (evenx? (sub1 n))]))))
                 (void))
 
-  (check-equal? (value '(define even?
+  (check-equal? (value '(define evenx?
                           (lambda (n)
                             (cond [(zero? n) #t]
-                                  [else (odd? (sub1 n))]))))
+                                  [else (oddx? (sub1 n))]))))
                 (void))
 
+  (check-equal? (value '(oddx? 2)) #f)
+  (check-equal? (value '(oddx? 1)) #t)
 
-  (check-false (value '(odd? 2)))
-  (check-true (value '(odd? 1))))
+  (check-equal? (value '((lambda (n) (oddx? n) (evenx? n)) 3)) #f)
+
+  (check-equal? (value '((lambda (oddx?) (evenx? oddx?)) 3)) #f)
+
+  ;; from ch10:
+
+  (check-equal? (cons 'a (cons 'b (cons 'c '())))
+                '(a b c))
+
+  (define cons-car (cons 'car
+                         (cons (cons 'quote
+                                     (cons (cons 'a
+                                                 (cons 'b
+                                                       (cons 'c '())))
+                                           '()))
+                               '())))
+  (check-equal? cons-car '(car (quote (a b c))))
+  (check-equal? cons-car '(car '(a b c)))     ; same thing as before
+
+  (check-equal? (car (quote (a b c)))
+                'a)
+  (check-equal? (value '(car (quote (a b c))))
+                'a)
+  (check-equal? (value '(cdr (quote (a b c))))
+                '(b c))
+  (check-equal? (value '(cdr (quote (a b c))))
+                '(b c))
+  (check-equal? (value '(cdr (quote (a b c))))
+                '(b c))
+  (check-equal? (value '(eq? 1 2))
+                #f)
+  (check-equal? (value '(eq? 1 1))
+                #t)
+  (check-equal? (value '(atom? 1))
+                #t)
+  (check-equal? (value '(atom? '(1 2 3)))
+                #f)
+  (check-equal? (value '(number? 1))
+                #t)
+  (check-equal? (value '(number? '(1 2 3)))
+                #f)
+
+  (check-equal? (value '(quote (car (quote (a b c)))))
+                '(car (quote (a b c))))
+  (check-equal? (value '(add1 6))
+                7)
+  (check-equal? (value 7)
+                7)
+  (check-equal? (value '(quote nothing))
+                'nothing)
+  (check-equal? (value '((lambda (nothing) (cons nothing (quote ())))
+                         (quote (from nothing comes something))))
+                '((from nothing comes something)))
+  (check-equal? (value '((lambda (nothing)
+                           (cond [nothing (quote something)]
+                                 [else (quote nothing)]))
+                         #t))
+                'something)
+  (check-false (value #f))
+
+  (define type expression-to-action)
+
+  ;; (check-equal? (value 'car)
+  ;;               (expression-to-action 'car))
+
+  (check-equal? (type 6)                          *const)
+  (check-equal? (type #f)                         *const)
+  (check-equal? (type 'cons)                      *const)
+  ;; (check-equal? (type 'car)                       *const)
+  ;; (check-equal? (type 'cdr)                       *const)
+  ;; (check-equal? (type 'eq?)                       *const)
+  (check-equal? (type 'atom?)                     *const)
+  (check-equal? (type '(quote nothing))           *quote)
+  (check-equal? (type 'nothing)                   *identifier)
+  (check-equal? (type '(lambda (x y (cons x y)))) *lambda)
+
+  (check-equal? (type '((lambda (nothing)
+                          (cond [nothing (quote something)]
+                                [else (quote nothing)]))
+                        #t))
+                *application)
+  (check-equal? (type '(cond
+                         [nothing (quote something)]
+                         [else (quote nothing)]))
+                *cond)
+
+  ;; (check-equal? (*cond '(cond (coffee klatsch) (else party))
+  ;;                      '(((coffee) (#t))
+  ;;                        ((klatsch party) (5 (6)))))
+  ;;               5)
+
+  (check-equal? (function-of '(cons z x))
+                'cons)
+
+  ;; (check-equal? (meaning (function-of '(cons z x)) '())
+  ;;               '(primitive cons))
+
+  ;; (check-equal? (apply-closure '((((u v w) (1 2 3))
+  ;;                                 ((x y z) (4 5 6)))
+  ;;                                (x y)
+  ;;                                (cons z x))
+  ;;                              '((a b c) (d e f)))
+  ;;               '(6 a b c))
+
+  ;; (check-equal? (apply1 '(primitive cons) '(6 (a b c)))
+  ;;               '(6 a b c))
+
+  ;; (check-equal? (apply-primitive 'cons '(6 (a b c)))
+  ;;               '(6 a b c))
+
+  )

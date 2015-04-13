@@ -25,34 +25,34 @@
                               (car (cdr args-in-a-list)))))
 
 (define (beglis es table)
-  (cond ((null? (cdr es)) (meaning (car es) table))
-        (else ((lambda (val) (beglis (cdr es) table))
-               (meaning (car es) table)))))
+  (cond [(null? (cdr es)) (meaning (car es) table)]
+        [else ((lambda (val) (beglis (cdr es) table))
+               (meaning (car es) table))]))
 
 (define (define? e)
-  (cond ((atom? e) #f)
-        ((atom? (car e)) (eq? (car e) 'define))
-        (else #f)))
+  (cond [(atom? e) #f]
+        [(atom? (car e)) (eq? (car e) 'define)]
+        [else #f]))
 
 (define (evcon lines table)
   (puts 'evcon lines)
-  (cond ((else? (question-of (car lines)))
-         (meaning (answer-of (car lines))  table))
-        ((meaning (question-of (car lines)) table)
-         (meaning (answer-of (car lines)) table))
-        (else (evcon (cdr lines) table))))
+  (cond [(else? (question-of (car lines)))
+         (meaning (answer-of (car lines))  table)]
+        [(meaning (question-of (car lines)) table)
+         (meaning (answer-of (car lines)) table)]
+        [else (evcon (cdr lines) table)]))
 
 (define (evlis args table)
   (puts 'evlis args)
-  (cond ((null? args) '())
-        (else ((lambda (val) (cons val (evlis (cdr args) table)))
-               (meaning (car args) table)))))
+  (cond [(null? args) '()]
+        [else ((lambda (val) (cons val (evlis (cdr args) table)))
+               (meaning (car args) table))]))
 
 (define (extend name1 value table)
   (puts 'extend name1)
   (lambda (name2)
-    (cond ((eq? name2 name1) value)
-          (else (table name2)))))
+    (cond [(eq? name2 name1) value]
+          [else (table name2)])))
 
 (define (lookup table name)
   (puts 'lookup name)
@@ -66,9 +66,9 @@
   ((expression-to-action e) e table))
 
 (define (multi-extend names values table)
-  (cond ((null? names) table)
-        (else (extend (car names) (car values)
-                      (multi-extend (cdr names) (cdr values) table)))))
+  (cond [(null? names) table]
+        [else (extend (car names) (car values)
+                      (multi-extend (cdr names) (cdr values) table))]))
 
 (define (the-empty-table)
   (lambda (name)
@@ -81,8 +81,8 @@
   (puts 'value e)
   (let/cc the-end
           (set! abort the-end)
-          (cond ((define? e) (*define e))
-                (else (the-meaning e)))))
+          (cond [(define? e) (*define e)]
+                [else (the-meaning e)])))
 
 ;;; Boxing:
 
@@ -92,9 +92,9 @@
     (sel it (lambda (new) (set! it new)))))
 
 (define (box-all vals)
-  (cond ((null? vals) '())
-        (else (cons (box (car vals))
-                    (box-all (cdr vals))))))
+  (cond [(null? vals) '()]
+        [else (cons (box (car vals))
+                    (box-all (cdr vals)))]))
 
 (define (setbox box new)
   (box (lambda (it set) (set new))))
@@ -122,33 +122,33 @@
                           ))))
 
 (define *const
-  (let ((:cons    (b-prim cons))
-        (:car     (a-prim car))
-        (:cdr     (a-prim cdr))
-        (:eq?     (b-prim eq?))
-        (:atom?   (a-prim atom?))
-        (:null?   (a-prim null?))
-        (:zero?   (a-prim zero?))
-        (:add1    (a-prim add1))
-        (:sub1    (a-prim sub1))
-        (:number? (a-prim number?)))
+  (let ([:cons    (b-prim cons)]
+        [:car     (a-prim car)]
+        [:cdr     (a-prim cdr)]
+        [:eq?     (b-prim eq?)]
+        [:atom?   (a-prim atom?)]
+        [:null?   (a-prim null?)]
+        [:zero?   (a-prim zero?)]
+        [:add1    (a-prim add1)]
+        [:sub1    (a-prim sub1)]
+        [:number? (a-prim number?)])
     (lambda (e table)
       (puts 'const e)
       (if (number? e)  e
           (case e
-            ((#t)      #t)
-            ((#f)      #f)
-            ((cons)    :cons)
-            ((car)     :car)
-            ((cdr)     :cdr)
-            ((eq?)     :eq?)
-            ((atom?)   :atom?)
-            ((null?)   :null?)
-            ((zero?)   :zero?)
-            ((add1)    :add1)
-            ((sub1)    :sub1)
-            ((number?) :number?)
-            (else      'fucked))))))
+            [(#t)      #t]
+            [(#f)      #f]
+            [(cons)    :cons]
+            [(car)     :car]
+            [(cdr)     :cdr]
+            [(eq?)     :eq?]
+            [(atom?)   :atom?]
+            [(null?)   :null?]
+            [(zero?)   :zero?]
+            [(add1)    :add1]
+            [(sub1)    :sub1]
+            [(number?) :number?]
+            [else      'fucked])))))
 
 (define (*define e)
   (puts '*define e)
@@ -183,36 +183,36 @@
   (puts 'atom-to-action e)
   (if (number? e)  *const
       (case e
-        ((#t)      *const)
-        ((#f)      *const)
-        ((cons)    *const)
-        ((car)     *const)
-        ((cdr)     *const)
-        ((null?)   *const)
-        ((eq?)     *const)
-        ((atom?)   *const)
-        ((zero?)   *const)
-        ((add1)    *const)
-        ((sub1)    *const)
-        ((number?) *const)
-        (else      *identifier))))
+        [(#t)      *const]
+        [(#f)      *const]
+        [(cons)    *const]
+        [(car)     *const]
+        [(cdr)     *const]
+        [(null?)   *const]
+        [(eq?)     *const]
+        [(atom?)   *const]
+        [(zero?)   *const]
+        [(add1)    *const]
+        [(sub1)    *const]
+        [(number?) *const]
+        [else      *identifier])))
 
 (define (expression-to-action e)
   (puts 'expression-to-action e)
-  (cond ((atom? e) (atom-to-action e))
-        (else (list-to-action e))))
+  (cond [(atom? e) (atom-to-action e)]
+        [else (list-to-action e)]))
 
 (define (list-to-action e)
   (puts 'list-to-action e)
-  (cond ((atom? (car e))
+  (cond [(atom? (car e))
          (case (car e)
-           ((quote)  *quote)
-           ((lambda) *lambda)
-           ((letcc)  *letcc)
-           ((set!)   *set)
-           ((cond)   *cond)
-           (else     *application)))
-        (else        *application)))
+           [(quote)  *quote]
+           [(lambda) *lambda]
+           [(letcc)  *letcc]
+           [(set!)   *set]
+           [(cond)   *cond]
+           [else     *application])]
+        [else        *application]))
 
 ;;; Stupid accessors
 
@@ -228,12 +228,12 @@
 (define text-of       cadr)
 
 (define (right-side-of x)
-  (cond ((null? (cddr x)) 0)
-        (else (caddr x))))
+  (cond [(null? (cddr x)) 0]
+        [else (caddr x)]))
 
 (define (else? x)
-  (cond ((atom? x) (eq? x 'else))
-        (else #f)))
+  (cond [(atom? x) (eq? x 'else)]
+        [else #f]))
 
 ;;; Internal Functions:
 
@@ -247,21 +247,21 @@
 (module+ test
   (check-equal? (value 3)
                 3)
-  (check-equal? (value '(cond (else 0)))
+  (check-equal? (value '(cond [else 0]))
                 0)
-  (check-equal? (value '(cond ((null? (cons 0 '())) 0) (else 1)))
+  (check-equal? (value '(cond [(null? (cons 0 '())) 0] [else 1]))
                 1)
 
   (check-equal? (value '(define odd?
                           (lambda (n)
-                            (cond ((zero? n) #f)
-                                  (else (even? (sub1 n)))))))
+                            (cond [(zero? n) #f]
+                                  [else (even? (sub1 n))]))))
                 (void))
 
   (check-equal? (value '(define even?
                           (lambda (n)
-                            (cond ((zero? n) #t)
-                                  (else (odd? (sub1 n)))))))
+                            (cond [(zero? n) #t]
+                                  [else (odd? (sub1 n))]))))
                 (void))
 
 

@@ -4,6 +4,9 @@
 
 (require "lib/shared.rkt")
 
+(module+ test
+  (require rackunit))
+
 ;;; Miscellany
 
 (define (debug name . vals)
@@ -234,8 +237,6 @@
 ;;; Tests:
 
 (module+ test
-  (require rackunit)
-
   (check-equal? (value 3)
                 3)
   (check-equal? (value '(cond [else 0]))

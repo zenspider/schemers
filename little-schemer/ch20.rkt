@@ -9,8 +9,10 @@
 
 ;;; Miscellany
 
+(define debug? #f)
+
 (define (debug name . vals)
-  (when #f
+  (when debug?
     (printf "~s~n" (cons name vals))))
 
 (define abort #f)                          ; for call/cc

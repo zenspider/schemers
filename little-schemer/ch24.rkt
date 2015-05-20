@@ -25,7 +25,7 @@
                   (cons° a res out)     ; build (cons a res) => out
                   (rember° x d res))])) ; always recurse last
 
-(define (surprise° s)                 ; 68
+(define (surprise° s)                   ; 68
   (rember° s '(a b c) '(a b c)))
 
 (module+ test

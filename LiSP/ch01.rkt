@@ -7,6 +7,13 @@
 ;;   (provide #%module-begin #%app #%datum #%top require
 ;;            prefix-in only-in provide))
 
+;; (module eval/ch01 (submod ".." minimum)
+;;   (provide false empty true)
+;;
+;;   (require (only-in racket/base define quote)))
+;;
+;; (require (submod "." eval/ch01))
+
 (define false #f)
 (define true #t)
 (define empty '())

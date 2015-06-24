@@ -64,18 +64,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(provide %s
-         %u
-         ≈
-         all
-         all-i
-         cond-e
-         cond-i
-         fresh
-         none
-         run*
-         run
-         dbg)
+(provide (all-defined-out))
 
 (require (only-in racket/list empty))
 

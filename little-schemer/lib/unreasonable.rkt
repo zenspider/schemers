@@ -160,7 +160,7 @@
 
 (define-syntax case∞
   (syntax-rules ()
-    ((_ e zero ((â) one) ((a f) many))
+    ((_ e (() zero) ((â) one) ((a f) many))
      (let ((a∞ e))
        (cond ((not a∞) zero)
              ((not (and (pair? a∞) (procedure? (cdr a∞))))
@@ -185,7 +185,7 @@
 
 (define (map∞ n p a∞)
   (case∞ a∞
-         '()
+         (()    '())
          ((a)   (dbg "map solo" (cons (p a) '())))
          ((a f) (dbg "map pair" (cons (dbg "map inner" (p a))
                                       (cond
@@ -245,25 +245,25 @@
 
 (define (mplus a∞ f)
   (case∞ a∞
-         (f)
+         (() (f))
          ((a)    (dbg "mplus1" (choice a f)))
          ((a f0) (dbg "mplus2" (choice a (λf () (mplus   (f0) f)))))))
 
 (define (mplus-i a∞ f)
   (case∞ a∞
-         (f)
+         (()     (f))
          ((a)    (choice a f))
          ((a f0) (choice a (λf () (mplus-i (f) f0))))))
 
 (define (bind a∞ g)
   (dbg "bind" (case∞ a∞
-                     (mzero)
+                     (()    (mzero))
                      ((a)   (dbg "bind1" (g a)))
                      ((a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))))))
 
 (define (bind-i a∞ g)
   (case∞ a∞
-         (mzero)
+         (()    (mzero))
          ((a)   (g a))
          ((a f) (mplus-i (g a) (λf () (bind-i (f) g))))))
 
@@ -283,8 +283,8 @@
      (λg (s)
          (let ((s∞ (g0 s)))
            (case∞ s∞
-                  (g2 s)
-                  ((s) (g1 s))
+                  (()    (g2 s))
+                  ((s)   (g1 s))
                   ((s f) (bind s∞ g1))))))))
 
 (define-syntax if-u
@@ -293,8 +293,8 @@
      (λg (s)
          (let ((s∞ (g0 s)))
            (case∞ s∞
-                  (g2 s)
-                  ((s) (g1 s))
+                  (()    (g2 s))
+                  ((s)   (g1 s))
                   ((s f) (g1 s))))))))
 
 (module+ test

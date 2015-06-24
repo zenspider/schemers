@@ -196,20 +196,15 @@
 (define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
 (define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))
 
-(define #%s (λg (s) (unit s)))
-(define #%u (λg (s) (mzero)))
-(define %s #%s)                         ; TODO: cleanup
-(define %u #%u)                         ; TODO: cleanup
-
-;; (set-sharp-read-syntax! #\s (lambda (port) '#%s))
-;; (set-sharp-read-syntax! #\u (lambda (port) '#%u))
+(define %s (λg (s) (unit s)))
+(define %u (λg (s) (mzero)))
 
 (define (≈ v w)
   (λg (s)
       (dbg "≈"
            (cond
-             ((unify v w s) => #%s)
-             (else (#%u s))))))
+             ((unify v w s) => %s)
+             (else (%u s))))))
 
 (define-syntax fresh
   (syntax-rules ()
@@ -223,7 +218,7 @@
 
 (define-syntax all-aux
   (syntax-rules ()
-    ((_ bnd)          (dbg "all-aux happy" #%s))
+    ((_ bnd)          (dbg "all-aux happy" %s))
     ((_ bnd g)        (dbg "all-aux solo" g))
     ((_ bnd g0 g ...) (dbg "all-aux multi"
                            (let ((g^ g0))
@@ -238,7 +233,7 @@
 
 (define-syntax cond-aux
   (syntax-rules (else)
-    ((_ ifer)                  (dbg "cond-aux %u"    #%u))
+    ((_ ifer)                  (dbg "cond-aux %u"    %u))
     ((_ ifer (else g ...))     (dbg "cond-aux else"  (all g ...)))
     ((_ ifer (g ...))          (dbg "cond-aux goals" (all g ...)))
     ((_ ifer (g0 g ...) c ...) (dbg "cond-aux mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))

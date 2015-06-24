@@ -185,13 +185,13 @@
 
 (define (map∞ n p a∞)
   (case∞ a∞
-         (()    '())
-         ((a)   (dbg "map solo" (cons (p a) '())))
-         ((a f) (dbg "map pair" (cons (dbg "map inner" (p a))
+         [()    '()]
+         [(a)   (dbg "map solo" (cons (p a) '()))]
+         [(a f) (dbg "map pair" (cons (dbg "map inner" (p a))
                                       (cond
                                         ((not n) (map∞ n p (f)))
                                         ((> n 1) (map∞ (- n 1) p (f)))
-                                        (else '())))))))
+                                        (else '()))))]))
 
 (define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
 (define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))
@@ -245,27 +245,27 @@
 
 (define (mplus a∞ f)
   (case∞ a∞
-         (() (f))
-         ((a)    (dbg "mplus1" (choice a f)))
-         ((a f0) (dbg "mplus2" (choice a (λf () (mplus   (f0) f)))))))
+         [() (f)]
+         [(a)    (dbg "mplus1" (choice a f))]
+         [(a f0) (dbg "mplus2" (choice a (λf () (mplus   (f0) f))))]))
 
 (define (mplus-i a∞ f)
   (case∞ a∞
-         (()     (f))
-         ((a)    (choice a f))
-         ((a f0) (choice a (λf () (mplus-i (f) f0))))))
+         [()     (f)]
+         [(a)    (choice a f)]
+         [(a f0) (choice a (λf () (mplus-i (f) f0)))]))
 
 (define (bind a∞ g)
   (dbg "bind" (case∞ a∞
-                     (()    (mzero))
-                     ((a)   (dbg "bind1" (g a)))
-                     ((a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))))))
+                     [()    (mzero)]
+                     [(a)   (dbg "bind1" (g a))]
+                     [(a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))])))
 
 (define (bind-i a∞ g)
   (case∞ a∞
-         (()    (mzero))
-         ((a)   (g a))
-         ((a f) (mplus-i (g a) (λf () (bind-i (f) g))))))
+         [()    (mzero)]
+         [(a)   (g a)]
+         [(a f) (mplus-i (g a) (λf () (bind-i (f) g)))]))
 
 (define-syntax if-e
   (syntax-rules ()
@@ -283,9 +283,9 @@
      (λg (s)
          (let ((s∞ (g0 s)))
            (case∞ s∞
-                  (()    (g2 s))
-                  ((s)   (g1 s))
-                  ((s f) (bind s∞ g1))))))))
+                  [()    (g2 s)]
+                  [(s)   (g1 s)]
+                  [(s f) (bind s∞ g1)]))))))
 
 (define-syntax if-u
   (syntax-rules ()
@@ -293,9 +293,9 @@
      (λg (s)
          (let ((s∞ (g0 s)))
            (case∞ s∞
-                  (()    (g2 s))
-                  ((s)   (g1 s))
-                  ((s f) (g1 s))))))))
+                  [()    (g2 s)]
+                  [(s)   (g1 s)]
+                  [(s f) (g1 s)]))))))
 
 (module+ test
   (require rackunit)

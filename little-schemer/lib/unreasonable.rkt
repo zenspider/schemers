@@ -82,7 +82,7 @@
 
 (define-syntax dbg
   (if reasonable/trace
-      (syntax-rules () [(_ fmt v) (debug #:name fmt v)])
+      (syntax-rules () [(_ fmt v) (debug #:name (string->symbol fmt) v)])
       (syntax-rules () [(_ fmt v) v])))
 
 (define none empty)

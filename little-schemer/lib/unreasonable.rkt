@@ -105,19 +105,20 @@
   (cons (cons x v) s))
 
 (define (unify v w s)                   ; 9:36
-  (if (eq? v w) s                       ; 9:37 optimization
-      (let ((v (walk v s))
-            (w (walk w s)))
-        (cond ((eq? v w) s)
-              ((var? v) (ext-s v w s))
-              ((var? w) (ext-s w v s))
-              ((and (pair? v) (pair? w))
-               (cond
-                 ((unify (car v) (car w) s) =>
-                  (lambda (s) (unify (cdr v) (cdr w) s)))
-                 (else #f)))
-              ((equal? v w) s)
-              (else #f)))))
+  (dbg "unify"
+       (if (eq? v w) s                  ; 9:37 optimization
+           (let ((v (walk v s))
+                 (w (walk w s)))
+             (cond ((eq? v w) s)
+                   ((var? v) (ext-s v w s))
+                   ((var? w) (ext-s w v s))
+                   ((and (pair? v) (pair? w))
+                    (cond
+                      ((unify (car v) (car w) s) =>
+                       (lambda (s) (unify (cdr v) (cdr w) s)))
+                      (else #f)))
+                   ((equal? v w) s)
+                   (else #f))))))
 
 (define (walk* v s)                     ; 9:47
   (let ((v (walk v s)))
@@ -138,7 +139,7 @@
           (else s))))
 
 (define (reify v)
-  (walk* v (reify-s v empty-s)))
+  (dbg "reify" (walk* v (reify-s v empty-s))))
 
 (define-syntax run                      ; 9 : 6, 13, 47, 58
   (syntax-rules ()
@@ -210,21 +211,22 @@
   (syntax-rules ()
     ((_ (x ...) g ...)
      (λg (s)
-         (let ((x (var 'x)) ...)
+         (let ([x (var 'x)] ...)
            ((all g ...) s))))))
 
-(define-syntax all    (syntax-rules () ((_ g ...) (dbg "all" (all-aux bind   g ...)))))
-(define-syntax all-i  (syntax-rules () ((_ g ...) (all-aux bind-i g ...))))
+(define-syntax all    (syntax-rules () ((_ g ...) (dbg "all"   (all-aux bind   g ...)))))
+(define-syntax all-i  (syntax-rules () ((_ g ...) (dbg "all-i" (all-aux bind-i g ...)))))
 
 (define-syntax all-aux
   (syntax-rules ()
-    ((_ bnd)          (dbg "all-aux happy" %s))
-    ((_ bnd g)        (dbg "all-aux solo" g))
-    ((_ bnd g0 g ...) (dbg "all-aux multi"
-                           (let ((g^ g0))
+    ((_ bnd)          (dbg "all-aux0" %s))
+    ((_ bnd g)        (dbg "all-aux1" g))
+    ((_ bnd g0 g ...) (dbg "all-auxN"
+                           (let ([g^ g0])
                              (λg (s)
-                                 (bnd (g^ s)
-                                      (λg (s) ((all-aux bnd g ...) s)))))))))
+                                 (dbg "all-aux/inner"
+                                      (bnd (g^ s)
+                                           (λg (s) ((all-aux bnd g ...) s))))))))))
 
 (define-syntax cond-e (syntax-rules () ((_ c ...) (dbg "cond-e" (cond-aux if-e c ...)))))
 (define-syntax cond-i (syntax-rules () ((_ c ...) (cond-aux if-i c ...))))
@@ -233,10 +235,10 @@
 
 (define-syntax cond-aux
   (syntax-rules (else)
-    ((_ ifer)                  (dbg "cond-aux %u"    %u))
-    ((_ ifer (else g ...))     (dbg "cond-aux else"  (all g ...)))
-    ((_ ifer (g ...))          (dbg "cond-aux goals" (all g ...)))
-    ((_ ifer (g0 g ...) c ...) (dbg "cond-aux mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
+    ((_ ifer)                  (dbg "cond-aux0"    %u))
+    ((_ ifer (else g ...))     (dbg "cond-aux/else"  (all g ...)))
+    ((_ ifer (g ...))          (dbg "cond-aux/goals" (all g ...)))
+    ((_ ifer (g0 g ...) c ...) (dbg "cond-aux/mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
 
 (define (mplus a∞ f)
   (case∞ a∞
@@ -252,9 +254,9 @@
 
 (define (bind a∞ g)
   (dbg "bind" (case∞ a∞
-                     [()    (mzero)]
+                     [()    (dbg "bind0" (mzero))]
                      [(a)   (dbg "bind1" (g a))]
-                     [(a f) (dbg "bind2" (mplus (dbg "bind-inner" (g a)) (λf () (bind   (f) g))))])))
+                     [(a f) (dbg "bind2" (mplus (dbg "bind2/car" (g a)) (λf () (bind   (f) g))))])))
 
 (define (bind-i a∞ g)
   (case∞ a∞
@@ -276,7 +278,7 @@
   (syntax-rules ()
     ((_ g0 g1 g2)
      (λg (s)
-         (let ((s∞ (g0 s)))
+         (let ([s∞ (g0 s)])
            (case∞ s∞
                   [()    (g2 s)]
                   [(s)   (g1 s)]
@@ -286,7 +288,7 @@
   (syntax-rules ()
     ((_ g0 g1 g2)
      (λg (s)
-         (let ((s∞ (g0 s)))
+         (let ([s∞ (g0 s)])
            (case∞ s∞
                   [()    (g2 s)]
                   [(s)   (g1 s)]

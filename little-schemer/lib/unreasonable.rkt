@@ -179,11 +179,21 @@
                                                     [(> n 1) (map∞ (- n 1) p (f))]
                                                     [else '()]))))]))
 
-(define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
-(define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))
+(struct r/λ (code output)
+  #:property prop:procedure (struct-field-index code)
+  #:methods gen:custom-write [(define (write-proc proc port mode)
+                                (fprintf port "~a" (r/λ-output proc)))])
 
-(define %s (λg (s) (unit s)))
-(define %u (λg (s) (mzero)))
+(define-syntax λg
+  (syntax-rules (=>)
+    [(_ a c ... => x) (r/λ (lambda a c ...) x)]
+    [(_ a c ...)      (r/λ (lambda a c ...) '(λg a c ...))]))
+(define-syntax λf
+  (syntax-rules ()
+    [(_ a c ...)      (r/λ (lambda a c ...) '(λf a c ...))]))
+
+(define %s (λg (s) (unit s) => '%s))
+(define %u (λg (s) (mzero)  => '%u))
 
 (define (≈ v w)
   (λg (s)

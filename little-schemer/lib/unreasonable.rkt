@@ -151,13 +151,8 @@
                             ((all g ...) empty-s)))
            '())))))
 
-(define-syntax run*
-  (syntax-rules ()
-    ((_ (x) g ...) (run #f (x) g ...))))
-
-(define-syntax run1
-  (syntax-rules ()
-    ((_ (x) g ...) (run 1 (x) g ...))))
+(define-syntax-rule (run* (x) g ...) (run #f (x) g ...))
+(define-syntax-rule (run1 (x) g ...) (run 1 (x) g ...))
 
 (define-syntax case∞
   (syntax-rules ()
@@ -172,17 +167,9 @@
                      many)))))))
 
 
-(define-syntax mzero
-  (syntax-rules ()
-    ((_) #f)))
-
-(define-syntax unit
-  (syntax-rules ()
-    ((_ a) a)))
-
-(define-syntax choice
-  (syntax-rules ()
-    ((_ a f) (cons a f))))
+(define-syntax-rule (mzero) #f)
+(define-syntax-rule (unit a) a)
+(define-syntax-rule (choice a f) (cons a f))
 
 (define (map∞ n p a∞)
   (case∞ a∞

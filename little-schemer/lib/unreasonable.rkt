@@ -69,7 +69,7 @@
 (require (only-in racket/list empty))
 
 (require (for-syntax racket/base))
-(define-for-syntax reasonable/trace #f)
+(define-for-syntax reasonable/trace (getenv "TRACE"))
 
 (define-syntax (require/if stx)
   (syntax-case stx ()

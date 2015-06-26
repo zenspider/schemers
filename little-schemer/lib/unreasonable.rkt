@@ -87,9 +87,7 @@
 
 (define none empty)
 
-(define var vector)                     ; 9:6
-
-(define var? vector?)                   ; 9:6
+(struct var (name) #:transparent)       ; 9:6 -- modified to struct
 
 (define empty-s '())                    ; 9:13
 

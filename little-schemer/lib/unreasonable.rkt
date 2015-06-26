@@ -129,7 +129,7 @@
 (define size-s length)
 
 (define (reify-name n)
-  (string->symbol (string-append "_" "." (number->string n))))
+  (string->symbol (format "_.~s" n)))
 
 (define (reify-s v s)                   ; 9:52
   (let ((v (walk v s)))

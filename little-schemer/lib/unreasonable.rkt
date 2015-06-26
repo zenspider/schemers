@@ -171,13 +171,13 @@
 
 (define (map∞ n p a∞)
   (case∞ a∞
-         [()    '()]
-         [(a)   (dbg "map solo" (cons (p a) '()))]
-         [(a f) (dbg "map pair" (cons (dbg "map inner" (p a))
-                                      (cond
-                                        ((not n) (map∞ n p (f)))
-                                        ((> n 1) (map∞ (- n 1) p (f)))
-                                        (else '()))))]))
+         [()    (dbg "map0" '())]
+         [(a)   (dbg "map1" (cons (dbg "map1/car" (p a)) '()))]
+         [(a f) (dbg "mapN" (cons (dbg "mapN/car" (p a))
+                                  (dbg "mapN/cdr" (cond
+                                                    [(not n) (map∞ n p (f))]
+                                                    [(> n 1) (map∞ (- n 1) p (f))]
+                                                    [else '()]))))]))
 
 (define-syntax λg (syntax-rules () ((_ a c ...) (lambda a c ...))))
 (define-syntax λf (syntax-rules () ((_ a c ...) (lambda a c ...))))

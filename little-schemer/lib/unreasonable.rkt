@@ -92,12 +92,12 @@
 (define empty-s '())                    ; 9:13
 
 (define (walk v s)                      ; 9:27
-  (let ((rhs cdr))
-    (cond ((var? v)
+  (let ([rhs cdr])
+    (cond [(var? v)
            (cond
              ((assq v s) => (lambda (a) (walk (rhs a) s)))
-             (else v)))
-          (else v))))
+             (else v))]
+          [else v])))
 
 (define (ext-s x v s)                   ; 9:29
   (cons (cons x v) s))
@@ -105,25 +105,25 @@
 (define (unify v w s)                   ; 9:36
   (dbg "unify"
        (if (eq? v w) s                  ; 9:37 optimization
-           (let ((v (walk v s))
-                 (w (walk w s)))
-             (cond ((eq? v w) s)
-                   ((var? v) (ext-s v w s))
-                   ((var? w) (ext-s w v s))
-                   ((and (pair? v) (pair? w))
+           (let ([v (walk v s)]
+                 [w (walk w s)])
+             (cond [(eq? v w) s]
+                   [(var? v) (ext-s v w s)]
+                   [(var? w) (ext-s w v s)]
+                   [(and (pair? v) (pair? w))
                     (cond
-                      ((unify (car v) (car w) s) =>
-                       (lambda (s) (unify (cdr v) (cdr w) s)))
-                      (else #f)))
-                   ((equal? v w) s)
-                   (else #f))))))
+                      [(unify (car v) (car w) s) =>
+                       (lambda (s) (unify (cdr v) (cdr w) s))]
+                      [else #f])]
+                   [(equal? v w) s]
+                   [else #f])))))
 
 (define (walk* v s)                     ; 9:47
-  (let ((v (walk v s)))
-    (cond ((var? v) v)
-          ((pair? v) (cons (walk* (car v) s)
-                           (walk* (cdr v) s)))
-          (else v))))
+  (let ([v (walk v s)])
+    (cond [(var? v) v]
+          [(pair? v) (cons (walk* (car v) s)
+                           (walk* (cdr v) s))]
+          [else v])))
 
 (define size-s length)
 
@@ -131,10 +131,10 @@
   (string->symbol (format "_.~s" n)))
 
 (define (reify-s v s)                   ; 9:52
-  (let ((v (walk v s)))
-    (cond ((var?  v) (ext-s v (reify-name (size-s s)) s))
-          ((pair? v) (reify-s (cdr v) (reify-s (car v) s)))
-          (else s))))
+  (let ([v (walk v s)])
+    (cond [(var?  v) (ext-s v (reify-name (size-s s)) s)]
+          [(pair? v) (reify-s (cdr v) (reify-s (car v) s))]
+          [else s])))
 
 (define (reify v)
   (dbg "reify" (walk* v (reify-s v empty-s))))
@@ -142,8 +142,8 @@
 (define-syntax run                      ; 9 : 6, 13, 47, 58
   (syntax-rules ()
     ((_ ñ (x) g ...)
-     (let ((n ñ)
-           (x (var 'x)))
+     (let ([n ñ]
+           [x (var 'x)])
        (if (or (not n) (> n 0))
            (dbg "run" (map∞ n (lambda (s) (reify (walk* x s)))
                             ((all g ...) empty-s)))
@@ -155,14 +155,14 @@
 (define-syntax case∞
   (syntax-rules ()
     ((_ e (() zero) ((â) one) ((a f) many))
-     (let ((a∞ e))
-       (cond ((not a∞) zero)
-             ((not (and (pair? a∞) (procedure? (cdr a∞))))
-              (let ((â a∞))
-                one))
-             (else (let ((a (car a∞))
-                         (f (cdr a∞)))
-                     many)))))))
+     (let ([a∞ e])
+       (cond [(not a∞) zero]
+             [(not (and (pair? a∞) (procedure? (cdr a∞))))
+              (let ([â a∞])
+                one)]
+             [else (let ([a (car a∞)]
+                         [f (cdr a∞)])
+                     many)])))))
 
 
 (define-syntax-rule (mzero) #f)
@@ -199,8 +199,8 @@
   (λg (s)
       (dbg "≈"
            (cond
-             ((unify v w s) => %s)
-             (else (%u s))))))
+             [(unify v w s) => %s]
+             [else (%u s)]))))
 
 (define-syntax fresh
   (syntax-rules ()
@@ -230,7 +230,7 @@
 
 (define-syntax cond-aux
   (syntax-rules (else)
-    ((_ ifer)                  (dbg "cond-aux0"    %u))
+    ((_ ifer)                  (dbg "cond-aux0"      %u))
     ((_ ifer (else g ...))     (dbg "cond-aux/else"  (all g ...)))
     ((_ ifer (g ...))          (dbg "cond-aux/goals" (all g ...)))
     ((_ ifer (g0 g ...) c ...) (dbg "cond-aux/mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))

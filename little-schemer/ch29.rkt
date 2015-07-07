@@ -215,5 +215,4 @@
       (check-equal? (walk* r (reify-s r empty-s))                 ; 56
                     '(a _.0 c _.0))
       (check-equal? (reify r) `(a _.0 c _.0))))                   ; 58
-
-  'done)
+  )

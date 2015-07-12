@@ -8,10 +8,13 @@
          all-i
          cond-e
          cond-i
+         cond-a
+         cond-u
          fresh
          none
          run*
          run
+         if-a
          dbg)
 
 (module+ test

@@ -103,8 +103,8 @@
   (cons (cons x v) s))
 
 (define (unify v w s)                   ; 9:36
-  (dbg "unify"
-       (if (eq? v w) s                  ; 9:37 optimization
+  (dbg (format "unify ~s ~s ~s" v w s)
+       (if (eq? v w) s                ; 9:37 optimization
            (let ([v (walk v s)]
                  [w (walk w s)])
              (cond [(eq? v w) s]
@@ -137,7 +137,7 @@
           [else s])))
 
 (define (reify v)
-  (dbg "reify" (walk* v (reify-s v empty-s))))
+  (dbg (format "reify/~s" v) (walk* v (reify-s v empty-s))))
 
 (define-syntax run                      ; 9 : 6, 13, 47, 58
   (syntax-rules ()
@@ -172,12 +172,12 @@
 (define (map∞ n p a∞)
   (case∞ a∞
          [()    (dbg "map0" '())]
-         [(a)   (dbg "map1" (cons (dbg "map1/car" (p a)) '()))]
-         [(a f) (dbg "mapN" (cons (dbg "mapN/car" (p a))
-                                  (dbg "mapN/cdr" (cond
-                                                    [(not n) (map∞ n p (f))]
-                                                    [(> n 1) (map∞ (- n 1) p (f))]
-                                                    [else '()]))))]))
+         [(a)   (cons (dbg "map1/car" (p a)) '())]
+         [(a f) (cons (dbg "mapN/car" (p a))
+                      (dbg "mapN/cdr" (cond
+                                        [(not n) (map∞ n p (f))]
+                                        [(> n 1) (map∞ (- n 1) p (f))]
+                                        [else '()])))]))
 
 (struct r/λ (code output)
   #:property prop:procedure (struct-field-index code)
@@ -217,11 +217,9 @@
     ((_ bnd)          (dbg "all-aux0" %s))
     ((_ bnd g)        (dbg "all-aux1" g))
     ((_ bnd g0 g ...) (dbg "all-auxN"
-                           (let ([g^ g0])
-                             (λg (s)
-                                 (dbg "all-aux/inner"
-                                      (bnd (g^ s)
-                                           (λg (s) ((all-aux bnd g ...) s))))))))))
+                           (λg (s)
+                               (bnd (g0 s)
+                                    (λg (s) ((all-aux bnd g ...) s))))))))
 
 (define-syntax cond-e (syntax-rules () ((_ c ...) (dbg "cond-e" (cond-aux if-e c ...)))))
 (define-syntax cond-i (syntax-rules () ((_ c ...) (cond-aux if-i c ...))))
@@ -251,7 +249,8 @@
   (dbg "bind" (case∞ a∞
                      [()    (dbg "bind0" (mzero))]
                      [(a)   (dbg "bind1" (g a))]
-                     [(a f) (dbg "bind2" (mplus (dbg "bind2/car" (g a)) (λf () (bind   (f) g))))])))
+                     [(a f) (dbg "bindN" (mplus (dbg "bindN/car" (g a))
+                                                (dbg "bindN/cdr" (λf () (bind   (f) g)))))])))
 
 (define (bind-i a∞ g)
   (case∞ a∞

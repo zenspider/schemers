@@ -231,6 +231,7 @@
     ((_ ifer)                  (dbg "cond-aux0"      %u))
     ((_ ifer (else g ...))     (dbg "cond-aux/else"  (all g ...)))
     ((_ ifer (g ...))          (dbg "cond-aux/goals" (all g ...)))
+    ((_ ifer (g0) c ...)       (dbg "cond-aux/mgoal0" (ifer g0 (cond-aux ifer c ...))))
     ((_ ifer (g0 g ...) c ...) (dbg "cond-aux/mgoal" (ifer g0 (all g ...) (cond-aux ifer c ...))))))
 
 (define (mplus a∞ f)
@@ -260,11 +261,15 @@
 
 (define-syntax if-e
   (syntax-rules ()
+    ((_ g0 g2)
+     (λg (s) (mplus (g0 s) (λf () (g2 s)))))
     ((_ g0 g1 g2)
      (λg (s) (mplus ((all g0 g1) s) (λf () (g2 s)))))))
 
 (define-syntax if-i
   (syntax-rules ()
+    ((_ g0    g2)
+     (λg (s) (mplus-i (g0 s) (λf () (g2 s)))))
     ((_ g0 g1 g2)
      (λg (s) (mplus-i ((all g0 g1) s) (λf () (g2 s)))))))
 

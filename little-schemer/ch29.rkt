@@ -177,7 +177,7 @@
   (check/walk walk/2)
   (check/walk walk/3)
   (check/walk walk/4)
-  (check/walk real/walk)
+  ;; (check/walk real/walk)
 
   (define (check/walk* walk*)
     (define-check (check-walk*? v l exp)
@@ -189,7 +189,7 @@
     )
 
   (check/walk* walk*/1)
-  (check/walk* real/walk*)
+  ;; (check/walk* real/walk*)
 
   ;; (real/run* (q)                        ; 47 / sidebar -- failing
   ;;            (real/≈ #f q)

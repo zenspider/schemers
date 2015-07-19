@@ -7,38 +7,16 @@
 (require "ch23.rkt")
 
 (define (queens1 b)
-  (fresh (q1)
-    (queens b
-            (list q1)
-            (nums '(1)))))
+  (queens b 1))
 
 (define (queens4 b)
-  (fresh (q1 q2 q3 q4)
-    (queens b
-            (list q1 q2 q3 q4)
-            (nums '(1 2 3 4)))))
+  (queens b 4))
 
 (define (queens6 b)
-  (fresh (q1 q2 q3 q4 q5 q6)
-    (queens b
-            (list q1 q2 q3 q4 q5 q6)
-            (nums '(1 2 3 4 5 6)))))
+  (queens b 6))
 
 (define (queens8 b)
-  (fresh (q1 q2 q3 q4 q5 q6 q7 q8)
-    (queens b
-            (list q1 q2 q3 q4 q5 q6 q7 q8)
-            (nums '(1 2 3 4 5 6 7 8)))))
-
-(define (queens b vars vals)
-  (all
-   (≈ b vars)
-
-   (domain b vals)
-
-   (distinct° b)
-
-   (safe b)))
+  (queens b 8))
 
 (define (domain l dom)                  ; aka members°
   (cond-e [(null° l)]
@@ -103,6 +81,25 @@
         [else (add1 (l->n (car l)))]))
 
 (define (nums l) (map n->l l))
+
+(require (for-syntax racket/base racket/list racket/syntax))
+
+(define-syntax (queens stx)
+  (syntax-case stx ()
+    [(_ b n)
+     (let ([n* (syntax->datum #'n)])
+       (with-syntax* ([(names ...) (make-list n* 'q)]
+                      [(num ...)   (range 1 (add1 n*))]
+                      [(var ...)   (generate-temporaries #'(names ...))])
+         #'(fresh (var ...)
+               (all
+                (≈ b (list var ...))
+
+                (domain b (nums '(num ...)))
+
+                (distinct° b)
+
+                (safe b)))))]))
 
 (module+ test
   (require rackunit)

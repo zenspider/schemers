@@ -6,18 +6,6 @@
 (require "ch22.rkt")
 (require "ch23.rkt")
 
-(define (queens1 b)
-  (queens b 1))
-
-(define (queens4 b)
-  (queens b 4))
-
-(define (queens6 b)
-  (queens b 6))
-
-(define (queens8 b)
-  (queens b 8))
-
 (define (domain l dom)                  ; aka members°
   (cond-e [(null° l)]
           [(fresh (a d)
@@ -86,7 +74,7 @@
 
 (define-syntax (queens stx)
   (syntax-case stx ()
-    [(_ b n)
+    [(_ n b)
      (let ([n* (syntax->datum #'n)])
        (with-syntax* ([(names ...) (make-list n* 'q)]
                       [(num ...)   (range 1 (add1 n*))]
@@ -185,18 +173,18 @@
 
   (time                          ; cpu time: 0 real time: 1 gc time: 0
    (check-run* (b)
-               (queens1 b)
+               (queens 1 b)
                => (num-list '((1)))))
 
   (time                       ; cpu time: 4 real time: 5 gc time: 0
    (check-run* (b)
-               (queens4 b)
+               (queens 4 b)
                => (num-list '((2 4 1 3)
                               (3 1 4 2)))))
 
   (time                   ; cpu time: 1319 real time: 1323 gc time: 25
    (check-run* (b)
-               (queens6 b)
+               (queens 6 b)
                => (num-list '((2 4 6 1 3 5)
                               (3 6 2 5 1 4)
                               (4 1 5 2 6 3)
@@ -204,7 +192,7 @@
 
   (time             ; cpu time: 672954 real time: 672790 gc time: 5966
    (check-run* (b)
-               (queens8 b)
+               (queens 8 b)
                => (num-list '((1 5 8 6 3 7 2 4)
                               (1 6 8 3 7 4 2 5)
                               (1 7 4 6 8 2 5 3)

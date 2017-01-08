@@ -1,4 +1,4 @@
-#lang reader "stacker.rkt"
+#lang reader "funstacker.rkt"
 
 4
 8

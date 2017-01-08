@@ -2,11 +2,11 @@
 
 (provide read-syntax
          handle
-         (rename-out [stacker-module-begin #%module-begin])
+         (rename-out [funstacker-module-begin #%module-begin])
          + *
          )
 
-(define-macro (stacker-module-begin HANDLE-EXPR ...)
+(define-macro (funstacker-module-begin HANDLE-EXPR ...)
   #'(#%module-begin
      HANDLE-EXPR ...
      (first stack)))
@@ -14,7 +14,7 @@
 (define (read-syntax path port)
   (define src-lines (port->lines port))
   (define src-datums (format-datums '(handle ~a) src-lines))
-  (datum->syntax #f `(module stacker-mod "stacker.rkt"
+  (datum->syntax #f `(module funstacker-mod "funstacker.rkt"
                        ,@src-datums)))
 
 (define (handle [arg #f])
@@ -42,7 +42,7 @@
 
   (check-equal? (syntax->datum
                  (read-syntax 'path (open-input-string "4\n8\n+\n3\n*\n")))
-                '(module stacker-mod "stacker.rkt"
+                '(module funstacker-mod "funstacker.rkt"
                    (handle 4)
                    (handle 8)
                    (handle +)

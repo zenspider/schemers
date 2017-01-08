@@ -1,52 +1,39 @@
 #lang br/quicklang
 
 (provide read-syntax
-         handle
+         handle-args
          (rename-out [funstacker-module-begin #%module-begin])
          + *
          )
 
-(define-macro (funstacker-module-begin HANDLE-EXPR ...)
+(define-macro (funstacker-module-begin HANDLE-ARGS-EXPR)
   #'(#%module-begin
-     HANDLE-EXPR ...
-     (first stack)))
+     (first HANDLE-ARGS-EXPR)))
 
 (define (read-syntax path port)
   (define src-lines (port->lines port))
-  (define src-datums (format-datums '(handle ~a) src-lines))
+  (define src-datums (format-datums '~a src-lines))
   (datum->syntax #f `(module funstacker-mod "funstacker.rkt"
-                       ,@src-datums)))
+                       (handle-args ,@src-datums))))
 
-(define (handle [arg #f])
-  (cond [(number? arg)
-         (push-stack! arg)]
-        [(or (equal? + arg)
-             (equal? * arg))
-         (define result (arg (pop-stack) (pop-stack)))
-         (push-stack! result)]
-        ))
-
-(define stack empty)
-
-(define (pop-stack)
-  (define item (first stack))
-  (set! stack (rest stack))
-  item)
-
-(define (push-stack! item)
-  (set! stack (cons item stack)))
+(define (handle-args . args)
+  (for/fold ([stack-acc empty])
+            ([arg (in-list args)]
+             #:unless (void? arg))
+    (cond
+      [(number? arg) (cons arg stack-acc)]
+      [(or (equal? * arg) (equal? + arg))
+       (define op-result
+         (arg (first stack-acc) (second stack-acc)))
+       (cons op-result (drop stack-acc 2))])))
 
 (module+ test
   (require rackunit)
   (require syntax/macro-testing)
 
   (check-equal? (syntax->datum
-                 (read-syntax 'path (open-input-string "4\n8\n+\n3\n*\n")))
-                '(module funstacker-mod "funstacker.rkt"
-                   (handle 4)
-                   (handle 8)
-                   (handle +)
-                   (handle 3)
-                   (handle *)))
+                 (read-syntax 'path (open-input-string "\n\n4\n8\n+\n3\n*\n")))
+                `(module funstacker-mod "funstacker.rkt"
+                   (handle-args ,(void) ,(void) 4 8 + 3 *)))
 
   (displayln "done"))

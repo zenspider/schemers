@@ -1,8 +1,11 @@
 #lang br/quicklang
 
-(provide tokenize)
+(provide (contract-out [tokenize (input-port? . -> . (-> token?))]))
 
 (require brag/support)
+
+(define (token? x)
+  (or (eof-object? x) (string? x) (token-struct? x)))
 
 (define (tokenize port)
   (define (next-token)

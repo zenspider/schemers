@@ -1,6 +1,6 @@
 #lang br/quicklang
 
-(provide read-syntax)
+(provide (contract-out [read-syntax (any/c input-port? . -> . syntax?)]))
 
 (require "tokenizer.rkt"
          "parser.rkt")

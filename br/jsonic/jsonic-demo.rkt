@@ -1,4 +1,5 @@
 #lang jsonic
+
 // a line comment
 
 [

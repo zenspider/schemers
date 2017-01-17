@@ -2,7 +2,9 @@
 
 (module reader br
   (require "reader.rkt")
-  (provide read-syntax)
+
+  (provide read-syntax get-info)
+
   (define (get-info port mod line col pso)
     (define (handle-query key default)
       (case key

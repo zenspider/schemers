@@ -1,6 +1,6 @@
 #lang br
 
-(require brag/support syntax-color/racket-lexer)
+(require brag/support racket/contract syntax-color/racket-lexer)
 
 (provide (contract-out
           [color-jsonic

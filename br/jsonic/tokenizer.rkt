@@ -1,8 +1,8 @@
 #lang br/quicklang
 
-(provide (contract-out [tokenize (input-port? . -> . (-> token?))]))
+(require brag/support racket/contract)
 
-(require brag/support)
+(provide (contract-out [tokenize (input-port? . -> . (-> token?))]))
 
 (module+ test
   (require rackunit))

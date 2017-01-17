@@ -1,9 +1,10 @@
 #lang br/quicklang
 
-(provide (contract-out [read-syntax (any/c input-port? . -> . syntax?)]))
-
-(require "tokenizer.rkt"
+(require racket/contract
+         "tokenizer.rkt"
          "parser.rkt")
+
+(provide (contract-out [read-syntax (any/c input-port? . -> . syntax?)]))
 
 (define (read-syntax path port)
   (define datum `(module jsonic-module jsonic/expander

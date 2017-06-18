@@ -23,6 +23,16 @@
 (module+ test
   (require rackunit)
 
-  (check-equal? (tokenize (open-input-string "++-[>-<]."))
-                42)
+  (check-equal? (test-reader read-syntax "++-[>-<].")
+                '(module bf-mod bf/expander
+                   (bf-program (op "+")
+                               (op "+")
+                               (op "-")
+                               (loop "["
+                                     (op ">")
+                                     (op "-")
+                                     (op "<")
+                                     "]")
+                               (op "."))))
+  (displayln 'done)
   )

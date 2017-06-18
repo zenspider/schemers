@@ -22,7 +22,17 @@
 
 (module+ test
   (require rackunit)
+  (require check-sexp-equal)
 
-  (check-equal? (tokenize (open-input-string "++-[>-<]."))
-                42)
+  (check-sexp-equal? (test-reader read-syntax "++-[>-<].")
+                     '(module bf-mod "expander.rkt"
+                        (bf-program (op "+")
+                                    (op "+")
+                                    (op "-")
+                                    (loop "["
+                                          (op ">")
+                                          (op "-")
+                                          (op "<")
+                                          "]")
+                                    (op "."))))
   )

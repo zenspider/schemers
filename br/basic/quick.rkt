@@ -1,4 +1,4 @@
-#lang basic/parse-only
+#lang basic
 
 00 rem this is some text as a comment
 10 print "Hello" : print 'world'

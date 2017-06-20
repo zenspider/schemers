@@ -1,0 +1,30 @@
+#lang racket/base
+
+(require (for-syntax br/syntax
+                     racket/base)
+         br/define
+         racket/format
+         racket/string
+         "struct.rkt")
+
+(provide (all-defined-out))
+
+(define-macro (b-line NUM STATEMENT ...)
+  (with-pattern ([LINE-NUM (prefix-id "line-" #'NUM
+                                      #:source #'NUM)])
+    (syntax/loc caller-stx
+      (define (LINE-NUM) (void) STATEMENT ...))))
+
+(define (b-rem val) (void))
+
+(define (b-end) (raise (end-program-signal)))
+
+(define (b-print . vals)
+  (displayln (string-append* (map ~a vals))))
+
+(define (b-goto expr) (raise (change-line-signal expr)))
+
+(define (b-expr expr)
+  (if (integer? expr) (inexact->exact expr) expr))
+
+(define (b-sum . nums) (apply + nums))

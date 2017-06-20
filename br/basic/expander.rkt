@@ -25,27 +25,9 @@
         (line-func)
         (add1 line-idx)))))
 
-
-
-;; #lang brag
-;;
-;;  b-program   : [b-line] (/NEWLINE [b-line])*
-;;  b-line      : b-line-num [b-statement] (/":" b-statement)* [b-rem]
-;; @b-line-num  : INTEGER
-;; @b-statement : b-end | b-print | b-goto
-;;  b-rem       : REM
-;;  b-end       : /"end"
-;;  b-print     : /"print" [b-printable] (/";" [b-printable])*
-;; @b-printable : STRING | b-expr
-;;  b-goto      : /"goto" b-expr
-;;  b-expr      : b-sum
-;;  b-sum       : b-number (/"+" b-number)*
-;; @b-number    : INTEGER | DECIMAL
-
 (define-macro (b-module-begin (b-program LINE ...))  ; TODO: rename b-program?
   (with-pattern
-    (
-     [((b-line NUM STATEMENT ...) ...) #'(LINE ...)]
+    ([((b-line NUM STATEMENT ...) ...) #'(LINE ...)]
      [(LINE-FUNC ...) (prefix-id "line-" #'(NUM ...))])
     #'(#%module-begin
        LINE ...
@@ -71,19 +53,3 @@
   (if (integer? expr) (inexact->exact expr) expr))
 
 (define (b-sum . nums) (apply + nums))
-
-;; '(b-program
-;;   (b-line 00 (b-rem "rem this is some text as a comment"))
-;;   (b-line 10 (b-print "Hello") (b-print "world"))
-;;   (b-line 20 (b-goto (b-expr (b-sum 9 10 11))))
-;;   (b-line 30 (b-end)))
-
-;; '(b-program
-;;   (b-line 30 (b-rem "rem print 'ignored'"))
-;;   (b-line 35)
-;;   (b-line 50 (b-print "never gets here"))
-;;   (b-line 40 (b-end))
-;;   (b-line 60 (b-print "three") (b-print (b-expr (b-sum 1.0 3))))
-;;   (b-line 70 (b-goto (b-expr (b-sum 11.0 18.5 0.5))))
-;;   (b-line 10 (b-print "o" "n" "e"))
-;;   (b-line 20 (b-print) (b-goto (b-expr (b-sum 60.0))) (b-end)))

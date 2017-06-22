@@ -27,7 +27,17 @@
 
 (define (b-goto expr) (raise (change-line-signal expr)))
 
+(define-macro (b-let ID VAL) #'(set! ID VAL))
+
+(define-macro (b-input ID)
+  #'(b-let ID (let* ([str (read-line)]
+                     [num (string->number (string-trim str))])
+                (or num str))))
+
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))
 
-(define (b-sum . nums) (apply + nums))
+(define (b-sum . vals)
+  (if (= 1 (length vals))
+      (car vals)
+      (apply + vals)))

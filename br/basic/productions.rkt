@@ -13,7 +13,10 @@
   (with-pattern ([LINE-NUM (prefix-id "line-" #'NUM
                                       #:source #'NUM)])
     (syntax/loc caller-stx
-      (define (LINE-NUM) (void) STATEMENT ...))))
+      (define (LINE-NUM #:error [msg #f])
+        (with-handlers ([line-error? (lambda (le) (handle-line-error NUM le))])
+          (when msg (raise-line-error msg))
+          STATEMENT ...)))))
 
 (define (b-rem val) (void))
 

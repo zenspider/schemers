@@ -19,7 +19,6 @@
             (define clsv (change-line-signal-val cls))
             (or (and (exact-positive-integer? clsv)
                      (vector-member clsv line-vec))
-                (error (format "error in line ~a: line ~a not found"
-                               line-num clsv))))])
+                (line-func #:error (format "line ~a not found" clsv))))])
         (line-func)
         (add1 line-idx)))))

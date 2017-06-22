@@ -1,7 +1,7 @@
 #lang br/quicklang
 
 (module+ reader
-  (provide read-syntax))
+  (provide read-syntax get-info))
 
 (require "parser.rkt" "tokenizer.rkt")
 
@@ -10,9 +10,11 @@
   (strip-bindings #`(module basic-mod basic/expander
                       #,parse-tree)))
 
-(module+ test
-  (require rackunit))
-
-(module+ test
-  ;; TODO: Tests to be run with raco test
-  )
+(define (get-info port mod line col pos)
+  (define (handle-query key default)
+    (case key
+      [(color-lexer)
+       (displayln "color-lexer")
+       (dynamic-require 'basic/colorer 'basic-colorer)]
+      [else default]))
+  handle-query)

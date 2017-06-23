@@ -10,6 +10,7 @@
   (:or "print" "goto" "end" "+" ":" ";" "let" "=" "input"
        "-" "*" "/" "^" "mod" "(" ")"
        "if" "then" "else" "<" ">" "<>" "and" "or" "not"
+       "gosub" "return" "for" "to" "step" "next"
        ))
 
 (define basic-lexer

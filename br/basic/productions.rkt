@@ -5,12 +5,18 @@
          br/define
          racket/format
          racket/string
+         racket/list
+         br/list
          "struct.rkt")
 
 (provide (all-defined-out))
 
 (define (bool->int val) (if val 1 0))
 (define nonzero? (compose not zero?))
+(define return-ccs empty)
+
+(define (in-closed-interval? x start end)
+  ((if (< start end) <= >=) start x end))
 
 (define-macro (b-line NUM STATEMENT ...)
   (with-pattern ([LINE-NUM (prefix-id "line-" #'NUM
@@ -43,6 +49,40 @@
   #'(b-let ID (let* ([str (read-line)]
                      [num (string->number (string-trim str))])
                 (or num str))))
+
+(define (b-gosub num-expr)
+  (let/cc here-cc
+    (push! return-ccs here-cc)
+    (b-goto num-expr)))
+
+(define (b-return)
+  (unless (not (empty? return-ccs)) ; TODO: unless not -> when
+    (raise-line-error "return without gosub"))
+  (define top-cc (pop! return-ccs))
+  (top-cc (void)))
+
+(define next-funcs (make-hasheq))
+
+(define-macro-cases b-for
+  [(_ LOOP-ID START END) #'(b-for LOOP-ID START END 1)]
+  [(_ LOOP-ID START END STEP)
+   #'(b-let LOOP-ID
+            (let/cc loop-cc
+              (hash-set! next-funcs
+                         'LOOP-ID
+                         (lambda ()
+                           (define next-val (+ LOOP-ID STEP))
+                           (if (in-closed-interval? next-val START END)
+                               (loop-cc next-val)
+                               (hash-remove! next-funcs 'LOOP-ID))))
+              START))])
+
+(define-macro (b-next LOOP-ID)
+  #'(begin
+      (unless (hash-has-key? next-funcs 'LOOP-ID)
+        (raise-line-error (format "`next ~a` without for in ~a" 'LOOP-ID (hash-keys next-funcs))))
+      (define func (hash-ref next-funcs 'LOOP-ID))
+      (func)))
 
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))

@@ -32,8 +32,9 @@
                  [(? symbol?) '(symbol #f)]
                  ["(" '(parenthesis |(|)]
                  [")" '(parenthesis |)|)]
-                 [else '(no-color #f)])]))
+                 [else '(other #f)])]))
      (values val cat paren start end)
      ]))
 
-(basic-colorer (open-input-string "10 rem 1 + 1\n20 2 + 3\n"))
+(module+ main
+  (basic-colorer (open-input-string "10 rem 1 + 1\n20 2 + 3\n")))

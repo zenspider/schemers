@@ -14,7 +14,6 @@
   (define (handle-query key default)
     (case key
       [(color-lexer)
-       (displayln "color-lexer")
        (dynamic-require 'basic/colorer 'basic-colorer)]
       [else default]))
   handle-query)

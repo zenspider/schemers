@@ -9,6 +9,9 @@
 
 (provide (all-defined-out))
 
+(define (bool->int val) (if val 1 0))
+(define nonzero? (compose not zero?))
+
 (define-macro (b-line NUM STATEMENT ...)
   (with-pattern ([LINE-NUM (prefix-id "line-" #'NUM
                                       #:source #'NUM)])
@@ -29,6 +32,13 @@
 
 (define-macro (b-let ID VAL) #'(set! ID VAL))
 
+(define-macro-cases b-if
+  [(_ COND-EXPR TRUE-EXPR) #'(b-if COND-EXPR TRUE-EXPR (void))]
+  [(_ COND-EXPR TRUE-EXPR FALSE-EXPR)
+   #'(let ([result (if (nonzero? COND-EXPR) TRUE-EXPR FALSE-EXPR)])
+       (when (exact-positive-integer? result)
+         (b-goto result)))])
+
 (define-macro (b-input ID)
   #'(b-let ID (let* ([str (read-line)]
                      [num (string->number (string-trim str))])
@@ -36,6 +46,30 @@
 
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))
+
+(define-macro-cases b-or-expr
+  [(_ VAL) #'VAL]
+  [(_ LHS "or" RHS) #'(bool->int (or (nonzero? LHS) (nonzero? RHS)))])
+
+(define-macro-cases b-and-expr
+  [(_ VAL) #'VAL]
+  [(_ LHS "and" RHS) #'(bool->int (and (nonzero? LHS) (nonzero? RHS)))])
+
+(define-macro-cases b-not-expr
+  [(_ VAL) #'VAL]
+  [(_ "not" RHS) #'(bool->int (not (nonzero? RHS)))])
+
+(define b=  (compose1 bool->int =))
+(define b<  (compose1 bool->int <))
+(define b>  (compose1 bool->int >))
+(define b<> (compose1 bool->int not =))
+
+(define-macro-cases b-comp-expr
+  [(_ VAL) #'VAL]
+  [(_ LHS "=" RHS)  #'(b=  LHS RHS)]
+  [(_ LHS "<" RHS)  #'(b<  LHS RHS)]
+  [(_ LHS ">" RHS)  #'(b>  LHS RHS)]
+  [(_ LHS "<>" RHS) #'(b<> LHS RHS)])
 
 (define-macro-cases b-sum
   [(_ VAL) #'VAL]

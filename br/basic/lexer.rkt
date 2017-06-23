@@ -7,7 +7,8 @@
 (define-lex-abbrev digits (:+ numeric))
 
 (define-lex-abbrev reserved-terms
-  (:or "print" "goto" "end" "+" ":" ";" "let" "=" "input"))
+  (:or "print" "goto" "end" "+" ":" ";" "let" "=" "input"
+       "-" "*" "/" "^" "mod" "(" ")"))
 
 (define basic-lexer
   (lexer-srcloc

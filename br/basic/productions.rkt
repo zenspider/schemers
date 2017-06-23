@@ -37,7 +37,21 @@
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))
 
-(define (b-sum . vals)
-  (if (= 1 (length vals))
-      (car vals)
-      (apply + vals)))
+(define-macro-cases b-sum
+  [(_ VAL) #'VAL]
+  [(_ LHS "+" RHS) #'(+ LHS RHS)]
+  [(_ LHS "-" RHS) #'(- LHS RHS)])
+
+(define-macro-cases b-product
+  [(_ VAL) #'VAL]
+  [(_ LHS "*" RHS) #'(* LHS RHS)]
+  [(_ LHS "/" RHS) #'(/ LHS RHS 1.0)]
+  [(_ LHS "mod" RHS) #'(modulo LHS RHS)])
+
+(define-macro-cases b-neg
+  [(_ VAL) #'VAL]
+  [(_ "-" VAL) #'(- VAL)])
+
+(define-macro-cases b-expt
+  [(_ VAL) #'VAL]
+  [(_ LHS "^" RHS) #'(expt LHS RHS)])

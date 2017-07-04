@@ -1,34 +1,9 @@
 #!/usr/bin/env racket
 
-#lang br
+#lang racket/base
 
-(require racket/pretty)
-
-(define debug #f)
-
-(define ns (make-base-namespace))
-
-(define (run-with-lang path lang)
-  (define input (input-port-append #t
-                                   (open-input-string (format "#lang ~a~n" lang))
-                                   (open-input-file path)))
-
-  (read-accept-reader #t)
-  (port-count-lines! input)
-  (define syntax (read-syntax (object-name input) input))
-
-  (when debug
-    (displayln path)
-    (displayln 'code:)
-    (pretty-display (syntax->datum syntax)))
-
-  (define this (make-resolved-module-path (gensym 'basic)))
-  (current-module-declare-name this)
-  (eval syntax ns)
-
-  (parameterize ([current-namespace ns])
-    (dynamic-require this #f)))
+(require "run-with-lang.rkt")
 
 (for ([arg (in-vector (current-command-line-arguments))])
   (when (file-exists? arg)
-    (run-with-lang arg 'basic)))
+    (run-with-lang (open-input-file arg) 'basic)))

@@ -84,6 +84,10 @@
       (define func (hash-ref next-funcs 'LOOP-ID))
       (func)))
 
+(define-macro (b-def FUNC-ID VAR-ID ... EXPR)
+  (syntax-local-lift-expression
+   #'(set! FUNC-ID (lambda (VAR-ID ...) EXPR))))
+
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))
 
@@ -129,3 +133,9 @@
 (define-macro-cases b-expt
   [(_ VAL) #'VAL]
   [(_ LHS "^" RHS) #'(expt LHS RHS)])
+
+(define-macro (b-func FUNC-ID ARG ...)
+  #'(if (procedure? FUNC-ID)
+        (FUNC-ID ARG ...)
+        (raise-line-error (format "expected ~a to be a function, got ~v"
+                                  'FUNC-ID FUNC-ID))))

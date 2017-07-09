@@ -8,9 +8,12 @@
 (define-macro (b-module-begin (b-program LINE ...))  ; TODO: rename b-program?
   (with-pattern
     ([((b-line NUM STATEMENT ...) ...) #'(LINE ...)]
-     [(LINE-FUNC ...) (prefix-id "line-" #'(NUM ...))]
-     [(VAR-ID ...) (find-unique-var-ids #'(LINE ...))])
+     [(LINE-FUNC ...)   (prefix-id "line-" #'(NUM ...))]
+     [(VAR-ID ...)      (find-property 'b-id #'(LINE ...))]
+     [(IMPORT-NAME ...) (find-property 'b-import-nm #'(LINE ...))]
+     )
     #'(#%module-begin
+       (require IMPORT-NAME ...)
        (define VAR-ID 0) ...
        LINE ...
        (define line-table (apply hasheqv (append (list NUM LINE-FUNC) ...)))
@@ -18,9 +21,9 @@
 
 (begin-for-syntax
   (require racket/list)
-  (define (find-unique-var-ids line-stxs)
+  (define (find-property which line-stxs)
     (remove-duplicates
      (for/list ([stx (in-list (stx-flatten line-stxs))]
-                #:when (syntax-property stx 'b-id))
+                #:when (syntax-property stx which))
        stx)
      #:key syntax->datum)))

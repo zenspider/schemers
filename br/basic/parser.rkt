@@ -7,6 +7,7 @@
              | b-gosub | b-return | b-for | b-next
              | b-def
              | b-import
+             | b-export
  b-rem       : REM
  b-end       : /"end"
  b-print     : /"print" [b-printable] (/";" [b-printable])*
@@ -24,6 +25,8 @@
  b-def       : /"def" b-id /"(" b-id [/"," b-id]* /")" /"=" b-expr
  b-import    : /"import" b-import-nm
 @b-import-nm : RACKET-ID | STRING
+ b-export    : /"export" b-export-nm
+@b-export-nm : ID
  b-expr      : b-or-expr
  b-or-expr   : [b-or-expr "or"] b-and-expr
  b-and-expr  : [b-and-expr "and"] b-not-expr

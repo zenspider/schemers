@@ -90,6 +90,8 @@
 
 (define-macro (b-import NAME) #'(void))
 
+(define-macro (b-export NAME) #'(void))
+
 (define (b-expr expr)
   (if (integer? expr) (inexact->exact expr) expr))
 

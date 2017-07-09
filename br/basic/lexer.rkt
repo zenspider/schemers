@@ -13,6 +13,7 @@
        "gosub" "return" "for" "to" "step" "next"
        "def" ","
        "import"
+       "export"
        ))
 
 (define-lex-abbrev racket-id

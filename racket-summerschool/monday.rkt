@@ -7,6 +7,7 @@
      x
      (λ (x) e)
      (e e)
+     (let ((x e)) e)
 
      ; booleans
      tt
@@ -90,7 +91,10 @@
    #:domain e
    (--> (in-hole E-value ((λ (x) e_1) v)) ; x_y to avoid y in grammar
         (in-hole E-value (substitute e_1 x v))
-        beta-value)
+        beta)
+   (--> (in-hole E-value (let ((x e_1)) e_2))
+        (in-hole E-value ((λ (x) e_2) e_1))
+        let)
    (--> (in-hole E-value (if v e_1 e_2))
         (in-hole E-value (ifif v e_1 e_2))
         if)
@@ -114,6 +118,12 @@
   (define t5 (term (2 - 1)))
   (define t6 (term (1 - 1)))
   (define t7 (term (1 - 2)))
+  (define t8 (term (let ((x (λ (a) (λ (b) a))))
+                     ((x y) y))))
+
+  (define exp8 (term ((λ (x) ((x y) y))
+                      (λ (a) (λ (b) a)))))
+  (define exp8* (term (((λ (a) (λ (b) a)) y) y)))
 
   (define e1 (term ("1" + 2)))
   (define e2 (term (1 + "2")))
@@ -134,6 +144,8 @@
   (test-->> ->value t5 1)
   (test-->> ->value t6 0)
   (test-->> ->value t7 0)
+  (test-->  ->value t8 exp8)
+  (test-->> ->value t8 exp8*)
 
   (test--> ->value (term (if tt x y)) (term x))
   (test--> ->value (term (if ff x y)) (term y))

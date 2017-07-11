@@ -16,6 +16,7 @@
      ; arithmetic
      n
      (e + e)
+     (e - e)
 
      ; strings
      s
@@ -44,6 +45,8 @@
      (if E-value e e)
      (E-value + e)
      (v + E-value)
+     (E-value - e)
+     (v - E-value)
      (E-value ++ e)
      (v ++ E-value))
   (v ::=
@@ -64,6 +67,12 @@
   [(plus n_1 n_2) ,(+ (term n_1) (term n_2))]
   [(plus n_1 v_2) (err "RHS is not a number")]
   [(plus v_1 v_2) (err "LHS is not a number")])
+
+(define-metafunction PCF-eval
+  minus : v v -> n or (err string)
+  [(minus n_1 n_2) ,(max 0 (- (term n_1) (term n_2)))]
+  [(minus n_1 v_2) (err "RHS is not a number")]
+  [(minus v_1 v_2) (err "LHS is not a number")])
 
 (define-metafunction PCF-eval
   append : v v -> s or (err string)
@@ -88,6 +97,9 @@
    (--> (in-hole E-value (v_1 + v_2))
         (in-hole E-value (plus v_1 v_2))
         plus)
+   (--> (in-hole E-value (v_1 - v_2))
+        (in-hole E-value (minus v_1 v_2))
+        minus)
    (--> (in-hole E-value (v_1 ++ v_2))
         (in-hole E-value (append v_1 v_2))
         concat)))
@@ -99,6 +111,9 @@
   (define t2 (term (λ (x) (1 + 1))))
   (define t3 (term (,t2 ,t1)))
   (define t4 (term (if 42 51 80)))
+  (define t5 (term (2 - 1)))
+  (define t6 (term (1 - 1)))
+  (define t7 (term (1 - 2)))
 
   (define e1 (term ("1" + 2)))
   (define e2 (term (1 + "2")))
@@ -116,6 +131,9 @@
   (test-->> ->value t3 2)
   (test-->> ->value t4 '(err "condition is not a boolean"))
   (test-equal (term (plus 1 1)) 2)
+  (test-->> ->value t5 1)
+  (test-->> ->value t6 0)
+  (test-->> ->value t7 0)
 
   (test--> ->value (term (if tt x y)) (term x))
   (test--> ->value (term (if ff x y)) (term y))

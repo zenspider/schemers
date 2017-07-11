@@ -120,10 +120,12 @@
   (define t7 (term (1 - 2)))
   (define t8 (term (let ((x (λ (a) (λ (b) a))))
                      ((x y) y))))
+  (define t9 (term (λ (x) (x (λ (y) (x y))))))
 
   (define exp8 (term ((λ (x) ((x y) y))
                       (λ (a) (λ (b) a)))))
   (define exp8* (term (((λ (a) (λ (b) a)) y) y)))
+  (define exp9 (term (λ (x) ((sd 0) (λ (y) ((sd 1) (sd 0)))))))
 
   (define e1 (term ("1" + 2)))
   (define e2 (term (1 + "2")))
@@ -164,7 +166,35 @@
   (test-->> ->value t3 (term 2))
 
   (displayln 'done)
+
+
+  ;; ;;-------------------------
+  ;; ;; tests
+  ;; (test-equal (term (sd* z)) (term z))
+  ;; (test-equal (term (sd* (λ(x) y)))
+  ;;   (term (λ(x) y)))
+  ;; (test-equal (term (sd* (λ(x) x)))
+  ;;   (term (λ(x) (sd 0))))
+  ;; (test-equal (term (sd* (λ(x) (λ(y) x))))
+  ;;   (term (λ(x) (λ(y) (sd 1)))))
+  ;; (test-equal (term (sd* (λ (x) (λ (y) y))))
+  ;;   (term (λ(x) (λ(y) (sd 0)))))
+  ;; (test-equal (term (sd* (λ(z) ((λ(y) (y (λ(x) x))) (λ(x) (z x)))) ))
+  ;;   (term      (λ(z) ((λ(y) ((sd 0) (λ(x) (sd 0)))) (λ(x) ((sd 1) (sd 0)))))))
+  ;;
+  ;; (define left-term     (term (λ(a) ((λ(b)(b a))
+  ;;                                    (λ(c) (λ(a) (a (c b))))))))
+  ;; (define right-term    (term (λ(b) (b (λ(c) (λ(d) (d b)))))))
+  ;;
+  ;; (define left-term/sd  (term (λ(a) ((λ(b)((sd 0) (sd 1)))
+  ;;                                    (λ(c) (λ(a) ((sd 0) ((sd 1) b))))))))
+  ;; (define right-term/sd (term (λ(b) ((sd 0) (λ(c) (λ(d) ((sd 0) (sd 2))))))))
+  ;;
+  ;; (test-equal (term (sd* (,left-term ,right-term)))
+  ;;             (term (,left-term/sd ,right-term/sd)))
+
   )
+
 
 ;; TODO: f(x) = 42; f((/ 1 0))
 

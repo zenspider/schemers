@@ -54,6 +54,12 @@
      (λ (x) e)))
 
 (define-metafunction PCF-eval
+  ifif : v e e -> e or (err string)
+  [(ifif tt e_1 e_2) e_1]
+  [(ifif ff e_1 e_2) e_2]
+  [(ifif _ _ _) (err "condition is not a boolean")])
+
+(define-metafunction PCF-eval
   plus : v v -> n or (err string)
   [(plus n_1 n_2) ,(+ (term n_1) (term n_2))]
   [(plus n_1 v_2) (err "RHS is not a number")]
@@ -70,17 +76,9 @@
    (--> (in-hole E-value ((λ (x) e_1) v)) ; x_y to avoid y in grammar
         (in-hole E-value (substitute e_1 x v))
         beta-value)
-   (--> (in-hole E-value (if tt e_1 e_2))
-        (in-hole E-value e_1)
-        if-tt)
-   (--> (in-hole E-value (if ff e_1 e_2))
-        (in-hole E-value e_2)
-        if-ff)
    (--> (in-hole E-value (if v e_1 e_2))
-        (err "condition is not a boolean")
-        (side-condition/hidden (not (or (equal? (term v) (term tt))
-                                        (equal? (term v) (term ff)))))
-        if-invalid)
+        (in-hole E-value (ifif v e_1 e_2))
+        if)
    (--> (in-hole E-value (v_1 + v_2))
         (in-hole E-value (plus v_1 v_2))
         plus)

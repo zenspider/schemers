@@ -96,13 +96,13 @@
         if)
    (--> (in-hole E-value (v_1 + v_2))
         (in-hole E-value (plus v_1 v_2))
-        plus)
+        +)
    (--> (in-hole E-value (v_1 - v_2))
         (in-hole E-value (minus v_1 v_2))
-        minus)
+        -)
    (--> (in-hole E-value (v_1 ++ v_2))
         (in-hole E-value (append v_1 v_2))
-        concat)))
+        ++)))
 
 (module+ test
   (require rackunit)

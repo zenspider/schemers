@@ -2,6 +2,55 @@
 
 (require redex)
 
+(define-language Lambda
+  (e ::=
+     x
+     (λ (x) e)
+     (e e))
+
+  (x ::= variable-not-otherwise-mentioned)
+
+  #:binding-forms
+  (λ (x) e #:refers-to x))
+
+(define-extended-language SD Lambda
+  (e ::=
+     ....
+     (sd n))
+  (n ::=
+     natural))
+
+(require rackunit)
+
+(check-equal? x
+              y)
+(test-equal x
+  y)
+
+(default-language SD)
+
+(define-metafunction SD
+  sd* : e -> e
+  [(sd* e) (sd*-accu e ())])
+
+;; (x ...) the binding variables on path from root in reverse order
+(define-metafunction SD
+  sd*-accu : e (x ...) -> e
+  [(sd*-accu x (x_1 ... x x_2 ...)) (sd ,(length (term (x_1 ...))))]
+  [(sd*-accu x any)                 x]
+  [(sd*-accu (λ (x) e) (x_1 ...))   (λ (x) (sd*-accu e (x x_1 ...)))]
+  [(sd*-accu (e_1 e_2) (x ...))     ((sd*-accu e_1 (x ...))
+                                     (sd*-accu e_2 (x ...)))])
+
+(test-equal (term (sd* c)) (term c))
+(test-equal (term (sd* (λ (x) x))) (term (λ (x) (sd 0))))
+(test-equal (term (sd* (λ (x) (λ (y) (x y)))))
+  (term      (λ (x) (λ (y) ((sd 1) (sd 0))))))
+(test-equal (term (sd* (λ (x) (x (λ (y) (x y))))))
+  (term      (λ (x) ((sd 0) (λ (y) ((sd 1) (sd 0)))))))
+(test-equal (term (sd* (λ (x) (λ (x) x))))
+  (term      (λ (x) (λ (x) (sd 0)))))
+
 (define-language PCF
   (e ::=
      x

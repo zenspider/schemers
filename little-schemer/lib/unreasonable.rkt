@@ -78,7 +78,7 @@
          #'(require id ...)
          #'(begin))]))
 
-(require/if reasonable/trace unstable/debug)
+(require/if reasonable/trace)
 
 (define-syntax dbg
   (if reasonable/trace

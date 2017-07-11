@@ -66,6 +66,12 @@
   [(plus v_1 v_2) (err "LHS is not a number")])
 
 (define-metafunction PCF-eval
+  append : v v -> s or (err string)
+  [(append s_1 s_2) ,(string-append (term s_1) (term s_2))]
+  [(append s_1 v_2) (err "RHS is not a string")]
+  [(append v_1 v_2) (err "LHS is not a string")])
+
+(define-metafunction PCF-eval
   eval : e -> v or (err string)
   [(eval e) ,(first (apply-reduction-relation* ->value (term e)))])
 
@@ -82,17 +88,9 @@
    (--> (in-hole E-value (v_1 + v_2))
         (in-hole E-value (plus v_1 v_2))
         plus)
-   (--> (in-hole E-value (s_1 ++ s_2))
-        (in-hole E-value ,(string-append (term s_1) (term s_2)))
-        concat)
    (--> (in-hole E-value (v_1 ++ v_2))
-        (err "LHS is not a string")
-        (side-condition/hidden (not (string? (term v_1))))
-        concat-error-lhs)
-   (--> (in-hole E-value (v_1 ++ v_2))
-        (err "RHS is not a string")
-        (side-condition/hidden (not (string? (term v_2))))
-        concat-error-rhs)))
+        (in-hole E-value (append v_1 v_2))
+        concat)))
 
 (module+ test
   (require rackunit)
@@ -130,9 +128,7 @@
   (test--> ->value e3 (term (err "LHS is not a number")))
   (test--> ->value e4 (term (err "RHS is not a string")))
   (test--> ->value e5 (term (err "LHS is not a string")))
-  (test--> ->value e6
-           (term (err "LHS is not a string"))
-           (term (err "RHS is not a string")))
+  (test--> ->value e6 (term (err "LHS is not a string")))
 
   (test--> ->value t1)
   (test-->> ->value t3 (term 2))

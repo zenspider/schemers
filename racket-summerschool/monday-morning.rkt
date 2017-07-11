@@ -22,7 +22,7 @@
      (e ++ e))
 
   (n ::=
-     integer)
+     natural)
 
   (s ::=
      string)

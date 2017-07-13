@@ -46,5 +46,50 @@
     (x️ e02 (term (λ (x) x)))
     (X️ e03 (term (λ (y) z)))))
 
+;;; Lambda - extend PureLambda with simple values and operations
+
+(define-extended-language Lambda PureLambda
+  (e ::= ....
+     n
+     (+ e e))
+  (n ::= number))
+
+(default-language Lambda)
+
+(define-extended-language Lambda-E PureLambda-E
+  (E ::= ....
+     (+ E e)
+     (+ v E)
+     )
+  (v ::=
+     n)
+  (n ::= number))
+
+(define Lambda->
+  (extend-reduction-relation
+   PureLambda-> Lambda-E
+   (--> (in-hole E (+ v_1 v_2))
+        (in-hole E ,(+ (term v_1) (term v_2)))
+        plus)))
+
+(module+ test
+  (letrec ([x (lambda (i e) (test-->  Lambda-> i e))]
+           [X (lambda (i e) (test-->> Lambda-> i e))])
+
+    (define e04 (term (+ 1 2)))
+    (define e05 (term (+ 1 (+ 2 3))))
+
+    (test-equal (redex-match? Lambda-E
+                              (in-hole E (+ v_1 v_2))
+                              (term (+ 1 (+ 2 3))))
+                #t)
+
+    (x e04 (term 3))
+    (X e05 (term 6))
+    ))
+
+;; (stepper Lambda-> (term (+ 1 (+ 2 3))))
+;; (traces Lambda-> (term (+ 1 (+ 2 3))))
+
 (module+ test
   (test-results))

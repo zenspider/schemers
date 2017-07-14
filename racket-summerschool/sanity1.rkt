@@ -52,6 +52,7 @@
      n
      s
      (nand e e)
+     (if e e e)
      (+ e e)
      (- e e)
      (++ e e)
@@ -67,6 +68,7 @@
   (E ::= ....
      (nand E e)
      (nand v E)
+     (if E e e)
      (+ E e)
      (+ v E)
      (- E e)
@@ -90,6 +92,12 @@
    (--> (in-hole E (nand b_1 b_2))
         (in-hole E ,(not (and (term b_1) (term b_2))))
         nand)
+   (--> (in-hole E (if #t e_1 e_2))
+        (in-hole E e_1)
+        if-t)
+   (--> (in-hole E (if #f e_1 e_2))
+        (in-hole E e_2)
+        if-f)
    (--> (in-hole E (+ v_1 v_2))
         (in-hole E ,(+ (term v_1) (term v_2)))
         plus)
@@ -113,6 +121,8 @@
     (define e09 (term (++ "a" (++ "b" "c"))))
     (define e10 (term (nand #t #t)))
     (define e11 (term (nand #f #f)))
+    (define e12 (term (if #t 1 2)))
+    (define e13 (term (if #f 1 2)))
 
     (x e04 (term 3))
     (X e05 (term 6))
@@ -123,13 +133,16 @@
     (X e09 (term "abc"))
     (x e10 (term #f))
     (x e11 (term #t))
+    (x e12 (term 1))
+    (x e13 (term 2))
     ))
 
 (default-language Lambda) ; Defines alpha-equivalence (eg test-equal)
 
-;; (redex-match Lambda b (term #t))
-;; (stepper Lambda-> (term (+ 1 (+ 2 3))))
-;; (traces Lambda-> (term (+ 1 (+ 2 3))))
+;; (define t (term (if #t 1 2)))
+;; (redex-match Lambda e t)
+;; (stepper Lambda-> t)
+;; (traces Lambda-> t)
 
 (module+ test
   (test-results))

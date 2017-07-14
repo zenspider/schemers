@@ -51,10 +51,14 @@
 (define-extended-language Lambda PureLambda
   (e ::= ....
      n
+     s
      (+ e e)
      (- e e)
+     (++ e e)
      )
-  (n ::= number))
+  (n ::= number)
+  (s ::= string)
+  )
 
 (default-language Lambda)
 
@@ -64,10 +68,15 @@
      (+ v E)
      (- E e)
      (- v E)
+     (++ E e)
+     (++ v E)
      )
   (v ::=
+     s
      n)
-  (n ::= number))
+  (n ::= number)
+  (s ::= string)
+  )
 
 (define Lambda->
   (extend-reduction-relation
@@ -77,7 +86,10 @@
         plus)
    (--> (in-hole E (- v_1 v_2))
         (in-hole E ,(- (term v_1) (term v_2)))
-        minus))
+        minus)
+   (--> (in-hole E (++ s_1 s_2))
+        (in-hole E ,(string-append (term s_1) (term s_2)))
+        string-append))
   )
 
 (module+ test
@@ -88,11 +100,16 @@
     (define e05 (term (+ 1 (+ 2 3))))
     (define e06 (term (- 5 2)))
     (define e07 (term (- 3 (- 2 1))))
+    (define e08 (term (++ "a" "b")))
+    (define e09 (term (++ "a" (++ "b" "c"))))
 
     (x e04 (term 3))
     (X e05 (term 6))
     (x e06 (term 3))
     (X e07 (term 2))
+    (x e08 (term "ab"))
+    (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
+    (X e09 (term "abc"))
     ))
 
 ;; (stepper Lambda-> (term (+ 1 (+ 2 3))))

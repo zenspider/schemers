@@ -19,6 +19,8 @@
   (check-equal? (conjunction 1 2) 2)
   (check-equal? (conjunction 1 2 3) 3))
 
+;; http://www.ccs.neu.edu/home/matthias/summer-school/thu-mor.html
+
 ;; Exercise 21. Develop the compile-time function disjunction2
 ;;              (without using or). The function deals with binary
 ;;              disjunctions of the shape (disjunction2 lhs:expr
@@ -110,11 +112,63 @@
            body ...
            (loop)))]))
 
-(let ([x 0])
-  (while (< x 3)
-    (displayln x)
-    (set! x (add1 x))))
+(module+ test
+  (check-equal? (let ([x 0]) (while (< x 3) (set! x (add1 x))) x)
+                3))
+
+
+;; Exercise 25. Develop the compile-time function dispatch. It
+;;              translates syntax trees of this shape...
+
+(define-syntax (dispatch stx)
+  (syntax-parse stx                     ; cheating...
+    [(_ e:expr (k:id v:expr) ... (default e-def:expr))
+     #'(case e
+         [(k) v] ...
+         [else e-def])]))
 
 (module+ test
-  (test-log #:exit? #f)
-  (displayln 'done))
+
+  (define (next-state-of-traffic-light current)
+   (dispatch current
+             [red        'yellow-red]
+             [yellow-red 'green]
+             [green      'yellow]
+             [yellow     'red]
+             [default
+               (if (symbol? current)
+                   'blinking-red
+                   (error "really bad things happened"))]))
+
+  (check-equal? (next-state-of-traffic-light 'red) 'yellow-red))
+
+;; http://www.ccs.neu.edu/home/matthias/summer-school/thu-aft.html
+
+;; Exercise 26. Develop a compile-time function that adds:
+;;
+;;                (defun (f:id x:id) e:expr)
+;;
+;;              to Racket where f becomes the identifier of a
+;;              function, x its argument, and f the function body.
+
+(define-syntax (defun stx)              ; too simple? did I misunderstand?
+  (syntax-parse stx
+    [(defun (f:id x:id) e:expr)
+     #'(define (f x) e)]))
+
+(module+ test
+  (defun (id*id x) (* x x))
+
+  (check-equal? (id*id 5) 25))
+
+;; Exercise 27. Develop a compile-time function that implements a
+;;              variant of like if that reacts only to #true and
+;;              #false in the test position.
+
+(define-syntax (iff stx)
+  (syntax-parse stx
+    [(_ c:boolean t:expr f:expr)
+     (if c t f)]))
+
+(module+ test
+  (void (test-log #:display? #t #:exit? #f)))

@@ -48,18 +48,25 @@
 
 (define-extended-language Lambda PureLambda
   (e ::= ....
+     b
      n
      s
+     (nand e e)
      (+ e e)
      (- e e)
      (++ e e)
      )
+  (b ::= boolean)
   (n ::= number)
   (s ::= string)
   )
 
+;; TODO: not sure if I should be extending Lambda or PureLambda-E
+;; what are the pros and cons?
 (define-extended-language Lambda-E PureLambda-E
   (E ::= ....
+     (nand E e)
+     (nand v E)
      (+ E e)
      (+ v E)
      (- E e)
@@ -68,8 +75,11 @@
      (++ v E)
      )
   (v ::=
+     b
+     n
      s
-     n)
+     )
+  (b ::= boolean)
   (n ::= number)
   (s ::= string)
   )
@@ -77,6 +87,9 @@
 (define Lambda->
   (extend-reduction-relation
    PureLambda-> Lambda-E
+   (--> (in-hole E (nand b_1 b_2))
+        (in-hole E ,(not (and (term b_1) (term b_2))))
+        nand)
    (--> (in-hole E (+ v_1 v_2))
         (in-hole E ,(+ (term v_1) (term v_2)))
         plus)
@@ -98,6 +111,8 @@
     (define e07 (term (- 3 (- 2 1))))
     (define e08 (term (++ "a" "b")))
     (define e09 (term (++ "a" (++ "b" "c"))))
+    (define e10 (term (nand #t #t)))
+    (define e11 (term (nand #f #f)))
 
     (x e04 (term 3))
     (X e05 (term 6))
@@ -106,10 +121,13 @@
     (x e08 (term "ab"))
     (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
     (X e09 (term "abc"))
+    (x e10 (term #f))
+    (x e11 (term #t))
     ))
 
 (default-language Lambda) ; Defines alpha-equivalence (eg test-equal)
 
+;; (redex-match Lambda b (term #t))
 ;; (stepper Lambda-> (term (+ 1 (+ 2 3))))
 ;; (traces Lambda-> (term (+ 1 (+ 2 3))))
 

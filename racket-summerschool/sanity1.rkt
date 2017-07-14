@@ -61,9 +61,9 @@
   (s ::= string)
   )
 
-;; TODO: not sure if I should be extending Lambda or PureLambda-E
-;; what are the pros and cons?
-(define-extended-language Lambda-E PureLambda-E
+(define-union-language HybridLambda Lambda PureLambda-E)
+
+(define-extended-language Lambda-E HybridLambda
   (E ::= ....
      (nand E e)
      (nand v E)

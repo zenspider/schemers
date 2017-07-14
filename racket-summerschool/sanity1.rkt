@@ -51,7 +51,9 @@
 (define-extended-language Lambda PureLambda
   (e ::= ....
      n
-     (+ e e))
+     (+ e e)
+     (- e e)
+     )
   (n ::= number))
 
 (default-language Lambda)
@@ -60,6 +62,8 @@
   (E ::= ....
      (+ E e)
      (+ v E)
+     (- E e)
+     (- v E)
      )
   (v ::=
      n)
@@ -70,7 +74,11 @@
    PureLambda-> Lambda-E
    (--> (in-hole E (+ v_1 v_2))
         (in-hole E ,(+ (term v_1) (term v_2)))
-        plus)))
+        plus)
+   (--> (in-hole E (- v_1 v_2))
+        (in-hole E ,(- (term v_1) (term v_2)))
+        minus))
+  )
 
 (module+ test
   (letrec ([x (lambda (i e) (test-->  Lambda-> i e))]
@@ -78,14 +86,13 @@
 
     (define e04 (term (+ 1 2)))
     (define e05 (term (+ 1 (+ 2 3))))
-
-    (test-equal (redex-match? Lambda-E
-                              (in-hole E (+ v_1 v_2))
-                              (term (+ 1 (+ 2 3))))
-                #t)
+    (define e06 (term (- 5 2)))
+    (define e07 (term (- 3 (- 2 1))))
 
     (x e04 (term 3))
     (X e05 (term 6))
+    (x e06 (term 3))
+    (X e07 (term 2))
     ))
 
 ;; (stepper Lambda-> (term (+ 1 (+ 2 3))))

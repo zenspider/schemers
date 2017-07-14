@@ -15,8 +15,6 @@
   #:binding-forms
   (λ (x) e #:refers-to x))
 
-(default-language PureLambda) ; Defines alpha-equivalence (eg test-equal)
-
 (define-extended-language PureLambda-E PureLambda
   (E ::=
      hole
@@ -59,8 +57,6 @@
   (n ::= number)
   (s ::= string)
   )
-
-(default-language Lambda)
 
 (define-extended-language Lambda-E PureLambda-E
   (E ::= ....
@@ -111,6 +107,8 @@
     (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
     (X e09 (term "abc"))
     ))
+
+(default-language Lambda) ; Defines alpha-equivalence (eg test-equal)
 
 ;; (stepper Lambda-> (term (+ 1 (+ 2 3))))
 ;; (traces Lambda-> (term (+ 1 (+ 2 3))))

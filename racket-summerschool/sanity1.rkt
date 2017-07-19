@@ -1,6 +1,6 @@
 #lang racket
 
-(require redex)
+(require redex/reduction-semantics)
 
 ;;; PureLambda - nothing extra at all
 
@@ -81,9 +81,6 @@
      n
      s
      )
-  (b ::= boolean)
-  (n ::= number)
-  (s ::= string)
   )
 
 (define Lambda->
@@ -141,6 +138,9 @@
 
 ;; (define t (term (if #t 1 2)))
 ;; (redex-match Lambda e t)
+;; (test--> Lambda-> t 1)
+;; (apply-reduction-relation* Lambda-> t)
+;; (require redex)
 ;; (stepper Lambda-> t)
 ;; (traces Lambda-> t)
 

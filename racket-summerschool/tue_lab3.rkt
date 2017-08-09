@@ -125,11 +125,17 @@
    ;; nothing yet
    ))
 
+(test-->> basic->
+         (term (prog
+                (let ((x (+ 41 1)))
+                  (+ x x))))
+         84)
 
-
-(test--> basic->
+(test-->> basic->
     (term (prog
            (defun (f x)
              (+ x 1))
            (+ 1 2)))
-    42)
+    3)
+
+(test-results)

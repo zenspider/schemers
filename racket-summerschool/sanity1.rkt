@@ -142,6 +142,103 @@
      (x e13 (term 2))
      )))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; VarLambda - extend Lambda with imperative features
+
+(define-extended-language VarLambda Lambda
+  (p ::= (prog (f ...) e))
+  (f ::= (defun (x x) e))
+  (e ::= ....
+     ;; (let ([x e]) e)
+     ;; (function x)
+     )
+
+  ;; #:binding-forms
+  ;; (let ([x e_1]) e_2 #:refers-to x)
+  )
+
+(define-union-language HybridVarLambda VarLambda Lambda-E)
+
+(define-extended-language VarLambda-E HybridVarLambda
+  (P ::= (prog (f ...) E))
+  (E ::= ....
+     ;; (let ([x E]) e)
+     )
+  (v ::= ....
+     (function x)
+     )
+  )
+
+;; (default-language VarLambda) ; Defines alpha-equivalence (eg test-equal)
+
+(define VarLambda->
+  (extend-reduction-relation
+   Lambda-> VarLambda-E
+   #:domain p
+   (--> (prog (f ...) (in-hole P v))
+        v
+        value)
+   (--> (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
+              (in-hole E x_fun))
+        (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
+              (in-hole E (function x_fun)))
+        function-value)
+   (--> (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
+              (in-hole E ((function x_fun) v_arg)))
+        (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
+              (in-hole E (substitute e_body x_param v_arg)))
+        function-apply)
+   (--> (in-hole P ((λ (x) e_1) e_2))
+        (in-hole P (substitute e_1 x e_2))
+        apply)
+   (--> (in-hole P (nand b_1 b_2))
+        (in-hole P ,(not (and (term b_1) (term b_2))))
+        nand)
+   (--> (in-hole P (if #t e_1 e_2))
+        (in-hole P e_1)
+        if-t)
+   (--> (in-hole P (if #f e_1 e_2))
+        (in-hole P e_2)
+        if-f)
+   (--> (in-hole P (+ v_1 v_2))
+        (in-hole P ,(+ (term v_1) (term v_2)))
+        plus)
+   (--> (in-hole P (- v_1 v_2))
+        (in-hole P ,(- (term v_1) (term v_2)))
+        minus)
+   (--> (in-hole P (++ s_1 s_2))
+        (in-hole P ,(string-append (term s_1) (term s_2)))
+        string-append)
+   ;; (--> (in-hole P (let ([x v]) e))
+   ;;      (in-hole P (substitute e x v))  ; TODO: or lambda application?
+   ;;      let)
+   ))
+
+(module+ test
+  (parameterize ([default-language VarLambda])
+   (letrec ((wrap (lambda (x) (term (prog () ,x))))
+            [x (lambda (i e) (test-->  VarLambda-> (wrap i) (wrap e)))]
+            [X (lambda (i e) (test-->> VarLambda-> (wrap i) (wrap e)))])
+     (x e04 (term 3))
+     (X e05 (term 6))
+     (x e06 (term 3))
+     (X e07 (term 2))
+     (x e08 (term "ab"))
+     (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
+     (X e09 (term "abc"))
+     (x e10 (term #f))
+     (x e11 (term #t))
+     (x e12 (term 1))
+     (x e13 (term 2))
+     )))
+
+;; (begin
+;;   (require redex)
+;;   (extend-language-show-union #t)
+;;   (render-language VarLambda)
+;;   (render-reduction-relation VarLambda->)
+;;   (traces VarLambda-> e13))
+
 ;; (define t (term (if #t 1 2)))
 ;; (redex-match Lambda e t)
 ;; (test--> Lambda-> t 1)

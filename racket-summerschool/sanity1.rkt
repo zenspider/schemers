@@ -232,6 +232,185 @@
      (x e13 (term 2))
      )))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; PCF - starting over via the doco... I don't understand SOMETHING
+
+(define-language PCF
+  (p ::=
+     (prog (f ...) e))
+
+  (f ::=
+     (defvar x v))
+
+  (v ::=
+     n
+     tt
+     ff
+     (λ (x) e))
+
+  (e ::=
+     (set! x e)                         ; NOTE: not a binding construct
+
+     x
+     (λ (x) e)
+     (e e)
+
+     ; booleans
+     tt
+     ff
+     (if e e e)
+
+     ; arithmetic
+     n
+     (e + e))
+
+  (n ::=
+     integer)
+
+  (x ::= variable-not-otherwise-mentioned)
+
+  #:binding-forms
+  (λ (x) e #:refers-to x))
+
+(define-metafunction PCF
+  let : ((x e)) e e -> e
+  [(let ([x_lhs e_rhs]) e_1 e_2)
+   ((λ (x_lhs)
+      ((λ (x_dummy) e_2) e_1))
+    e_rhs)
+   (where (x_dummy) ,(variables-not-in (term (e_1 e_2)) '(dummy)))])
+
+(define-extended-language PCF-eval PCF
+  (P ::=
+     (prog (f ...) E))
+  (E ::=
+     hole
+     (set! x E)
+     (if E e e)
+     (E e)
+     (v E)
+     (E + e)
+     (v + E)))
+
+(define ->value
+  (reduction-relation PCF-eval #:domain p
+    (--> (in-hole P (if tt e_1 e_2))
+         (in-hole P e_1)
+         if-tt)
+    (--> (in-hole P (if ff e_1 e_2))
+         (in-hole P e_2)
+         if-ff)
+    (--> (in-hole P (n_1 + n_2))
+         (in-hole P ,(+ (term n_1) (term n_2)))
+         plus)
+    (--> (prog ((defvar x_1 v_1) ... (defvar x v) (defvar x_2 v_2) ...)
+               (in-hole E x))
+         (prog ((defvar x_1 v_1) ... (defvar x v) (defvar x_2 v_2) ...)
+               (in-hole E v))
+         retrieve)
+    (--> (prog ((defvar x_1 v_1) ... (defvar x v)     (defvar x_2 v_2) ...)
+               (in-hole E (set! x v_new)))
+         (prog ((defvar x_1 v_1) ... (defvar x v_new) (defvar x_2 v_2) ...)
+               (in-hole E 81))
+         assignment)
+    (--> (prog ((defvar x_1 v_1) ...)              (in-hole E ((λ (x) e) v)))
+         (prog ((defvar x_1 v_1) ... (defvar x v)) (in-hole E e))
+         allocation)))
+
+(define-metafunction PCF-eval
+  eval : p -> v or (err any)
+  [(eval p)                             ; is this crazy?
+   (λ (x_3) v)
+   (where ((prog ((defvar x_1 v_1) ... (defvar x v) (defvar x_2 v_2) ...)
+                 (λ (x_3) x)))
+          ,(apply-reduction-relation* ->value (term p)))]
+  [(eval p)
+   v
+   (where ((prog (f ...) v))
+          ,(apply-reduction-relation* ->value (term p)))]
+  [(eval p)
+   (err ,(apply-reduction-relation* ->value (term p)))])
+
+(module+ test
+  (parameterize ([default-language PCF])
+    (define e1
+      (term
+       (prog ()
+             (((λ (x)
+                 (λ (y)
+                   (let ([tmp x])
+                     (set! x (y + 1))
+                     tmp)))
+               1)
+              2))))
+
+    (define e2
+      (term
+       (prog ()
+             ((λ (y)
+                ((λ (z)
+                   ((λ (x)
+                      (let ([tmp x])
+                        (set! x y)
+                        tmp))
+                    (let ([tmp-z z])
+                      (set! z (z + 1))
+                      (let ([tmp-y y])
+                        (set! y tmp-z)
+                        tmp-y))))
+                 1))
+              2))))
+
+    (define e3
+      (term
+       (prog ()
+             ((λ (x) (λ (y) x))
+              ((λ (x) x) 2)))))
+
+    (define e4
+      (term
+       (prog ()
+             (((λ (x) (λ (y) x))
+               (1 + (1 + 1)))
+              (2 + 2)))))
+
+    (define e5
+      (term
+       (prog ((defvar f (λ (x) (if x g h)))
+              (defvar g (λ (x) 42))
+              (defvar h (λ (y) 21)))
+             ((f tt) 5))))
+
+    (define e6
+      (term
+       (prog ((defvar f (λ (x) (if x g h)))
+              (defvar g (λ (x) 42))
+              (defvar h (λ (y) 21)))
+             (let ([x 99])
+               (set! f x)
+               f))))
+
+    (define e7
+      (term
+       (prog ((defvar f (λ (x) (if x g h)))
+              (defvar g (λ (x) 42))
+              (defvar h (λ (y) 21)))
+             ((λ (x)
+                (let ([d (set! x 10)])
+                  (set! f (x + 89))
+                  f))
+              42))))
+
+    (test-equal (term (eval ,e1)) (term 1))
+    (test-equal (term (eval ,e2)) (term 2))
+    (test-equal (term (eval ,e3)) (term (λ (y) 2)))
+    (test-equal (term (eval ,e4)) (term 3))
+    (test-equal (term (eval ,e5)) (term 42))
+    (test-equal (term (eval ,e6)) (term 99))
+    (test-equal (term (eval ,e7)) (term 99))
+
+    (test-equal (term (eval (prog () (1 + 2)))) (term 3))))
+
 ;; (begin
 ;;   (require redex)
 ;;   (extend-language-show-union #t)

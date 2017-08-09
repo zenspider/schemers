@@ -25,7 +25,7 @@
      (function x)
      (e e)
      x
-     (let ((x e)) e))
+     (let ([x e]) e))
   (x ::= variable-not-otherwise-mentioned)
   (b ::= true false)
   (n ::= number)
@@ -36,7 +36,7 @@
      s
      (function x))
   #:binding-forms
-  (let ((x e_1)) e_2 #:refers-to x))
+  (let ([x e_1]) e_2 #:refers-to x))
 
 (default-language basic-syntax)
 
@@ -118,7 +118,6 @@
   )
 
 (default-language basic-lang-2)
-
 
 (define basic->2
   (extend-reduction-relation

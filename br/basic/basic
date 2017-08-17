@@ -6,4 +6,4 @@
 
 (for ([arg (in-vector (current-command-line-arguments))])
   (when (file-exists? arg)
-    (run-with-lang (open-input-file arg) 'basic)))
+    (displayln (run-with-lang (open-input-file arg) 'basic))))

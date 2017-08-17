@@ -38,13 +38,13 @@
   (define e03 (term ((λ (x) (λ (y) x))
                      ((λ (x) x) z))))
 
-  (parameterize ([default-language PureLambda])
-   (letrec ([x (lambda (i e) (test-->  PureLambda-> i e))]
-            [X (lambda (i e) (test-->> PureLambda-> i e))])
+  (define (test-purelambda reduction [wrap identity])
+    (test-->  reduction (wrap e01) (wrap (term x)))
+    (test-->  reduction (wrap e02) (wrap (term (λ (x) x))))
+    (test-->> reduction (wrap e03) (wrap (term (λ (y) z)))))
 
-     (x e01 (term x))
-     (x e02 (term (λ (x) x)))
-     (X e03 (term (λ (y) z))))))
+  (parameterize ([default-language PureLambda])
+    (test-purelambda PureLambda->)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Lambda - extend PureLambda with simple values and operations
@@ -116,31 +116,29 @@
   (define e07 (term (- 3 (- 2 1))))
   (define e08 (term (++ "a" "b")))
   (define e09 (term (++ "a" (++ "b" "c"))))
+  (define e09/e (term (++ "a" (+ 1 2))))
   (define e10 (term (nand #t #t)))
   (define e11 (term (nand #f #f)))
   (define e12 (term (if #t 1 2)))
   (define e13 (term (if #f 1 2)))
 
+  (define (test-lambda reduction [wrap identity])
+    (test-->  reduction (wrap e04)   (wrap (term 3)))
+    (test-->> reduction (wrap e05)   (wrap (term 6)))
+    (test-->  reduction (wrap e06)   (wrap (term 3)))
+    (test-->> reduction (wrap e07)   (wrap (term 2)))
+    (test-->  reduction (wrap e08)   (wrap (term "ab")))
+    (test-->  reduction (wrap e09/e) (wrap (term (++ "a" 3))))
+    ;; (test-->> reduction (wrap e09/e) (wrap (term (err "blah"))))
+    (test-->> reduction (wrap e09)   (wrap (term "abc")))
+    (test-->  reduction (wrap e10)   (wrap (term #f)))
+    (test-->  reduction (wrap e11)   (wrap (term #t)))
+    (test-->  reduction (wrap e12)   (wrap (term 1)))
+    (test-->  reduction (wrap e13)   (wrap (term 2))))
+
   (parameterize ([default-language Lambda])
-   (letrec ([x (lambda (i e) (test-->  Lambda-> i e))]
-            [X (lambda (i e) (test-->> Lambda-> i e))])
-
-     (x e01 (term x))                   ; previous tests
-     (x e02 (term (λ (x) x)))
-     (X e03 (term (λ (y) z)))
-
-     (x e04 (term 3))
-     (X e05 (term 6))
-     (x e06 (term 3))
-     (X e07 (term 2))
-     (x e08 (term "ab"))
-     (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
-     (X e09 (term "abc"))
-     (x e10 (term #f))
-     (x e11 (term #t))
-     (x e12 (term 1))
-     (x e13 (term 2))
-     )))
+    (test-purelambda Lambda->)          ; previous tests
+    (test-lambda Lambda->)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; VarLambda - extend Lambda with imperative features
@@ -216,21 +214,10 @@
 
 (module+ test
   (parameterize ([default-language VarLambda])
-   (letrec ((wrap (lambda (x) (term (prog () ,x))))
-            [x (lambda (i e) (test-->  VarLambda-> (wrap i) (wrap e)))]
-            [X (lambda (i e) (test-->> VarLambda-> (wrap i) (wrap e)))])
-     (x e04 (term 3))
-     (X e05 (term 6))
-     (x e06 (term 3))
-     (X e07 (term 2))
-     (x e08 (term "ab"))
-     (x (term (++ "a" (+ 1 2))) (term (++ "a" 3))) ; TODO: failure
-     (X e09 (term "abc"))
-     (x e10 (term #f))
-     (x e11 (term #t))
-     (x e12 (term 1))
-     (x e13 (term 2))
-     )))
+    (letrec ([wrap (lambda (x) (term (prog () ,x)))])
+      (test-purelambda VarLambda-> wrap)          ; previous tests
+      (test-lambda VarLambda-> wrap)
+      )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; PCF - starting over via the doco... I don't understand SOMETHING
@@ -409,7 +396,16 @@
     (test-equal (term (eval ,e6)) (term 99))
     (test-equal (term (eval ,e7)) (term 99))
 
-    (test-equal (term (eval (prog () (1 + 2)))) (term 3))))
+    (test-equal (term (eval (prog () (1 + 2)))) (term 3))
+
+    (test-equal (term (eval (prog
+                             ((defvar first  (λ (a) (λ (b) a)))
+                              (defvar second (λ (a) (λ (b) b)))
+                              (defvar pair   (λ (a) (λ (b) (λ (f) ((f a) b))))))
+                             (((pair 1) 2) second))))
+                2)
+    ))
+
 
 ;; (begin
 ;;   (require redex)

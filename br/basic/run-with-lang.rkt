@@ -1,10 +1,10 @@
 #lang racket/base
 
-(require racket/port)
+(require racket/port
+         racket/string
+         racket/function)
 
 (provide run-with-lang)
-
-(define ns (make-base-namespace))
 
 (define (run-with-lang port lang)
   (define input (input-port-append #t   ; prepend a #lang line
@@ -14,9 +14,22 @@
   (port-count-lines! input)             ; TODO: verify the line nos are correct
   (define syntax (read-syntax (object-name input) input))
 
-  (define this (make-resolved-module-path (gensym 'basic)))
-  (current-module-declare-name this)
-  (eval syntax ns)
+  (define ns (make-base-namespace))
 
-  (parameterize ([current-namespace ns])
-    (dynamic-require this #f)))
+  (define this (make-resolved-module-path 'a-module))
+  (parameterize ([current-module-declare-name this]
+                 [current-namespace ns])
+    (eval syntax ns)
+    (string-trim (with-output-to-string
+                   (thunk (dynamic-require this #f))))))
+
+(module+ test
+  (require rackunit
+           rackunit/log)
+
+  (define (go src)
+    (run-with-lang (open-input-string src) 'racket))
+
+  (check-equal? (go "(+ 1 2 3)") "6")
+
+  (void (test-log #:display? #t)))

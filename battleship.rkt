@@ -10,7 +10,7 @@
 
 (define-simple-macro (define/case name e ...) (define name (case-lambda e ...)))
 (define-simple-macro (for/none e ...)         (not (for/or e ...)))
-(define-simple-macro (nor e ...) (not (or e ...)))
+(define-simple-macro (nor e ...)              (not (or e ...)))
 
 (define dot '|.|)
 (define hit  '●)
@@ -32,6 +32,9 @@
 
 (define (->coord r c)
   (format-symbol "~a~a" r c))
+
+(define (rc->coord rc)
+  (->coord (list-ref rows (sub1 (first rc))) (second rc)))
 
 (module+ test
   (check-equal? (->coord 'A 1) 'A1))
@@ -132,6 +135,42 @@
   (check-equal? (game-live? (new-game))                        #f)
   (check-equal? (game-live? (new-game (hash submarine '(A1)))) #t))
 
+(define neighbors
+  (for*/hash ([r (in-range 1 11)]
+              [c (in-list cols)])
+    (define n (sub1 r))
+    (define s (add1 r))
+    (define w (sub1 c))
+    (define e (add1 c))
+    (define coords (filter (λ (l) (and (< 0 (first l) 11) (< 0 (second l) 11)))
+                           (list (list n c)
+                                 (list s c)
+                                 (list r w)
+                                 (list r e))))
+    (values (rc->coord (list r c))
+            (for/list ([coord (in-list coords)])
+              (rc->coord coord)))))
+
+(define (board->scores board)
+  (for/hash ([(rc v) (in-board board)])
+    (values rc
+            (cond
+              [(null? v) -0.1]
+              [v 1]
+              [else 0]))))
+
+(define (calculate-moves board moves)
+  (define scores (board->scores board))
+  (map car
+       (sort (hash->list
+              (for/hash ([rc (in-list moves)])
+                (let* ([coords (hash-ref neighbors rc)]
+                       [score (/ (for/sum ([coord (in-list coords)])
+                                   (hash-ref scores coord 0))
+                                 (length coords))])
+                  (values rc score))))
+             (λ (a b) (< (cdr b) (cdr a))))))
+
 (define (fire board coordinate)
   (define s (board-ref board coordinate))
   (if (ship? s)
@@ -139,7 +178,7 @@
              [sunk (and (for/none ([(rc v) (in-board nb)]
                                    #:when (ship? v))
                           (equal? s v))
-                        (ship-name s))]
+                        (symbol->string (ship-name s)))]
              [dead (not (for/or ([(rc v) (in-board nb)])
                           (ship? v)))])
         (values nb #t sunk dead))
@@ -175,7 +214,8 @@
           v))))
 
 (module+ test
-  (check-equal? #t #f))
+  #;(check-equal? #t #f)
+  )
 
 (define (next-move game-id turn-id coordinate) ; rename to payload?
   (hash 'game_id game-id
@@ -183,7 +223,8 @@
                      'turn_id turn-id)))
 
 (module+ test
-  (check-equal? #t #f))
+  #;(check-equal? #t #f)
+  )
 
 (define (my-result payload turn-id hit? sunk? lost?)
   (hash-set payload 'response (hash 'hit hit?
@@ -192,9 +233,7 @@
                                     'turn_id turn-id)))
 
 (module+ test
-  (check-equal? #t #f))
-
-(define game-id (hash-ref (string->jsexpr "{\"game_id\":13}") 'game_id))
+  #;(check-equal? #t #f))
 
 (define game-uri "https://battleship-176302.appspot.com/new_game")
 (define turn-uri "https://battleship-176302.appspot.com/turn")
@@ -208,8 +247,6 @@
                         submarine  '(F1 F2 F3)
                         frigate    '(F5 F6 F7)
                         destroyer  '(F9 F10)))
-
-
 
 (define (play placement)
   ;; me                                     server
@@ -228,7 +265,10 @@
 
   ;; 1. initialize boards & moves
 
-  (define d pretty-print)                ; HACK
+  (define game-id (dig (get game-uri) 'game_id))
+  ;; (define game-id 30)
+
+  (printf "game-id: ~a~n" game-id)
 
   (let loop ([turn-id 1]
              [mine (new-game placement)]   ; boards
@@ -238,18 +278,15 @@
              [mine-sunk? #f]
              [mine-dead? #f])
 
-    (d 'turn) (d turn-id)
-    (d 'theirs)
+    (printf "Turn ~a~n" turn-id)
     (board-print theirs)
-    (d 'mine)
+    (newline)
     (board-print mine)
     (newline)
 
     ;; 2. calculate move and/or response
 
     (define my-move (first moves))
-    ;; (d 'my-move) (d my-move)
-    ;; (d 'payload) (d (next-move game-id turn-id my-move))
 
     ;; 3. post payload
     (define payload (my-result (next-move game-id turn-id my-move)
@@ -257,10 +294,7 @@
                                mine-hit?
                                mine-sunk?
                                mine-dead?))
-    ;; (d 'payload) (d payload)
     (define response (post turn-uri payload))
-
-    ;; (d 'response) (d response)
 
     ;; 4. extract response & update theirs
     (define their-hit?  (dig response 'response 'hit))
@@ -269,21 +303,22 @@
 
     ;; 5. extract guess & update mine
     (define their-guess (dig response 'guess    'guess))
-    (set!   turn-id     (dig response 'guess    'turn_id)) ; TODO: maybe remove?
-    ;; (d 'their-guess) (d their-guess)
     (set!-values (mine mine-hit? mine-sunk? mine-dead?) (fire mine their-guess))
 
     (when (nor their-dead? mine-dead?)
       (loop (add1 turn-id)
             mine
             theirs
-            (rest moves)
+            (calculate-moves theirs (rest moves))
             mine-hit?
             mine-sunk?
-            mine-dead?))))
+            mine-dead?))
 
-(module+ main
-  (play placement))
+    (cond
+      [their-dead? (displayln "You won!")]
+      [mine-dead?  (displayln "You lost!")])))
+
+(play placement)
 
 (module+ test
   (displayln 'done))

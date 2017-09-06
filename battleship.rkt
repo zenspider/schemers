@@ -193,7 +193,7 @@
       (check-equal? (list (board-ref b 'A1) h s d)
                     exp)))
   (check-fire '()      '(#f #f #f #f))        ; miss
-  (check-fire '(A1)    '(#t #t submarine #t)) ; hit/sunk/dead
+  (check-fire '(A1)    '(#t #t "submarine" #t)) ; hit/sunk/dead
   (check-fire '(A1 A2) '(#t #t #f #f)))       ; hit/live
 
 (define (post uri payload)
@@ -238,10 +238,6 @@
 (define game-uri "https://battleship-176302.appspot.com/new_game")
 (define turn-uri "https://battleship-176302.appspot.com/turn")
 
-;; { game_id: <id>,
-;;   response: { hit: [true|false], sunk: <ship name>, turn_id: i },
-;;   guess:    { guess: "A7", turn_id: i + 1 } }
-
 (define placement (hash battleship '(A8 B8 C8 D8 E8)
                         cruiser    '(G8 H8 I8 J8)
                         submarine  '(F1 F2 F3)
@@ -266,14 +262,11 @@
   ;; 1. initialize boards & moves
 
   (define game-id (dig (get game-uri) 'game_id))
-  ;; (define game-id 30)
-
-  (printf "game-id: ~a~n" game-id)
 
   (let loop ([turn-id 1]
-             [mine (new-game placement)]   ; boards
-             [theirs (new-game)]
              [moves (shuffle coordinates)]
+             [theirs (new-game)]
+             [mine (new-game placement)]
              [mine-hit? #f]
              [mine-sunk? #f]
              [mine-dead? #f])
@@ -307,18 +300,22 @@
 
     (when (nor their-dead? mine-dead?)
       (loop (add1 turn-id)
-            mine
-            theirs
             (calculate-moves theirs (rest moves))
+            theirs
+            mine
             mine-hit?
             mine-sunk?
             mine-dead?))
-
     (cond
       [their-dead? (displayln "You won!")]
       [mine-dead?  (displayln "You lost!")])))
 
-(play placement)
-
 (module+ test
   (displayln 'done))
+
+(define (go)
+  (play placement))
+
+(module+ main
+  (go)
+  )

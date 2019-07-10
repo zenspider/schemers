@@ -1,16 +1,15 @@
 #lang racket
 
-(require (for-syntax syntax/parse)
+(require (for-syntax syntax/parse racket/list)
          racket/function
          syntax/parse/define
          "run.rkt")
 
 (provide #%top-interaction
          string-append                  ; HACK
-         #;(rename-out [pfsh:module-begin #%module-begin])
-         #%module-begin
          < >
          (rename-out [pfsh:define define]
+                     [pfsh:module-begin #%module-begin]
                      [pfsh:datum  #%datum]
                      [pfsh:top    #%top]
                      [pfsh:app    #%app]))
@@ -20,12 +19,16 @@
 (module reader syntax/module-reader
   pfsh)
 
-#;
 (define-syntax (pfsh:module-begin stx)
   (syntax-parse stx
-    [(_ (e ...) ...)
-     #'(#%module-begin
-        (void (run e ...)) ...)]))
+    [(_ e ...)
+     (define (stand-alone e) (and (= 1 (length e)) (pair? (syntax-e (car e)))))
+     (define (wrap e)        (if (stand-alone e) e (list e)))
+     (define per-line      (group-by syntax-line (syntax->list #'(e ...)) =))
+     (define wrapped-exprs (datum->syntax stx (append-map wrap per-line)))
+     #`(#%module-begin
+        #,@wrapped-exprs
+        )]))
 
 (define-syntax (< stx)
   (raise-syntax-error '< "Cannot use redirection outside of run") stx)

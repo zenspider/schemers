@@ -3,24 +3,14 @@
 (define (double s)
   (string-append s s))
 
-(double "a a ")
+(whoami > me)
 
-(wc -w < (double "a a ") > woot)
+echo here we go
+ls -l
+echo
 
-woot
-
-(ls "-1" -l > out)
-out
-42
-(wc -l < out)
-(wc -l < out > xxx)
-(echo HAHAHA ": " xxx)
-(wc -l < out > boo)
-(echo HAHAHA ": " boo)
-ls
+echo Hello me
 
 (define you (double "YOU"))
 
-(whoami > me)
-(echo Hello me)
 (echo Hello you)

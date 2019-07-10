@@ -1,4 +1,4 @@
-#lang s-exp pfsh
+#lang pfsh
 
 (define (double s)
   (string-append s s))

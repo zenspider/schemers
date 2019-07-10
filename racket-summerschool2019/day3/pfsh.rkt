@@ -22,10 +22,19 @@
 (define-simple-macro (pfsh:define k:id e:expr)
   (define k (with-output-to-string (lambda () e))))
 
+(begin-for-syntax
+  (define-syntax-class ss
+    #:attributes ([s 0])                ; TODO: remove attributes?
+    (pattern str:string
+             #:attr s (datum->syntax #'here (syntax-e #'str)))
+    (pattern sym:identifier
+             #:attr s (datum->syntax #'here (symbol->string (syntax-e #'sym))))
+    ))
+
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
-    [(_ prog:id arg:id ... (~datum <) val:id)
-     #'(run-with-input val (symbol->string 'prog) (symbol->string 'arg) ...)]
-    [(_ prog:id arg:id ...)
-     #'(run (symbol->string 'prog) (symbol->string 'arg) ...)]
+    [(_ prog:ss arg:ss ... (~datum <) val:id)
+     #'(run-with-input val prog.s arg.s ...)]
+    [(_ prog:ss arg:ss ...)
+     #'(run prog.s arg.s ...)]
     ))

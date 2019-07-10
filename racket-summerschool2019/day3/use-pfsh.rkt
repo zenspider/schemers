@@ -1,4 +1,4 @@
-#lang s-exp "pfsh.rkt"
+#lang s-exp pfsh
 
 (define (double s)
   (string-append s s))

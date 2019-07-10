@@ -7,8 +7,14 @@
 
 (wc -w < (double "a a "))
 
-(define out (ls "-1" -l))
+(ls "-1" -l > out)
 out
 42
 (wc -l < out)
 ls
+
+(define you (double "YOU"))
+
+(whoami > me)
+(echo Hello me)
+(echo Hello you)

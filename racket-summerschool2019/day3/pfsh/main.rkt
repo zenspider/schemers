@@ -1,6 +1,7 @@
 #lang racket
 
 (require (for-syntax syntax/parse)
+         racket/function
          syntax/parse/define
          "run.rkt")
 
@@ -41,15 +42,17 @@
 (define-syntax (pfsh:define stx)
   (syntax-parse stx
     [(_ k:id e:expr)
-     #'(define k (with-output-to-string (lambda () e)))]
+     #'(define k e)]
     [(_ (name:id arg:id ...) body ...)
      #'(define (name arg ...) body ...)]))
 
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
-    #:datum-literals (<)
-    [(_ prog arg ... < val)
-     #'(run-with-input val prog arg ...)]
+    #:datum-literals (< >)
+    [(_ prog arg ... < in)
+     #'(run-with-input in prog arg ...)]
+    [(_ prog arg ... > out)
+     #'(define out (with-output-to-string (thunk (run prog arg ...))))]
     [(_ prog arg ...)
      #'(run prog arg ...)]
     ))

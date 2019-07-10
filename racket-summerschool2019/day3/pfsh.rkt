@@ -24,7 +24,6 @@
 
 (begin-for-syntax
   (define-syntax-class ss
-    #:attributes ([s 0])                ; TODO: remove attributes?
     (pattern str:string
              #:attr s (datum->syntax #'here (syntax-e #'str)))
     (pattern sym:identifier

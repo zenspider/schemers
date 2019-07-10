@@ -25,10 +25,13 @@
      #'(#%module-begin
         (void (run e ...)) ...)]))
 
-(define-syntax (pfsh:top stx)
+(define-syntax (pfsh:app stx)
   (syntax-parse stx
-    [(_ . sym:id)
-     #`#,(symbol->string (syntax-e #'sym)) ]))
+    [(_ name:id arg ...)
+     #:when (identifier-binding #'name)
+     #'(#%app name arg ...)]
+    [(_ other arg ...)
+     #'(pfsh:run other arg ...)]))
 
 (define-syntax (pfsh:datum stx)
   (syntax-parse stx
@@ -42,14 +45,6 @@
     [(_ (name:id arg:id ...) body ...)
      #'(define (name arg ...) body ...)]))
 
-(define-syntax (pfsh:app stx)
-  (syntax-parse stx
-    [(_ name:id arg ...)
-     #:when (identifier-binding #'name)
-     #'(#%app name arg ...)]
-    [(_ other arg ...)
-     #'(pfsh:run other arg ...)]))
-
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
     #:datum-literals (<)
@@ -58,3 +53,8 @@
     [(_ prog arg ...)
      #'(run prog arg ...)]
     ))
+
+(define-syntax (pfsh:top stx)
+  (syntax-parse stx
+    [(_ . sym:id)
+     #`#,(symbol->string (syntax-e #'sym)) ]))

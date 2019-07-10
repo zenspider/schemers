@@ -55,11 +55,18 @@
 
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
-    #:literals (< >)
+    #:literals (>)
+    [(_ prog arg ... > out)
+     #'(define out (with-output-to-string (thunk (pfsh:run* prog arg ...))))]
+    [(_ prog arg ...)
+     #'(void (pfsh:run* prog arg ...))]
+    ))
+
+(define-syntax (pfsh:run* stx)
+  (syntax-parse stx
+    #:literals (<)
     [(_ prog arg ... < in)
      #'(run-with-input in prog arg ...)]
-    [(_ prog arg ... > out)
-     #'(define out (with-output-to-string (thunk (run prog arg ...))))]
     [(_ prog arg ...)
      #'(run prog arg ...)]
     ))

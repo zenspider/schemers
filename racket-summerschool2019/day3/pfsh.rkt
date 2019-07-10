@@ -24,6 +24,8 @@
 
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
+    [(_ prog:id arg:id ... (~datum <) val:id)
+     #'(run-with-input val (symbol->string 'prog) (symbol->string 'arg) ...)]
     [(_ prog:id arg:id ...)
      #'(run (symbol->string 'prog) (symbol->string 'arg) ...)]
     ))

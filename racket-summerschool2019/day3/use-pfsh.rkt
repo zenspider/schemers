@@ -2,5 +2,4 @@
 
 (define out (run ls -l))
 out
-;; (run wc -l < l)
-
+(run wc -l < out)

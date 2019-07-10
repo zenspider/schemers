@@ -15,6 +15,9 @@
 
 ;; TODO: switch #%top-interaction to use display (?)
 
+(module reader syntax/module-reader
+  pfsh)
+
 #;
 (define-syntax (pfsh:module-begin stx)
   (syntax-parse stx

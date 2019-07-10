@@ -2,13 +2,13 @@
 
 (require (for-syntax syntax/parse)
          syntax/parse/define
-         "pfsh-run.rkt")
+         "run.rkt")
 
-(provide run
-         #%top-interaction
+(provide #%top-interaction
          #;(rename-out [pfsh-module-begin #%module-begin])
          #%module-begin
-         (rename-out [pfsh-define define]))
+         (rename-out [pfsh:define define]
+                     [pfsh:run    run]))
 
 ;; TODO: switch #%top-interaction to use display (?)
 
@@ -19,5 +19,11 @@
      #'(#%module-begin
         (void (run e ...)) ...)]))
 
-(define-simple-macro (pfsh-define k:id e:expr)
+(define-simple-macro (pfsh:define k:id e:expr)
   (define k (with-output-to-string (lambda () e))))
+
+(define-syntax (pfsh:run stx)
+  (syntax-parse stx
+    [(_ prog:id arg:id ...)
+     #'(run (symbol->string 'prog) (symbol->string 'arg) ...)]
+    ))

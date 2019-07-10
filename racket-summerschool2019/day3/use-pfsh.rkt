@@ -1,5 +1,6 @@
 #lang s-exp "pfsh.rkt"
 
-(define out (run ls "-1"))
+(define out (ls "-1" -l))
 out
-(run wc -l < out)
+42
+(wc -l < out)

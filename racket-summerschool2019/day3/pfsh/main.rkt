@@ -9,6 +9,7 @@
          string-append                  ; HACK
          #;(rename-out [pfsh:module-begin #%module-begin])
          #%module-begin
+         < >
          (rename-out [pfsh:define define]
                      [pfsh:datum  #%datum]
                      [pfsh:top    #%top]
@@ -25,6 +26,12 @@
     [(_ (e ...) ...)
      #'(#%module-begin
         (void (run e ...)) ...)]))
+
+(define-syntax (< stx)
+  (raise-syntax-error '< "Cannot use redirection outside of run") stx)
+
+(define-syntax (> stx)
+  (raise-syntax-error '> "Cannot use redirection outside of run") stx)
 
 (define-syntax (pfsh:app stx)
   (syntax-parse stx
@@ -48,7 +55,7 @@
 
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
-    #:datum-literals (< >)
+    #:literals (< >)
     [(_ prog arg ... < in)
      #'(run-with-input in prog arg ...)]
     [(_ prog arg ... > out)

@@ -32,7 +32,8 @@
 
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
-    [(_ prog:ss arg:ss ... (~datum <) val:id)
+    #:datum-literals (<)
+    [(_ prog:ss arg:ss ... < val:id)
      #'(run-with-input val prog.s arg.s ...)]
     [(_ prog:ss arg:ss ...)
      #'(run prog.s arg.s ...)]

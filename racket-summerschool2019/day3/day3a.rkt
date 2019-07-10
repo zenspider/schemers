@@ -6,6 +6,7 @@
 
 (run ls -l)
 
-(define-five x (+ 41 1))
+(define x (+ 41 1))
+(define y 314)
 
-x
+(+ x y)

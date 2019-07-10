@@ -9,6 +9,7 @@
          #%module-begin
          (rename-out [pfsh:define define]
                      [pfsh:datum  #%datum]
+                     [pfsh:top    #%top]
                      [pfsh:run    #%app]))
 
 ;; TODO: switch #%top-interaction to use display (?)
@@ -20,6 +21,11 @@
      #'(#%module-begin
         (void (run e ...)) ...)]))
 
+(define-syntax (pfsh:top stx)
+  (syntax-parse stx
+    [(_ . sym:id)
+     #`#,(symbol->string (syntax-e #'sym)) ]))
+
 (define-syntax (pfsh:datum stx)
   (syntax-parse stx
     [(_ . x) #'(#%datum . x)]))
@@ -27,19 +33,11 @@
 (define-simple-macro (pfsh:define k:id e:expr)
   (define k (with-output-to-string (lambda () e))))
 
-(begin-for-syntax
-  (define-syntax-class ss
-    (pattern str:string
-             #:attr s (datum->syntax #'here (syntax-e #'str)))
-    (pattern sym:identifier
-             #:attr s (datum->syntax #'here (symbol->string (syntax-e #'sym))))
-    ))
-
 (define-syntax (pfsh:run stx)
   (syntax-parse stx
     #:datum-literals (<)
-    [(_ prog:ss arg:ss ... < val:id)
-     #'(run-with-input val prog.s arg.s ...)]
-    [(_ prog:ss arg:ss ...)
-     #'(run prog.s arg.s ...)]
+    [(_ prog arg ... < val:id)
+     #'(run-with-input val prog arg ...)]
+    [(_ prog arg ...)
+     #'(run prog arg ...)]
     ))

@@ -4,3 +4,4 @@
 out
 42
 (wc -l < out)
+ls

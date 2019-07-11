@@ -4,6 +4,7 @@
 (require rackunit/turnstile)
 
 (provide ann λ def
+         rec
          (rename-out [λ lambda]
                      [app #%app]
                      [datum #%datum])
@@ -21,13 +22,13 @@
 ;; THE TEMPLATE:
 ;;
 ;; (define-typed-syntax form-name
-;;   [typed-form-pattern ⇐ expected-type-pattern
+;;   [typed-form-pattern ⇐ expected-type-pattern ; confirmed/verified
 ;;    ≫
 ;;    premisses ...             ; [[x ≫ x- : s] ... ⊢ e ≫ e- ⇐ t]
 ;;    ----------                ; ^^ maps to x- and uses them after
 ;;                              ; vv doesn't need to declare a type
 ;;    conclusion]               ; [⊢ (λ- (x- ...) e-)]
-;;   [typed-form-pattern
+;;   [typed-form-pattern                         ; computed
 ;;    ≫
 ;;    premisses ...             ; [[x ≫ x- : s] ... ⊢ e ≫ e- ⇒ t]
 ;;    ----------                ; ^^ same as above, but pushes type
@@ -106,13 +107,12 @@
    --------------------
    [⊢ e- ⇒ τ.norm]])
 
-;;                      x'... fresh
 ;;             ∆,[x>>x':∂],... ¬ e >> e' => †
 ;; ---------------------------------------------------------
 ;; ∆ ⊢ (λ ([x ∂] ...) e) ≫ (λ' (x' ...) e') ⇒ (-> ∂ ... †)
 
 (define-typed-syntax λ
-  [(_ (x:id ...) e:expr) ;; confimed form
+  [(_ (x:id ...) e:expr) ;; confirmed/verified
    ⇐ (~-> s ... t)
    ≫
    #:fail-when (check-duplicate-identifier (stx->list #'(x ...)))
@@ -134,6 +134,34 @@
    [[x ≫ x- : s] ... ⊢ e ≫ e- ⇒ t]
    ------------------------------------
    [⊢ (λ- (x- ...) e-) ⇒ (-> s ... t)]])
+
+(define-syntax (rec- stx)
+  (syntax-parse stx
+    [(_ x:id e:expr)
+     #'(letrec- ([x e]) x)]))
+
+;;    Δ,[x ≫ x- : τ] ⊢ e ≫ e- ⇐ τ
+;; ----------------------------------
+;; Δ ⊢ (rec x e) ≫ (rec- x- e-) ⇐ τ
+;;
+;;    Δ,[x ≫ x- : τ] ⊢ e ≫ e- ⇐ τ
+;; ----------------------------------
+;; Δ ⊢ (rec x τ e) ≫ (rec- x- e-) ⇒ τ
+
+(define-typed-syntax rec
+  [(_ x:id e:expr)
+   ⇐ τ
+   ≫
+   [[x ≫ x- : τ] ⊢ e ≫ e- ⇐ τ]
+   ----------------------------
+   [⊢ (rec- x- e-)]]
+
+  [(_ x:id τ:type e:expr)
+   ≫
+   [[x ≫ x- : τ] ⊢ e ≫ e- ⇐ τ]
+   ----------------------------
+   [⊢ (rec- x- e-) ⇒ τ]]
+  )
 
 ;; gives:
 ;;

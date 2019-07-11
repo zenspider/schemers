@@ -98,9 +98,9 @@
          e-halt)
     ;; id
     (--> (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
-               (in-hole E x_fun))
+               (in-hole P x_fun))
          (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
-               (in-hole E (function x_fun)))
+               (in-hole P (function x_fun)))
          e-id)
     ;; let
     (--> (in-hole P (let ((x v)) e))
@@ -108,9 +108,9 @@
          e-let)
     ;; apply
     (--> (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
-               (in-hole E ((function x_fun) v_arg)))
+               (in-hole P ((function x_fun) v_arg)))
          (prog f_1 ... (defun (x_fun x_param) e_body) f_2 ...
-               (in-hole E (substitute e_body x_param v_arg)))
+               (in-hole P (substitute e_body x_param v_arg)))
          e-apply)))
 
 (define-extended-language basic-lang-2 basic-lang

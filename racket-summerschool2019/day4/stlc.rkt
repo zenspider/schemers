@@ -45,6 +45,22 @@
 ;; Leftarrow  ⇐  | confirms
 ;; Rightarrow ⇒  | computes
 
+;; (define-base-types Int) gives:
+;;
+;;   Int  : just the name
+;;   Int? : -> syntax? boolean? (phase 1) "am I an int?"
+;;   Int- : internals
+;;   ~Int : pattern for macros
+;; ... and bools
+
+;; (define-type-constructor -> #:arity >= 1) gives:
+;;
+;;   ->  : just the name
+;;   ->? : -> syntax? boolean? "am I a function?"
+;;   ->- : X
+;;   ~-> : eg (~-> ~Int ~Int)    (pattern w/ hard types)
+;;         or (~-> dom cod)      (pattern w/ type vars)
+
 ;; TRANSLATION:
 ;;   [[x ≫ x- : s] ... ⊢ e ≫ e- ⇐ t]
 ;; "given [extending env x's translated to x- with type s],
@@ -162,81 +178,3 @@
    ----------------------------
    [⊢ (rec- x- e-) ⇒ τ]]
   )
-
-;; gives:
-;;
-;;   Int  : just the name
-;;   Int? : -> syntax? boolean? (phase 1) "am I an int?"
-;;   Int- : internals
-;;   ~Int : pattern for macros
-;; ... and bools
-
-;; gives:
-;;
-;;   ->  : just the name
-;;   ->? : -> syntax? boolean? "am I a function?"
-;;   ->- : X
-;;   ~-> : eg (~-> ~Int ~Int)    (pattern w/ hard types)
-;;         or (~-> dom cod)      (pattern w/ type vars)
-
-;; (define-syntax (count-arrows stx)
-;;   (syntax-parse stx
-;;     [(_ τ:type)
-;;      #:with (~-> dom ... cod) #'τ.norm
-;;      #'(+ 1 (count-arrows dom) ... (count-arrows cod))]
-;;     [_ #'0]))
-;;
-;; (count-arrows (-> Int (-> Bool Int)))
-;; (count-arrows (-> Int (-> Bool Int) (-> Bool)))
-
-#|
-
-e ::= z
-    | b
-    | (λ (x ...) e)
-    | (λ ([x t] ...) e)
-    | (let [x e] ...) e)
-    | (f e ...)
-    | x
-    | (rec x e)
-    | (rec x t e)
-
-∆ ::= null,
-    | ∆, [x >> x' : t]
-
-----------------------------------------------------------------------
-
-e ::= z
-    | b
-    | (λ (x ...) e)
-    | (f e ...)
-    | (let [x e] e)
-    | (rec x e)
-
-[x>>x' : t] « ∆
----------------
- ∆ ¬ x>>x' => t
-
-IF ->                    ∆ ¬ e1>>e1' : ∂
-                         ∆ ¬ e2>>e2' : †
-                         ∆ ¬ e3>>e3' : †
-          ---------------------------------------------
-          ∆ ¬ (if e1 e2 e3) : † >> (if e1' e2' e3') : †
-
-|#
-
-;; (define-syntax (syntax-parse0 stx)
-;;   (syntax-parse stx
-;;     #:literals (syntax)
-;;     [(_ #'e0 [p e1 ... er] ...+)
-;;      #'(let-syntax ([m (λ (stx)
-;;                          (syntax-parse stx
-;;                            [(_ p) e1 ... #`'#,er] ...))])
-;;          (m e0))]))
-;;
-;; (syntax-parse0 #'Int
-;;                [t:type {type->str #'t}])
-;;
-;; (syntax-parse0 #'(-> Int Bool)
-;;                [τ:type #:with (~-> dom cod) #'τ.norm
-;;                        (type->str #'cod)])

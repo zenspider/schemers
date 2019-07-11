@@ -5,10 +5,12 @@
 
 (provide ann λ def
          (rename-out [λ lambda]
+                     [app #%app]
                      [datum #%datum])
          (type-out Bool Int ->)
          (typed-out [not (-> Bool Bool)]
                     [+   (-> Int Int Int)]
+                    [*   (-> Int Int Int)]
                     [<=  (-> Int Int Bool)])
 
          (all-from-out rackunit/turnstile))
@@ -49,10 +51,34 @@
 
 ;; ---------------------------------------------------------------------
 
-(define-syntax (datum stx)
-  (syntax-parse stx
-    [(_ . x:integer) #'(#%datum . x)]
-    [(_ . x:boolean) #'(#%datum . x)]))
+(define-typed-syntax datum
+  [(_ . x:integer)
+   ≫
+   --------------------
+   [⊢ (#%datum- . x) ⇒ Int]]
+  [(_ . x:boolean)
+   ≫
+   --------------------
+   [⊢ (#%datum- . x) ⇒ Bool]]
+  [(_ . x) ≫ #:fail-when #t "Unsupported literal!"
+   --------------------
+   [⊢ (void-)]])
+
+;;       Δ ⊢ ƒ ≫ ƒ- ⇒ (-> σ ... τ)
+;;           Δ ⊢ e ≫ e- ⇐ σ ...
+;; --------------------------------------
+;; Δ ⊢ (ƒ e ...) ≫ (#%app ƒ- e- ...) ⇒ τ
+
+(define-typed-syntax app
+  [(_ ƒ:expr e:expr ...)
+   ≫
+   [⊢ ƒ ≫ ƒ- ⇒ (~-> σ ... τ)]
+   #:fail-unless (= (stx-length #'(σ ...))
+                    (stx-length #'(e ...)))
+   "wrong number of args for call"
+   [⊢ e ≫ e- ⇐ σ] ...
+   ----------
+   [⊢ (#%app- ƒ- e- ...) ⇒ τ]])
 
 ;; ------------
 ;; Δ ≻ ...dunno
@@ -65,7 +91,7 @@
 
   [(_ x:id τ:type e:expr)
    ≫
-   [⊢ e ≫ -e ⇐ τ.norm]
+   [⊢ e ≫ e- ⇐ τ.norm]
    -------------------------------
    [≻ (define-typed-variable x e- ⇐ τ.norm)]])
 

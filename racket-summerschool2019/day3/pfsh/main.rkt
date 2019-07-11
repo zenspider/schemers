@@ -1,6 +1,6 @@
 #lang racket
 
-(require (for-syntax syntax/parse racket/list)
+(require (for-syntax syntax/parse)
          racket/function
          syntax/parse/define
          "run.rkt")
@@ -8,8 +8,8 @@
 (provide #%top-interaction
          string-append                  ; HACK
          < >
+         #%module-begin
          (rename-out [pfsh:define define]
-                     [pfsh:module-begin #%module-begin]
                      [pfsh:datum  #%datum]
                      [pfsh:top    #%top]
                      [pfsh:app    #%app]))
@@ -17,18 +17,19 @@
 ;; TODO: switch #%top-interaction to use display (?)
 
 (module reader syntax/module-reader
-  pfsh)
+  pfsh
 
-(define-syntax (pfsh:module-begin stx)
-  (syntax-parse stx
-    [(_ e ...)
-     (define (stand-alone e) (and (= 1 (length e)) (pair? (syntax-e (car e)))))
-     (define (wrap e)        (if (stand-alone e) e (list e)))
-     (define per-line      (group-by syntax-line (syntax->list #'(e ...)) =))
-     (define wrapped-exprs (datum->syntax stx (append-map wrap per-line)))
-     #`(#%module-begin
-        #,@wrapped-exprs
-        )]))
+  #:wrapper1 pfsh:wrapper
+
+  (require racket/list)
+
+  (define (gather stxs)
+    (define (alone? e) (and (= 1 (length e)) (pair? (syntax-e (car e)))))
+    (define (wrap e)   (if (alone? e) e (list e)))
+    (append-map wrap (group-by syntax-line stxs =)))
+
+  (define (pfsh:wrapper t)
+    (gather (t))))
 
 (define-syntax (< stx)
   (raise-syntax-error '< "Cannot use redirection outside of run") stx)

@@ -17,6 +17,5 @@
 (typecheck-fail (ann (λ (x y z) z)
                      (-> Int Bool Int)))
 
-; No literals yet:
-(typecheck-fail 5)
-(typecheck-fail #f)
+5
+#f

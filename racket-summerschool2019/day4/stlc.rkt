@@ -4,7 +4,8 @@
 (require rackunit/turnstile)
 
 (provide ann λ def
-         (rename-out [λ lambda])
+         (rename-out [λ lambda]
+                     [datum #%datum])
          (type-out Bool Int ->)
          (typed-out [not (-> Bool Bool)]
                     [+   (-> Int Int Int)]
@@ -47,6 +48,11 @@
 ;;  prove e translated to e- confirms type t"
 
 ;; ---------------------------------------------------------------------
+
+(define-syntax (datum stx)
+  (syntax-parse stx
+    [(_ . x:integer) #'(#%datum . x)]
+    [(_ . x:boolean) #'(#%datum . x)]))
 
 ;; ------------
 ;; Δ ≻ ...dunno

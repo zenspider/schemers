@@ -32,13 +32,13 @@
 
 (typecheck-fail (- #t #f))
 
-;; Finds the factorial of an integer.
+;; Finds the factorial of an integer, weirdly.
 (def fact
   (rec self (-> Int Int)
        (λ (n)
-         (if (<= n 1)
-             1
-             (* n (self (- n 1)))))))
+         (let ([condition (<= n 1)]
+               [n         (- n 1)])
+           (* (+ n 1) (if condition 1 (self n)))))))
 
 (check-type (fact 5) : Int -> 120)
 

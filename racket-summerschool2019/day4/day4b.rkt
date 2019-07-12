@@ -31,3 +31,28 @@
 (check-type (- 12 7)      : Int -> 5)
 
 (typecheck-fail (- #t #f))
+
+;; Finds the factorial of an integer.
+(def fact
+  (rec self (-> Int Int)
+       (λ (n)
+         (if (<= n 1)
+             1
+             (* n (self (- n 1)))))))
+
+(check-type (fact 5) : Int -> 120)
+
+;; (iter n f x) applies `f` to `x`, `n` times.
+(def iter (-> Int (-> Int Int) Int Int)
+  (rec self
+       (λ (n f x)
+         (if (<= n 0)
+             x
+             (self (- n 1) f (f x))))))
+
+;; Integer exponentiation using `iter`.
+(def expt (-> Int Int Int)
+  (λ (n m)
+    (iter m (λ (acc) (* n acc)) 1)))
+
+(check-type (expt 2 10) : Int -> 1024)

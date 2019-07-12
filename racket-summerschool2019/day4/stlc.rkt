@@ -1,13 +1,12 @@
 #lang turnstile/quicklang
 
-(require turnstile/no-unicode)
 (require rackunit/turnstile)
 
 (provide ann λ def
          rec
-         let
          if
          (rename-out [λ lambda]
+                     [stlc:let let]
                      [app #%app]
                      [datum #%datum])
          (type-out Bool Int ->)
@@ -224,7 +223,7 @@
 ;; --------------------------------------------------
 ;; Δ ⊢ (let ([k v] e) ≫ (let- ([k- v-]) e-) ⇐ τ
 
-(define-typed-syntax let
+(define-typed-syntax stlc:let
   [(_ ([k:id v:expr] ...) e:expr)
    ≫
    [⊢ v ≫ v- ⇒ σ] ...

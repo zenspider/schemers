@@ -1,9 +1,6 @@
-#lang racket
+#lang macracket
 
-(require (for-syntax syntax/parse)
-         racket/function
-         syntax/parse/define
-         "run.rkt")
+(require "run.rkt")
 
 (provide #%top-interaction
          string-append                  ; HACK
